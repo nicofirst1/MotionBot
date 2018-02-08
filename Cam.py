@@ -12,9 +12,9 @@ class Cam_class:
     def reopen_cam(self):
         print("reopening cam")
         self.CAM.release()
-        sleep(1.5)
+        sleep(2)
         self.CAM=cv2.VideoCapture(0)
-        #self.check_open_cam()
+        self.check_open_cam()
 
     def close_cam(self):
         print("close cam")
@@ -23,7 +23,7 @@ class Cam_class:
     def check_open_cam(self):
         print("checking cam")
         if not self.CAM.isOpened():
-            self.CAM.open()
+            self.CAM.open(0)
 
     def capture_image(self, image_name):
         max_ret = self.MAX_RETRIES

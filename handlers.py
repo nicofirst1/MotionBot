@@ -42,7 +42,6 @@ def get_camshot(bot, update):
 
 
     if ret:
-        print("image taken")
         update.message.reply_text("Invio immagine")
         with open(image, "rb") as file:
             bot.sendPhoto(update.message.from_user.id, file)
