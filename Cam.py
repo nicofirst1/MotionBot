@@ -9,6 +9,9 @@ class Cam_class:
     def __init__(self):
         self.MAX_RETRIES=4
         self.CAM=cv2.VideoCapture(0)
+
+
+        self.check_open_cam()
         self.thread=Cam_thread(self.CAM)
         self.thread.start()
 
@@ -142,9 +145,14 @@ class Cam_thread(Thread):
         self.CAM = CAM
 
     def run(self):
+
+
         while True:
 
             ret, img = self.CAM.read()
 
             if ret:
                 self.img=img
+                print("saved")
+
+            sleep(0.01)
