@@ -23,15 +23,17 @@ class Cam_class:
     def check_open_cam(self):
         print("checking cam")
         if not self.CAM.isOpened():
+            print("cam was closed")
             self.CAM.open(0)
+        else:
+            print("cam was open")
 
     def capture_image(self, image_name):
         max_ret = self.MAX_RETRIES
         print("taking image")
 
         #check if camera stream is opened
-        if not self.CAM.isOpened():
-            self.CAM.open(0)
+        self.check_open_cam()
         # try to read the image
         sleep(1)
         ret, img = self.CAM.read()
@@ -44,11 +46,10 @@ class Cam_class:
             ret, img = self.CAM.read()
             max_ret -= 1
             if not ret:
-                #self.reopen_cam()
-                sleep(2)
+                self.reopen_cam()
             # if max retries is exceeded exit and release the stream
             if max_ret == 0:
-                #self.close_cam()
+                self.close_cam()
                 return False
 
         # try to save the image
