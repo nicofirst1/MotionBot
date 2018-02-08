@@ -31,16 +31,35 @@ def annulla(bot,update):
 
 def get_camshot(bot, update):
     print("taking image")
-
+    max_ret=4
     update.message.reply_text("Aspetta un secondo...")
-    cap = cv2.CaptureFromCAM(0)
-    img = cv2.QueryFrame(cap)
-    cv2.imwrite('image.png', img)
+    cap = cv2.VideoCapture(0)
+    ret, img = cap.read()
+
+    while not ret:
+        ret, img = cap.read()
+        sleep(1)
+        max_ret-=1
+        if max_ret==0:
+            update.message.reply_text("Ci sono stati dei problemi tecnici 1")
+            break
+
+    ret= cv2.imwrite('image.png', img)
+    max_ret=4
+
+    while not ret:
+        ret = cv2.imwrite('image.png', img)
+        sleep(1)
+        max_ret -= 1
+        if max_ret == 0:
+            update.message.reply_text("Ci sono stati dei problemi tecnici 2")
+            break
+
     cv2.VideoCapture(0).release()
     sleep(2)
     print("image taken")
 
-    if "image.png" in os.listdir("."):
-        print("image found")
+    if ret:
+        update.message.reply_text("Invio immagine")
         with open("image.png","rb") as file:
-            bot.sendPhoto(update.message.from_id,file)
+        bot.sendPhoto(update.message.from_id,file)
