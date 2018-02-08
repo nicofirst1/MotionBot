@@ -1,3 +1,5 @@
+from threading import Thread
+
 import cv2
 from time import sleep
 from datetime import datetime
@@ -5,8 +7,9 @@ from datetime import datetime
 class Cam_class:
 
     def __init__(self):
-        self.MAX_RETRIES=10000000
+        self.MAX_RETRIES=1000
         self.CAM=cv2.VideoCapture(0)
+        self.thread=Cam_thread(self.CAM)
 
 
     def reopen_cam(self):
@@ -28,7 +31,7 @@ class Cam_class:
         else:
             print("cam was open")
 
-    def capture_image(self, image_name):
+    def capture_image2(self, image_name):
         max_ret = self.MAX_RETRIES
         print("taking image")
 
@@ -53,6 +56,27 @@ class Cam_class:
                 self.close_cam()
                 return False
 
+        # try to save the image
+        ret = cv2.imwrite(image_name, img)
+        max_ret = self.MAX_RETRIES
+
+        while not ret:
+            ret = cv2.imwrite(image_name, img)
+            sleep(1)
+            max_ret -= 1
+            # if max retries is exceeded exit and release the stream
+
+            if max_ret == 0:
+                self.close_cam()
+                return False
+
+        self.close_cam()
+        # sleep(2)
+        print("Image taken")
+        return True
+
+    def capture_iamge(self,image_name):
+        img=self.thread.img
         # try to save the image
         ret = cv2.imwrite(image_name, img)
         max_ret = self.MAX_RETRIES
@@ -107,3 +131,19 @@ class Cam_class:
         self.close_cam()
         out.release()
 
+
+class Cam_thread(Thread):
+    def __init__(self, CAM):
+        ''' Constructor. '''
+        Thread.__init__(self)
+        self.img=0
+
+        self.CAM = CAM
+
+    def run(self):
+        while True:
+
+            ret, img = self.CAM.read()
+
+            if ret:
+                self.img=img
