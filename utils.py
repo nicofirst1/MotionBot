@@ -86,7 +86,7 @@ def elegible_user(func):
 def capture_image(image_name):
     max_ret = MAX_RETRIES
     cam = cv2.VideoCapture(0)
-
+    sleep(2)
     # try to read the image
     ret, img = cam.read()
 
@@ -97,7 +97,9 @@ def capture_image(image_name):
         ret, img = cam.read()
         max_ret -= 1
         if not ret:
+            sleep(0.5)
             cv2.VideoCapture(0).release()
+            sleep(0.5)
             cam=cv2.VideoCapture(0)
         # if max retries is exceeded exit and release the stream
         if max_ret == 0:

@@ -42,7 +42,6 @@ def get_camshot(bot, update):
 
 
     if ret:
-        sleep(2)
         print("image taken")
         update.message.reply_text("Invio immagine")
         with open(image, "rb") as file:
@@ -52,6 +51,7 @@ def get_camshot(bot, update):
         update.message.reply_text("Si è verificato un errore...riprova")
 
 
+@elegible_user
 def stream(bot, update):
     print("Video")
     SECONDS=5
