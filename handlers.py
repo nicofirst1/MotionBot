@@ -12,8 +12,8 @@ MAX_RETRIES = 8
 psw = "SuperMegaFamBrand123!"
 CAM=cv2.VideoCapture(0)
 
-
 def start(bot, update):
+    print("start")
     update.message.reply_text("Benvenuto...per iniziare inserisci la password")
     return 1
 

@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from functools import wraps
-from inspect import signature
+#from inspect import signature
 
 
 
@@ -65,10 +65,11 @@ def elegible_user(func):
             return
 
         else:
-            sig = signature(func)
-            if len(sig.parameters) > 1:
-                return func(bot, update, *args, **kwargs)
-            else:
-                return func(*args, **kwargs)
+            # sig = signature(func)
+            # if len(sig.parameters) > 1:
+            #     return func(bot, update, *args, **kwargs)
+            # else:
+            #     return func(*args, **kwargs)
+            return func(bot, update, *args, **kwargs)
 
     return check_if_user_can_interact
