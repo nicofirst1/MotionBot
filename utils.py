@@ -98,7 +98,7 @@ def capture_image(image_name):
         max_ret -= 1
         if not ret:
             cv2.VideoCapture(0).release()
-            CAM.cv2.VideoCapture(0)
+            CAM=cv2.VideoCapture(0)
         # if max retries is exceeded exit and release the stream
         if max_ret == 0:
             cv2.VideoCapture(0).release()
