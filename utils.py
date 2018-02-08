@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from functools import wraps
 from inspect import signature
 
@@ -37,7 +39,10 @@ def read_ids():
 
 
 def elegible_user(func):
-  
+    """questa funzione ha il compito di verificare se l'id utente è abilitato a chiamare il comando
+    il suo utilizzo è il seguente:
+    data la funzione command che deve essere wrappata, si può creare una nuova funzione elegible_user(command) """
+
     @wraps(func)
     def check_if_user_can_interact(bot, update, *args, **kwargs):
         """Questa funzione ritorna true se l'user puo interagire, altrimenti false
