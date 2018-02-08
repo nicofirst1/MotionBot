@@ -1,5 +1,6 @@
 from telegram.ext import ConversationHandler
 from subprocess import call
+import cv2
 
 
 psw="SuperMegaFamBrand123!"
@@ -28,6 +29,11 @@ def annulla(bot,update):
 
 def get_camshot(bot, update):
     print("taking image")
-    call(['pwd','fswebcam image.jpg'])
-    print("image taken")
+    cap = cv2.VideoCapture(0)
 
+    ret, img = cap.read()
+    cv2.imshow("input", img)
+    key = cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    cv2.VideoCapture(0).release()
+    print("image taken")
