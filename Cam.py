@@ -10,15 +10,18 @@ class Cam_class:
 
 
     def reopen_cam(self):
+        print("reopening cam")
         self.CAM.release()
         sleep(1.5)
         self.CAM=cv2.VideoCapture(0)
         self.check_open_cam()
 
     def close_cam(self):
+        print("close cam")
         self.CAM.release()
 
     def check_open_cam(self):
+        print("checking cam")
         if not self.CAM.isOpened():
             self.CAM.open()
 
