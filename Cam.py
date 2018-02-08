@@ -14,7 +14,7 @@ class Cam_class:
         self.CAM.release()
         sleep(1.5)
         self.CAM=cv2.VideoCapture(0)
-        self.check_open_cam()
+        #self.check_open_cam()
 
     def close_cam(self):
         print("close cam")
