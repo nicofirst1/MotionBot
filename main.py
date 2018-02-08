@@ -1,7 +1,7 @@
 from telegram.ext import (
     Updater, ConversationHandler, CommandHandler, MessageHandler, Filters)
 import os
-from handlers import start, get_psw, annulla, get_camshot
+from handlers import start, get_psw, annulla, get_camshot, stream
 from utils import read_ids
 
 TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     disp.add_handler(conversation)
 
     disp.add_handler(CommandHandler("photo",get_camshot))
+    disp.add_handler(CommandHandler("video",stream))
 
 
     print("Polling...")
