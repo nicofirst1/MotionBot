@@ -44,6 +44,9 @@ def get_camshot(bot, update):
             update.message.reply_text("Ci sono stati dei problemi tecnici 1")
             break
 
+    if not ret:
+        return
+
     ret= cv2.imwrite('image.png', img)
     max_ret=4
 
@@ -54,6 +57,8 @@ def get_camshot(bot, update):
         if max_ret == 0:
             update.message.reply_text("Ci sono stati dei problemi tecnici 2")
             break
+    if not ret:
+        return
 
     cv2.VideoCapture(0).release()
     sleep(2)
