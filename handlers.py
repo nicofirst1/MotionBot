@@ -4,8 +4,11 @@ from subprocess import call
 import cv2
 import os
 
+from utils import  add_id, elegible_user
+
 MAX_RETRIES = 8
 psw = "SuperMegaFamBrand123!"
+CAM=cv2.VideoCapture(0)
 
 
 def start(bot, update):
@@ -13,37 +16,39 @@ def start(bot, update):
     return 1
 
 
+
 def get_psw(bot, update):
     user_psw = update.message.text
 
     if not user_psw == psw:
-        update.message.reply_text("Password incorretta")
-
+        update.message.reply_text("Password incorretta...non ti è stato garantito l'accesso :(")
+        add_id(update.message.from_user.id,0)
     else:
-        update.message.reply_text("Password corretta")
+        update.message.reply_text("Password corretta...ti è stato garantito l'accesso al bot")
+        add_id(update.message.from_user.id,1)
+
 
 
 def annulla(bot, update):
     update.message.reply_text("annullo")
     return ConversationHandler.END
 
-
+@elegible_user
 def get_camshot(bot, update):
     image = "image.png"
     print("taking image")
     max_ret = MAX_RETRIES
     update.message.reply_text("Aspetta qualche secondo...")
 
-    #access to webcam on device 0
-    cap = cv2.VideoCapture(0)
+
 
     #try to read the image
-    ret, img = cap.read()
+    ret, img = CAM.read()
 
     #while the reading is unsuccesfull
     while not ret:
         #read again and sleep
-        ret, img = cap.read()
+        ret, img = CAM.read()
         sleep(1)
         max_ret -= 1
         #if max retries is exceeded exit and release the stream
