@@ -85,6 +85,7 @@ def elegible_user(func):
 
 def capture_image(image_name):
     max_ret = MAX_RETRIES
+    cv2.VideoCapture(0).release()
     cam = cv2.VideoCapture(0)
 
     # try to read the image
