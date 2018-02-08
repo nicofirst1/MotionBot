@@ -2,7 +2,7 @@ import cv2
 from time import sleep
 from datetime import datetime
 
-class Cam:
+class Cam_class:
 
     def __init__(self):
         self.MAX_RETRIES=4

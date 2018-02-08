@@ -5,9 +5,12 @@ from subprocess import call
 
 import os
 
-from utils import add_id, elegible_user, capture_image, capture_video
+import Cam
+from utils import add_id, elegible_user
 
 psw = "SuperMegaFamBrand123!"
+cam= Cam.Cam_class()
+
 
 def start(bot, update):
     print("start")
@@ -37,7 +40,7 @@ def get_camshot(bot, update):
     image = "image.png"
     print("taking image")
     update.message.reply_text("Aspetta qualche secondo...")
-    ret=capture_image(image)
+    ret=cam.capture_image(image)
 
 
     if ret:
@@ -58,7 +61,7 @@ def stream(bot, update):
 
     update.message.reply_text("Attendi "+str(SECONDS)+" secondi...")
 
-    capture_video(video_name,SECONDS)
+    cam.capture_video(video_name,SECONDS)
 
     print("Capture complete")
 
