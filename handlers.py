@@ -53,13 +53,16 @@ def get_camshot(bot, update):
 
 
 def stream(bot, update):
-
+    print("Video")
     SECONDS=5
     video_name="video.mp4"
 
     update.message.reply_text("Attendi "+str(SECONDS)+" secondi...")
 
     capture_video(video_name,SECONDS)
+
+    print("Capture complete")
+
 
     with open(video_name, "rb") as file:
         bot.sendVideo(update.message.from_user.id, file)
