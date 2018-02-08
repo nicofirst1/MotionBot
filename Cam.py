@@ -7,10 +7,10 @@ from datetime import datetime
 class Cam_class:
 
     def __init__(self):
-        self.MAX_RETRIES=1000
+        self.MAX_RETRIES=4
         self.CAM=cv2.VideoCapture(0)
         self.thread=Cam_thread(self.CAM)
-        self.thread.run()
+        self.thread.start()
 
 
     def reopen_cam(self):
@@ -18,7 +18,7 @@ class Cam_class:
         self.CAM.release()
         sleep(2)
         self.CAM=cv2.VideoCapture(0)
-        #self.check_open_cam()
+        self.check_open_cam()
 
     def close_cam(self):
         print("close cam")
@@ -37,7 +37,7 @@ class Cam_class:
         print("taking image")
 
         #check if camera stream is opened
-        #self.check_open_cam()
+        self.check_open_cam()
         # try to read the image
         sleep(1)
         ret, img = self.CAM.read()
@@ -50,7 +50,7 @@ class Cam_class:
             ret, img = self.CAM.read()
             max_ret -= 1
             if not ret:
-                #self.reopen_cam()
+                self.reopen_cam()
                 print("fail")
             # if max retries is exceeded exit and release the stream
             if max_ret == 0:
