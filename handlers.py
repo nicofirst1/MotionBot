@@ -53,6 +53,9 @@ def get_camshot(bot, update):
         ret, img = CAM.read()
         sleep(1)
         max_ret -= 1
+        if not ret:
+            cv2.VideoCapture(0).release()
+            CAM.cv2.VideoCapture(0)
         #if max retries is exceeded exit and release the stream
         if max_ret == 0:
             update.message.reply_text("Ci sono stati dei problemi tecnici 1...riprova")
