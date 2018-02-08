@@ -1,3 +1,4 @@
+# coding=utf-8
 from time import sleep
 from telegram.ext import ConversationHandler
 from subprocess import call
