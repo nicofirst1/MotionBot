@@ -148,7 +148,7 @@ def capture_video(video_name,seconds):
         # Break the loop
         else:
             cv2.VideoCapture(0).release()
-            CAM=cv2.VideoCapture(0)
+            cam=cv2.VideoCapture(0)
             pass
 
         if (end - start).seconds>=seconds:
