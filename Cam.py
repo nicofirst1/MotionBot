@@ -5,7 +5,7 @@ from datetime import datetime
 class Cam_class:
 
     def __init__(self):
-        self.MAX_RETRIES=100
+        self.MAX_RETRIES=10000
         self.CAM=cv2.VideoCapture(0)
 
 
