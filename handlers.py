@@ -55,7 +55,7 @@ def get_camshot(bot, update):
 def stream(bot, update):
     print("Video")
     SECONDS=5
-    video_name="video.avi"
+    video_name="video.mp4"
 
     update.message.reply_text("Attendi "+str(SECONDS)+" secondi...")
 
