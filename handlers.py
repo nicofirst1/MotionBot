@@ -30,6 +30,8 @@ def annulla(bot,update):
 
 
 def get_camshot(bot, update):
+
+    image="image.png"
     print("taking image")
     max_ret=4
     update.message.reply_text("Aspetta un secondo...")
@@ -47,11 +49,11 @@ def get_camshot(bot, update):
     if not ret:
         return
 
-    ret= cv2.imwrite('image.png', img)
+    ret= cv2.imwrite(image, img)
     max_ret=4
 
     while not ret:
-        ret = cv2.imwrite('image.png', img)
+        ret = cv2.imwrite(image, img)
         sleep(1)
         max_ret -= 1
         if max_ret == 0:
@@ -66,5 +68,7 @@ def get_camshot(bot, update):
 
     if ret:
         update.message.reply_text("Invio immagine")
-        with open("image.png","rb") as file:
-            bot.sendPhoto(update.message.from_id,file)
+        with open(image,"rb") as file:
+            bot.sendPhoto(update.message.from_user.id, file)
+        os.remove(image)
+
