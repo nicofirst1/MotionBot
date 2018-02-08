@@ -119,6 +119,7 @@ def capture_image(image_name):
             return False
 
     cv2.VideoCapture(0).release()
+    print("Image taken")
     return True
 
 
