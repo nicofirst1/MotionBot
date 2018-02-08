@@ -40,7 +40,7 @@ class Cam_class:
         while not ret:
             print(max_ret)
             # read again and sleep
-            sleep(0.5)
+            sleep(1)
             ret, img = self.CAM.read()
             max_ret -= 1
             if not ret:
