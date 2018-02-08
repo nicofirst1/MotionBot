@@ -11,9 +11,9 @@ class Cam_class:
         self.CAM=cv2.VideoCapture(0)
 
 
-        self.check_open_cam()
+        #self.check_open_cam()
         self.thread=Cam_thread(self.CAM)
-        self.thread.start()
+        #self.thread.start()
 
 
     def reopen_cam(self):
@@ -35,7 +35,7 @@ class Cam_class:
         else:
             print("cam was open")
 
-    def capture_image2(self, image_name):
+    def capture_image(self, image_name):
         max_ret = self.MAX_RETRIES
         print("taking image")
 
@@ -79,8 +79,8 @@ class Cam_class:
         print("Image taken")
         return True
 
-    def capture_iamge(self,image_name):
-        img=self.thread.img
+    def capture_iamge2(self,image_name):
+        img=self.thread.get_img()
         # try to save the image
         ret = cv2.imwrite(image_name, img)
         max_ret = self.MAX_RETRIES
@@ -156,3 +156,6 @@ class Cam_thread(Thread):
                 print("saved")
 
             sleep(0.01)
+
+    def get_img(self):
+        return self.img
