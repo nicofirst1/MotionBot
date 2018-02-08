@@ -93,12 +93,12 @@ def capture_image(image_name):
     # while the reading is unsuccesfull
     while not ret:
         # read again and sleep
+        sleep(1)
         ret, img = cam.read()
         max_ret -= 1
         if not ret:
             cv2.VideoCapture(0).release()
             cam=cv2.VideoCapture(0)
-            sleep(1)
         # if max retries is exceeded exit and release the stream
         if max_ret == 0:
             cv2.VideoCapture(0).release()
