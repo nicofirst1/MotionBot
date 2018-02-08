@@ -10,6 +10,7 @@ class Cam_class:
         self.MAX_RETRIES=1000
         self.CAM=cv2.VideoCapture(0)
         self.thread=Cam_thread(self.CAM)
+        self.thread.run()
 
 
     def reopen_cam(self):
