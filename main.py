@@ -2,7 +2,6 @@ from telegram.ext import (
     Updater, ConversationHandler, CommandHandler, MessageHandler, Filters)
 import os
 from handlers import start, get_psw, annulla, get_camshot, stream
-from utils import read_ids
 
 TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
 

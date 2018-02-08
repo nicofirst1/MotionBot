@@ -1,7 +1,6 @@
 # coding=utf-8
 
 from telegram.ext import ConversationHandler
-from subprocess import call
 
 import os
 
