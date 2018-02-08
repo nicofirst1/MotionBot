@@ -1,7 +1,9 @@
+from time import sleep
+
 from telegram.ext import ConversationHandler
 from subprocess import call
 import cv2
-
+import os
 
 psw="SuperMegaFamBrand123!"
 
@@ -29,9 +31,16 @@ def annulla(bot,update):
 
 def get_camshot(bot, update):
     print("taking image")
-    cap = cv2.VideoCapture(0)
 
+    update.message.reply_text("Aspetta un secondo...")
+    cap = cv2.VideoCapture(0)
     ret, img = cap.read()
     cv2.imwrite('image.png', img)
     cv2.VideoCapture(0).release()
+    sleep(2)
     print("image taken")
+
+    if "image.png" in os.listdir("."):
+        print("image found")
+        with open("image.png","rb") as file:
+            bot.sendPhoto(update.message.from_id,file)
