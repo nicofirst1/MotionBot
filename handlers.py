@@ -37,7 +37,6 @@ def annulla(bot, update):
 @elegible_user
 def get_camshot(bot, update):
     image = "image.png"
-    print("taking image")
     update.message.reply_text("Aspetta qualche secondo...")
     ret=cam.capture_image(image)
 

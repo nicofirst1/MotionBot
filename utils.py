@@ -7,6 +7,7 @@ MAX_RETRIES = 8
 COMMANDS="""
 photo - invia una foto
 start - inizzializza il bot
+video - manda un video 
 """
 
 def is_enabled(id):

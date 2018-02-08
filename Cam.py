@@ -24,6 +24,7 @@ class Cam_class:
 
     def capture_image(self, image_name):
         max_ret = self.MAX_RETRIES
+        print("taking image")
 
         #check if camera stream is opened
         if not self.CAM.isOpened():
@@ -33,6 +34,7 @@ class Cam_class:
 
         # while the reading is unsuccesfull
         while not ret:
+            print(max_ret)
             # read again and sleep
             sleep(0.5)
             ret, img = self.CAM.read()
