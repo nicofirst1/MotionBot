@@ -33,6 +33,7 @@ class Cam_class:
         if not self.CAM.isOpened():
             self.CAM.open(0)
         # try to read the image
+        sleep(1)
         ret, img = self.CAM.read()
 
         # while the reading is unsuccesfull
