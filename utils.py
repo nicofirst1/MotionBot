@@ -6,7 +6,6 @@ from time import sleep
 import cv2
 from datetime import datetime
 
-CAM=cv2.VideoCapture(0)
 MAX_RETRIES = 8
 
 COMMANDS="""
@@ -86,19 +85,20 @@ def elegible_user(func):
 
 def capture_image(image_name):
     max_ret = MAX_RETRIES
+    cam = cv2.VideoCapture(0)
 
     # try to read the image
-    ret, img = CAM.read()
+    ret, img = cam.read()
 
     # while the reading is unsuccesfull
     while not ret:
         # read again and sleep
-        ret, img = CAM.read()
+        ret, img = cam.read()
         sleep(1)
         max_ret -= 1
         if not ret:
             cv2.VideoCapture(0).release()
-            cv2.VideoCapture(0)
+            cam=cv2.VideoCapture(0)
         # if max retries is exceeded exit and release the stream
         if max_ret == 0:
             cv2.VideoCapture(0).release()
@@ -130,11 +130,12 @@ def capture_video(video_name,seconds):
     print(frame_height,frame_width)
     fps=10
     out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (frame_width, frame_height))
+    cam = cv2.VideoCapture(0)
 
     start=datetime.now()
     end=datetime.now()
     while (True):
-        ret, frame = CAM.read()
+        ret, frame = cam.read()
 
         if ret == True:
 
@@ -153,7 +154,7 @@ def capture_video(video_name,seconds):
         end=datetime.now()
 
             # When everything done, release the video capture and video write objects
-    CAM.release()
+    cam.release()
     out.release()
     cv2.VideoCapture(0).release()
 
