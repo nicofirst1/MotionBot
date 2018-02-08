@@ -14,7 +14,7 @@ class Cam_class:
         self.CAM.release()
         sleep(2)
         self.CAM=cv2.VideoCapture(0)
-        self.check_open_cam()
+        #self.check_open_cam()
 
     def close_cam(self):
         print("close cam")
@@ -33,7 +33,7 @@ class Cam_class:
         print("taking image")
 
         #check if camera stream is opened
-        self.check_open_cam()
+        #self.check_open_cam()
         # try to read the image
         sleep(1)
         ret, img = self.CAM.read()
