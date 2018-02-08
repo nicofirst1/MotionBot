@@ -33,8 +33,8 @@ def get_camshot(bot, update):
     print("taking image")
 
     update.message.reply_text("Aspetta un secondo...")
-    cap = cv2.VideoCapture(0)
-    ret, img = cap.read()
+    cap = cv2.CaptureFromCAM(0)
+    img = cv2.QueryFrame(cap)
     cv2.imwrite('image.png', img)
     cv2.VideoCapture(0).release()
     sleep(2)
