@@ -143,7 +143,7 @@ def capture_video(video_name,seconds):
         else:
             pass
 
-        if (start - end).seconds>=seconds:
+        if (end - start).seconds>=seconds:
             break
 
         end=datetime.now()
