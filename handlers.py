@@ -6,11 +6,9 @@ from subprocess import call
 import cv2
 import os
 
-from utils import  add_id, elegible_user
+from utils import add_id, elegible_user, capture_image, capture_video
 
-MAX_RETRIES = 8
 psw = "SuperMegaFamBrand123!"
-CAM=cv2.VideoCapture(0)
 
 def start(bot, update):
     print("start")
@@ -39,47 +37,8 @@ def annulla(bot, update):
 def get_camshot(bot, update):
     image = "image.png"
     print("taking image")
-    max_ret = MAX_RETRIES
     update.message.reply_text("Aspetta qualche secondo...")
-
-
-
-    #try to read the image
-    ret, img = CAM.read()
-
-    #while the reading is unsuccesfull
-    while not ret:
-        #read again and sleep
-        ret, img = CAM.read()
-        sleep(1)
-        max_ret -= 1
-        if not ret:
-            cv2.VideoCapture(0).release()
-            CAM.cv2.VideoCapture(0)
-        #if max retries is exceeded exit and release the stream
-        if max_ret == 0:
-            update.message.reply_text("Ci sono stati dei problemi tecnici 1...riprova")
-            cv2.VideoCapture(0).release()
-            return
-
-
-    #try to save the image
-    ret = cv2.imwrite(image, img)
-    max_ret = MAX_RETRIES
-
-    while not ret:
-        ret = cv2.imwrite(image, img)
-        sleep(1)
-        max_ret -= 1
-        #if max retries is exceeded exit and release the stream
-
-        if max_ret == 0:
-            update.message.reply_text("Ci sono stati dei problemi tecnici 2...riprova")
-            cv2.VideoCapture(0).release()
-            return
-
-
-    cv2.VideoCapture(0).release()
+    ret=capture_image(image)
 
 
     if ret:
@@ -89,3 +48,22 @@ def get_camshot(bot, update):
         with open(image, "rb") as file:
             bot.sendPhoto(update.message.from_user.id, file)
         os.remove(image)
+    else:
+        update.message.reply_text("Si è verificato un errore...riprova")
+
+
+def stream(bot, update):
+
+    SECONDS=5
+    video_name="video.mp4"
+
+    update.message.reply_text("Attendi "+str(SECONDS)+" secondi...")
+
+    capture_video(video_name,SECONDS)
+
+    with open(video_name, "rb") as file:
+        bot.sendVideo(update.message.from_user.id, file)
+    os.remove(video_name)
+
+
+

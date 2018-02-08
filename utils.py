@@ -2,8 +2,17 @@
 
 from functools import wraps
 #from inspect import signature
+from time import sleep
+import cv2
+from datetime import datetime
 
+CAM=cv2.VideoCapture(0)
+MAX_RETRIES = 8
 
+COMMANDS="""
+photo - invia una foto
+start - inizzializza il bot
+"""
 
 def is_enabled(id):
     IDS=read_ids()
@@ -73,3 +82,72 @@ def elegible_user(func):
             return func(bot, update, *args, **kwargs)
 
     return check_if_user_can_interact
+
+
+def capture_image(image_name):
+    max_ret = MAX_RETRIES
+
+    # try to read the image
+    ret, img = CAM.read()
+
+    # while the reading is unsuccesfull
+    while not ret:
+        # read again and sleep
+        ret, img = CAM.read()
+        sleep(1)
+        max_ret -= 1
+        if not ret:
+            cv2.VideoCapture(0).release()
+            CAM.cv2.VideoCapture(0)
+        # if max retries is exceeded exit and release the stream
+        if max_ret == 0:
+            cv2.VideoCapture(0).release()
+            return False
+
+    # try to save the image
+    ret = cv2.imwrite(image_name, img)
+    max_ret = MAX_RETRIES
+
+    while not ret:
+        ret = cv2.imwrite(image_name, img)
+        sleep(1)
+        max_ret -= 1
+        # if max retries is exceeded exit and release the stream
+
+        if max_ret == 0:
+            cv2.VideoCapture(0).release()
+            return False
+
+    cv2.VideoCapture(0).release()
+    return True
+
+
+
+def capture_video(video_name,seconds):
+    frame_width = int(CAM.get(3))
+    frame_height = int(CAM.get(4))
+    fps=10
+    out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (frame_width, frame_height))
+
+    start=datetime.now()
+    end=datetime.now()
+    while (True):
+        ret, frame = CAM.read()
+
+        if ret == True:
+
+            # Write the frame into the file 'output.avi'
+            out.write(frame)
+
+        # Break the loop
+        else:
+            pass
+
+        if (start - end).seconds>=seconds:
+            break
+
+        end=datetime.now()
+
+            # When everything done, release the video capture and video write objects
+    CAM.release()
+    out.release()
