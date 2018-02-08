@@ -27,6 +27,7 @@ def annulla(bot,update):
 
 
 def get_camshot(bot, update):
-    print("getting image")
+    print("taking image")
     call(['pwd','fswebcam image.jpg'])
+    print("image taken")
 
