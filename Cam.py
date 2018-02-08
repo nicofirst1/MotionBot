@@ -44,10 +44,11 @@ class Cam_class:
             ret, img = self.CAM.read()
             max_ret -= 1
             if not ret:
-                self.reopen_cam()
+                #self.reopen_cam()
+                sleep(2)
             # if max retries is exceeded exit and release the stream
             if max_ret == 0:
-                self.close_cam()
+                #self.close_cam()
                 return False
 
         # try to save the image
