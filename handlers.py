@@ -62,4 +62,4 @@ def get_camshot(bot, update):
     if ret:
         update.message.reply_text("Invio immagine")
         with open("image.png","rb") as file:
-        bot.sendPhoto(update.message.from_id,file)
+            bot.sendPhoto(update.message.from_id,file)
