@@ -32,8 +32,6 @@ def get_camshot(bot, update):
     cap = cv2.VideoCapture(0)
 
     ret, img = cap.read()
-    cv2.imshow("input", img)
-    key = cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.imwrite('image.png', img)
     cv2.VideoCapture(0).release()
     print("image taken")
