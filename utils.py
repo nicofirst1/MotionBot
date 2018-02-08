@@ -128,8 +128,8 @@ def capture_image(image_name):
 
 
 def capture_video(video_name,seconds):
-    frame_width = 480
-    frame_height = 320
+    frame_width = 640
+    frame_height = 480
     print(frame_height,frame_width)
     fps=5
     out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (frame_width, frame_height))
