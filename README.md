@@ -9,3 +9,5 @@
 `sudo service motion start`
 port =8081
 
+# Opencv api
+* https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html

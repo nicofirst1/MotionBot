@@ -1,9 +1,8 @@
 # coding=utf-8
 
-from time import sleep
 from telegram.ext import ConversationHandler
 from subprocess import call
-import cv2
+
 import os
 
 from utils import add_id, elegible_user, capture_image, capture_video

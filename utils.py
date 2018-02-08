@@ -1,10 +1,6 @@
 # coding=utf-8
 
 from functools import wraps
-#from inspect import signature
-from time import sleep
-import cv2
-from datetime import datetime
 
 MAX_RETRIES = 8
 
@@ -81,83 +77,3 @@ def elegible_user(func):
             return func(bot, update, *args, **kwargs)
 
     return check_if_user_can_interact
-
-
-def capture_image(image_name):
-    max_ret = MAX_RETRIES
-    cam = cv2.VideoCapture(0)
-    sleep(2)
-    # try to read the image
-    ret, img = cam.read()
-
-    # while the reading is unsuccesfull
-    while not ret:
-        # read again and sleep
-        sleep(0.5)
-        ret, img = cam.read()
-        max_ret -= 1
-        if not ret:
-            sleep(0.2)
-            cv2.VideoCapture(0).release()
-            sleep(0.2)
-            cam=cv2.VideoCapture(0)
-        # if max retries is exceeded exit and release the stream
-        if max_ret == 0:
-            cv2.VideoCapture(0).release()
-            return False
-
-    # try to save the image
-    ret = cv2.imwrite(image_name, img)
-    max_ret = MAX_RETRIES
-
-    while not ret:
-        ret = cv2.imwrite(image_name, img)
-        sleep(1)
-        max_ret -= 1
-        # if max retries is exceeded exit and release the stream
-
-        if max_ret == 0:
-            cv2.VideoCapture(0).release()
-            return False
-
-    cv2.VideoCapture(0).release()
-    #sleep(2)
-    print("Image taken")
-    return True
-
-
-
-def capture_video(video_name,seconds):
-    frame_width = 640
-    frame_height = 480
-    print(frame_height,frame_width)
-    fps=5
-    out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (frame_width, frame_height))
-    cam = cv2.VideoCapture(0)
-
-    start=datetime.now()
-    end=datetime.now()
-    while (True):
-        ret, frame = cam.read()
-
-        if ret == True:
-
-            # Write the frame into the file 'output.avi'
-            out.write(frame)
-
-        # Break the loop
-        else:
-            cv2.VideoCapture(0).release()
-            cam=cv2.VideoCapture(0)
-            pass
-
-        if (end - start).seconds>=seconds:
-            break
-
-        end=datetime.now()
-
-            # When everything done, release the video capture and video write objects
-    cam.release()
-    out.release()
-    cv2.VideoCapture(0).release()
-
