@@ -156,6 +156,8 @@ class Cam_movement(Thread):
 
     def are_different(self, img1, img2):
 
+        if isinstance(img1,int) or isinstance(img2,int): return False
+
         return self.get_similarity(img1,img2)<1
 
 
