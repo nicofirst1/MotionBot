@@ -134,9 +134,9 @@ class Cam_movement(Thread):
 
         self.frame=frames
         self.bot=bot
-        self.delay=1
+        self.delay=0.5
         self.send_id=24978334
-        self.diff_threshold=0
+        self.diff_threshold=0.9
 
     def run(self):
 
