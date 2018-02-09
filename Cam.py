@@ -36,49 +36,7 @@ class Cam_class:
         else:
             print("cam was open")
 
-    def capture_image2(self, image_name):
-        max_ret = self.MAX_RETRIES
-        print("taking image")
 
-        #check if camera stream is opened
-        self.check_open_cam()
-        # try to read the image
-        sleep(1)
-        ret, img = self.CAM.read()
-
-        # while the reading is unsuccesfull
-        while not ret:
-            print(max_ret)
-            # read again and sleep
-            #sleep(1)
-            ret, img = self.CAM.read()
-            max_ret -= 1
-            if not ret:
-                self.reopen_cam()
-                print("fail")
-            # if max retries is exceeded exit and release the stream
-            if max_ret == 0:
-                self.close_cam()
-                return False
-
-        # try to save the image
-        ret = cv2.imwrite(image_name, img)
-        max_ret = self.MAX_RETRIES
-
-        while not ret:
-            ret = cv2.imwrite(image_name, img)
-            sleep(1)
-            max_ret -= 1
-            # if max retries is exceeded exit and release the stream
-
-            if max_ret == 0:
-                self.close_cam()
-                return False
-
-        self.close_cam()
-        # sleep(2)
-        print("Image taken")
-        return True
 
     def capture_image(self,image_name):
         print("taking image")
@@ -120,20 +78,12 @@ class Cam_class:
         start = datetime.now()
         end = datetime.now()
 
-        self.check_open_cam()
 
         while (True):
-            ret, frame = self.CAM.read()
 
-            if ret == True:
 
-                # Write the frame into the file 'output.avi'
-                out.write(frame)
+            out.write(self.frames[-1])
 
-            # Break the loop
-            else:
-                self.reopen_cam()
-                pass
 
             if (end - start).seconds >= seconds:
                 break
