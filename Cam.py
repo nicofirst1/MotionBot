@@ -181,7 +181,7 @@ class Cam_movement(Thread):
                 if(end-start).seconds>self.max_seconds_retries:
                     print("max seconds exceeded")
                     break
-
+                end = datetime.now()
 
             if not found_face:
                 self.send_image(end_frame, "Faccia non rilevata")
