@@ -1,4 +1,4 @@
-from queue import Queue
+import Queue
 from threading import Thread
 
 import cv2
