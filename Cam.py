@@ -48,8 +48,9 @@ class Cam_class:
 
         while (True):
 
-
-            out.write(self.frames[-1])
+            frame=self.frames[-1]
+            print(frame)
+            out.write(frame)
 
 
             if (end - start).seconds >= seconds:
