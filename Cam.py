@@ -83,6 +83,7 @@ class Cam_class:
 
     def capture_iamge(self,image_name):
         print("taking image")
+        print(self.frames)
         if not self.frames.empty():
             img = self.frames.get()
 
@@ -160,7 +161,7 @@ class Cam_thread(Thread):
 
             if ret:
                 self.queue.put(img)
-                print("saved")
+                #print("saved")
             else:
                 print("not saved")
                 if not self.CAM.isOpened():
