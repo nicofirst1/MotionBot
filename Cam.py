@@ -1,4 +1,4 @@
-import Queue
+from asyncio import Queue
 from threading import Thread
 
 import cv2
