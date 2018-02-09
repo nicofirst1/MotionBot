@@ -80,6 +80,8 @@ class Cam_class:
         return True
 
     def capture_iamge(self,image_name):
+        print("taking image")
+
         img=self.thread.get_img()
         # try to save the image
         ret = cv2.imwrite(image_name, img)
