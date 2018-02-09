@@ -159,7 +159,7 @@ class Cam_movement(Thread):
 
         if isinstance(img1,int) or isinstance(img2,int): return False
 
-        return self.get_similarity(img1,img2)>self.diff_threshold
+        return self.get_similarity(img1,img2)<self.diff_threshold
 
 
     def get_similarity(self, img1,img2):
@@ -167,5 +167,5 @@ class Cam_movement(Thread):
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         (score, diff) = compare_ssim(img1, img2, full=True)
         print(score)
-        
+
         return score
