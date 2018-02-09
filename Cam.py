@@ -165,7 +165,7 @@ class Cam_movement(Thread):
         if self.are_different(initial_frame, end_frame) and self.notification:
             prov = self.frame[-1]
             found_face = False
-            while (not self.are_different(initial_frame, prov)):
+            while ( self.are_different(initial_frame, prov)):
                 print("in while")
                 if self.detect_face(prov):
                     self.send_image(prov, "Faccia rilevata!")
