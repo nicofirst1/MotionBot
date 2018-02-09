@@ -4,6 +4,7 @@ from telegram.ext import ConversationHandler, Updater
 
 import os
 
+import Cam
 from utils import add_id, elegible_user
 
 psw = "SuperMegaFamBrand123!"

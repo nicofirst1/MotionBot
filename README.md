@@ -19,3 +19,13 @@ port =8081
 
 ## With telegram
 * https://github.com/meinside/telegram-bot-opencv
+
+
+# TODO
+
+## Raspberry
+* cron job to update when gitlab difference detected
+
+## Code
+* fix mp4 video on telegram mobile
+* Nofity when movement is detected 
