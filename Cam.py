@@ -166,7 +166,9 @@ class Cam_thread(Thread):
             else:
                 print("not saved")
                 self.CAM.release()
+                sleep(2)
                 self.CAM=cv2.VideoCapture(0)
+                sleep(2)
                 if not self.CAM.isOpened():
                     self.CAM.open(0)
 
