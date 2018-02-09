@@ -49,7 +49,7 @@ class Cam_class:
         while (True):
 
             frame=self.frames[-1]
-            print(frame)
+            print(frame[:2])
             out.write(frame)
 
 
