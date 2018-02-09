@@ -23,7 +23,9 @@ class Cam_class:
 
         if self.frames:
             img = self.frames[-1]
-
+            if img==0:
+                print("empy queue")
+                return False
         else:
             print("empy queue")
             return False
