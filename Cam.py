@@ -154,6 +154,10 @@ class Cam_thread(Thread):
             if ret:
                 self.img=img
                 print("saved")
+            else:
+                print("not saved")
+                if not self.CAM.isOpened():
+                    self.CAM.open()
 
             sleep(0.01)
 
