@@ -90,3 +90,21 @@ def stream(bot, update,args):
 
 
 
+@elegible_user
+def notification(bot, update, args):
+    if not args:
+        update.message.reply_text("Non hai inserito ON/OFF")
+        return
+
+    if args[0].lower()=="on":
+        cam.motion.notification=True
+        update.message.reply_text("Ho attivato le notifiche")
+
+
+    elif args[0].lower()=="off":
+        cam.motion.notification=False
+        update.message.reply_text("Ho disattivato le notifiche")
+
+    else:
+        update.message.reply_text("Devi usare il comando seguito da ON/OFF")
+

@@ -137,6 +137,7 @@ class Cam_movement(Thread):
         self.delay=0.5
         self.send_id=24978334
         self.diff_threshold=0.7
+        self.notification=True
 
     def run(self):
 
@@ -149,7 +150,7 @@ class Cam_movement(Thread):
 
 
 
-            if self.are_different(initial_frame,end_frame):
+            if self.are_different(initial_frame,end_frame) and self.notification:
                 self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
                 sleep(5)
 

@@ -28,4 +28,8 @@ port =8081
 
 ## Code
 * fix mp4 video on telegram mobile
-* Nofity when movement is detected 
+
+### Movement detection
+- [X] Nofity when movement is detected 
+- [ ] Enable/disable notification
+- [ ] Detect face in image change
