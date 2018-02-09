@@ -32,6 +32,6 @@
 ### Movement detection
 - [X] Nofity when movement is detected 
 - [X] Enable/disable notification
-- [ ] Send different image
+- [X] Send different image
 - [ ] Send different video
-- [ ] Detect face in image change
+- [X] Detect face in image change
