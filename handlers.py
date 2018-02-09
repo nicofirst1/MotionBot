@@ -64,7 +64,7 @@ def stream(bot, update,args):
             return
 
         if SECONDS>20:
-            update.message.reply_text("Il massimo numero di secodni è 20")
+            update.message.reply_text("Il massimo numero di secondi è 20")
             SECONDS=5
 
     video_name="video.mp4"
