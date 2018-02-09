@@ -1,18 +1,8 @@
 from telegram.ext import (
-    Updater, ConversationHandler, CommandHandler, MessageHandler, Filters)
+     ConversationHandler, CommandHandler, MessageHandler, Filters)
 import os
 
-import Cam
-from handlers import start, get_psw, annulla, get_camshot, stream
-
-TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
-
-
-
-
-updater = Updater(TOKEN)
-disp = updater.dispatcher
-cam = Cam.Cam_class(updater.bot)
+from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater
 
 if __name__ == "__main__":
 
