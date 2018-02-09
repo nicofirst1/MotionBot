@@ -146,7 +146,7 @@ class Cam_movement(Thread):
         self.queue=[]
         self.queue_len=20
 
-        self.face_cascade = cv2.CascadeClassifier('/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_default.xml')
+        self.face_cascade = cv2.CascadeClassifier('/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt.xml')
 
     def run(self):
 
