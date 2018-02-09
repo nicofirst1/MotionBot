@@ -35,8 +35,8 @@ class Cam_class:
         return True
 
     def capture_video(self, video_name, seconds):
-        frame_width = self.thread.cam_w
-        frame_height =self.thread.cam_h
+        frame_width = 720
+        frame_height = 480
         print(frame_height, frame_width)
         fps = 12
         out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps,
@@ -73,8 +73,6 @@ class Cam_thread(Thread):
         #get camera and queue
         self.CAM=cv2.VideoCapture(0)
         self.queue=queue
-        self.cam_h=self.CAM.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
-        self.cam_w=self.CAM.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
 
     def run(self):
 
