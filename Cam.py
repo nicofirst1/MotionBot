@@ -36,7 +36,7 @@ class Cam_class:
 
     def capture_video(self, video_name, seconds):
         frame_width = self.thread.w
-        frame_height = self.thread.h
+        frame_height = self.thread
         print(frame_height, frame_width)
         fps = 20
         out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), fps,
@@ -102,8 +102,8 @@ class Cam_thread(Thread):
         sleep(2)
 
         self.check_open_cam()
-        self.h=self.CAM.get(4)
-        self.w=self.CAM.get(3)
+        self.h=self.CAM.get(3)
+        self.w=self.CAM.get(4)
 
     def close_cam(self):
         print("close cam")
