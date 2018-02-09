@@ -27,8 +27,10 @@ class Cam_class:
             return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
+
+        #if the image was not saved return false
         if not ret: return False
-      
+
         print("Image taken")
         return True
 
@@ -55,7 +57,7 @@ class Cam_class:
 
             end = datetime.now()
 
-            # When everything done, release the video capture and video write objects
+        # When everything done, release the video capture and video write objects
         out.release()
 
 
@@ -88,7 +90,7 @@ class Cam_thread(Thread):
                 self.reopen_cam()
 
 
-            sleep(0.01)
+            #sleep(0.01)
 
     def reopen_cam(self):
         print("reopening cam")
