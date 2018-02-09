@@ -4,7 +4,7 @@ from telegram.ext import ConversationHandler, Updater
 
 import os
 
-import Cam
+from Cam import Cam_class
 from utils import add_id, elegible_user
 
 psw = "SuperMegaFamBrand123!"
@@ -15,7 +15,9 @@ TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
 
 updater = Updater(TOKEN)
 disp = updater.dispatcher
-cam = Cam.Cam_class(updater.bot)
+cam = Cam_class(updater.bot)
+
+
 
 def start(bot, update):
     print("start")

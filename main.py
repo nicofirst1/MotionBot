@@ -1,6 +1,5 @@
 from telegram.ext import (
      ConversationHandler, CommandHandler, MessageHandler, Filters)
-import os
 
 from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater
 
