@@ -171,8 +171,9 @@ class Cam_movement(Thread):
                 prov=self.frame[-1]
                 found_face=False
                 while (not self.are_different(initial_frame, prov)):
+                    print("in while")
                     if self.detect_face(prov):
-                        self.send_image(prov)
+                        self.send_image(prov,"Faccia rilevata!")
                         found_face=True
                     prov=self.frame[-1]
                 if not found_face:
@@ -212,8 +213,8 @@ class Cam_movement(Thread):
 
     def detect_face(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
-        if faces:
+        faces = self.face_cascade.detectMultiScale(img)
+        if faces.any():
             print("face detcted!")
             return True
 
