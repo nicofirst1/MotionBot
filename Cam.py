@@ -155,6 +155,7 @@ class Cam_movement(Thread):
 
             if self.are_different(initial_frame,end_frame) and self.notification:
                 self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+                self.send_image(end_frame)
                 sleep(5)
 
 
