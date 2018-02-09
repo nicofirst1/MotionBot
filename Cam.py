@@ -176,6 +176,8 @@ class Cam_movement(Thread):
                     self.send_image(prov, "Faccia rilevata!")
                     found_face = True
                     break
+
+
                 prov = self.frame[-1]
 
                 if(end-start).seconds>self.max_seconds_retries:
@@ -234,8 +236,6 @@ class Cam_movement(Thread):
         faces = self.face_cascade.detectMultiScale(img)
         if len(faces)>0:
             print("face detcted!")
-            for (x, y, w, h) in faces:
-                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
             return True
 
         return False
