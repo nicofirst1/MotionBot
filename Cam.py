@@ -163,6 +163,8 @@ class Cam_movement(Thread):
                     self.send_image(elem)
                     sleep(2)
 
+            self.queue=[]
+
             # initial_frame=self.frame[-1]
             # sleep(self.delay)
             # end_frame=self.frame[-1]
