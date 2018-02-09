@@ -36,7 +36,7 @@ class Cam_class:
 
     def capture_video(self, video_name, seconds):
         frame_width = self.thread.w
-        frame_height = self.thread
+        frame_height = self.thread.h
         print(frame_height, frame_width)
         fps = 20
         out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), fps,
