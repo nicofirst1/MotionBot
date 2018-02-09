@@ -161,13 +161,10 @@ class Cam_thread(Thread):
             ret, img = self.CAM.read()
 
             if ret:
-                #rotate list to pop first element
-                self.queue.rotate(-1)
-                self.queue.pop()
-                #append image
+                # pop first element
+                self.queue.pop(0)
+                #append image at last
                 self.queue.append(img)
-                #rotate back to original
-                self.queue.rotate(1)
                 #print("saved")
             else:
                 print("not saved")
