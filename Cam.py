@@ -38,7 +38,7 @@ class Cam_class:
         frame_width = 640
         frame_height = 480
         print(frame_height, frame_width)
-        fps = 10
+        fps = 100
         out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps,
                               (frame_width, frame_height))
 
