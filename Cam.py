@@ -136,8 +136,9 @@ class Cam_movement(Thread):
 
         self.frame=frames
         self.bot=bot
-        self.delay=2
         self.send_id=24978334
+
+        self.delay=2
         self.diff_threshold=0.7
         self.notification=True
         self.image_name="different.png"
@@ -150,32 +151,19 @@ class Cam_movement(Thread):
 
         while True:
 
-            for i in range(1,self.queue_len):
-                self.queue.append(self.frame[-1])
-                sleep(self.delay/self.queue_len)
 
 
-            first=self.queue[0]
-            for elem in self.queue:
-                if self.are_different(first, elem) and self.notification:
-                    print("difference spotted!")
-                    self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
-                    self.send_image(elem)
-                    sleep(2)
+            initial_frame=self.frame[-1]
+            sleep(self.delay)
+            end_frame=self.frame[-1]
 
-            self.queue=[]
 
-            # initial_frame=self.frame[-1]
-            # sleep(self.delay)
-            # end_frame=self.frame[-1]
-            #
-            #
-            #
-            # if self.are_different(initial_frame,end_frame) and self.notification:
-            #     self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
-            #     self.send_image(end_frame)
-            #     sleep(5)
-            #
+
+            if self.are_different(initial_frame,end_frame) and self.notification:
+                self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+                self.send_image(end_frame)
+                sleep(5)
+
 
 
 
