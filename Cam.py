@@ -6,13 +6,14 @@ from datetime import datetime
 
 class Cam_class:
 
-    def __init__(self):
+    def __init__(self,bot):
         self.MAX_RETRIES=4
         self.frames = [0,0,0,0,0,0,0,0,0,0]
 
 
         self.thread=Cam_thread(self.frames)
         self.thread.start()
+        self.bot=bot
 
 
 

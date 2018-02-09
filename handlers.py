@@ -4,11 +4,10 @@ from telegram.ext import ConversationHandler
 
 import os
 
-import Cam
+from main import cam
 from utils import add_id, elegible_user
 
 psw = "SuperMegaFamBrand123!"
-cam= Cam.Cam_class()
 
 
 def start(bot, update):

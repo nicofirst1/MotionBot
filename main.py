@@ -1,6 +1,8 @@
 from telegram.ext import (
     Updater, ConversationHandler, CommandHandler, MessageHandler, Filters)
 import os
+
+import Cam
 from handlers import start, get_psw, annulla, get_camshot, stream
 
 TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
@@ -10,9 +12,7 @@ TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
 
 updater = Updater(TOKEN)
 disp = updater.dispatcher
-
-
-
+cam = Cam.Cam_class(updater.bot)
 
 if __name__ == "__main__":
 
@@ -30,7 +30,6 @@ if __name__ == "__main__":
 
     disp.add_handler(CommandHandler("photo",get_camshot))
     disp.add_handler(CommandHandler("video",stream,pass_args=True))
-
 
     print("Polling...")
     updater.start_polling()
