@@ -158,6 +158,7 @@ class Cam_movement(Thread):
             first=self.queue[0]
             for elem in self.queue:
                 if self.are_different(first, elem) and self.notification:
+                    print("difference spotted!")
                     self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
                     self.send_image(elem)
                     sleep(2)
