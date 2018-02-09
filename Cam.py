@@ -169,10 +169,14 @@ class Cam_movement(Thread):
 
             if self.are_different(initial_frame, end_frame) and self.notification:
                 prov=self.frame[-1]
+                found_face=False
                 while (not self.are_different(initial_frame, prov)):
                     if self.detect_face(prov):
                         self.send_image(prov)
+                        found_face=True
                     prov=self.frame[-1]
+                if not found_face:
+                    self.send_image(end_frame,"Faccia non rilevata")
 
 
     def are_different(self, img1, img2):
@@ -190,13 +194,15 @@ class Cam_movement(Thread):
 
         return score
 
-    def send_image(self, img):
+    def send_image(self, img, msg=""):
 
         ret = cv2.imwrite(self.image_name, img)
         if not ret:
             self.bot.sendMessage(self.send_id, "Errore durante la scrittura dell'immagine")
             return
 
+        if msg:
+            self.bot.sendMessage(self.send_id,msg)
         with open(self.image_name, "rb") as file:
             self.bot.sendPhoto(self.send_id, file)
         os.remove(self.image_name)
