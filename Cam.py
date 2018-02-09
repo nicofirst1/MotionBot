@@ -21,12 +21,13 @@ class Cam_class:
     def capture_image(self,image_name):
         print("taking image")
 
-        if not self.frames[-1]==0:
-            img = self.frames[-1]
 
-        else:
+        img = self.frames[-1]
+
+        if img==0:
             print("empty queue")
             return False
+                  
         # try to save the image
         ret = cv2.imwrite(image_name, img)
         if not ret:return False
