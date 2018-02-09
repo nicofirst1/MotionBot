@@ -83,10 +83,9 @@ class Cam_class:
 
     def capture_image(self,image_name):
         print("taking image")
-        print(str(self.frames))
 
         if not self.frames.empty():
-            img = self.frames.get()
+            img = self.frames[-1]
 
         else:
             print("empy queue")
@@ -167,7 +166,7 @@ class Cam_thread(Thread):
                 #append image
                 self.queue.append(img)
                 #rotate back to original
-                self.queue.rotate(1) 
+                self.queue.rotate(1)
                 #print("saved")
             else:
                 print("not saved")
