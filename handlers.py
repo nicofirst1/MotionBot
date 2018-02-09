@@ -37,12 +37,10 @@ def annulla(bot, update):
 @elegible_user
 def get_camshot(bot, update):
     image = "image.png"
-    update.message.reply_text("Aspetta qualche secondo...")
     ret=cam.capture_image(image)
 
 
     if ret:
-        update.message.reply_text("Invio immagine")
         with open(image, "rb") as file:
             bot.sendPhoto(update.message.from_user.id, file)
         os.remove(image)

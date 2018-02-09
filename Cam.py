@@ -1,4 +1,4 @@
-from queue import Queue
+from collections import deque
 from threading import Thread
 
 import cv2
@@ -10,7 +10,7 @@ class Cam_class:
     def __init__(self):
         self.MAX_RETRIES=4
         self.CAM=cv2.VideoCapture(0)
-        self.frames = Queue(10)
+        self.frames = deque([0,0,0,0,0,0,0,0,0,0], maxlen=10)
 
 
         self.check_open_cam()
@@ -161,7 +161,13 @@ class Cam_thread(Thread):
             ret, img = self.CAM.read()
 
             if ret:
-                self.queue.put(img)
+                #rotate list to pop first element
+                self.queue.rotate(-1)
+                self.queue.pop()
+                #append image
+                self.queue.append(img)
+                #rotate back to original
+                self.queue.rotate(1) 
                 #print("saved")
             else:
                 print("not saved")
