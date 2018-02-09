@@ -175,9 +175,11 @@ class Cam_movement(Thread):
                 if self.detect_face(prov):
                     self.send_image(prov, "Faccia rilevata!")
                     found_face = True
+                    break
                 prov = self.frame[-1]
 
                 if(end-start).seconds>self.max_seconds_retries:
+                    print("max seconds exceeded")
                     break
 
 
