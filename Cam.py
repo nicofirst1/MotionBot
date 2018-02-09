@@ -177,6 +177,7 @@ class Cam_movement(Thread):
                     prov=self.frame[-1]
                 if not found_face:
                     self.send_image(end_frame,"Faccia non rilevata")
+                sleep(3)
 
 
     def are_different(self, img1, img2):
