@@ -177,7 +177,7 @@ class Cam_movement(Thread):
     def get_similarity(self, img1,img2):
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        (score, diff) = compare_ssim(img1, img2)
+        (score, diff) = compare_ssim(img1, img2, full=True)
         print(score)
 
         return score
