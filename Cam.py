@@ -1,3 +1,4 @@
+from queue import Queue
 from threading import Thread
 
 import cv2
@@ -9,10 +10,11 @@ class Cam_class:
     def __init__(self):
         self.MAX_RETRIES=4
         self.CAM=cv2.VideoCapture(0)
+        self.frames = Queue(10)
 
 
         self.check_open_cam()
-        self.thread=Cam_thread(self.CAM)
+        self.thread=Cam_thread(self.CAM,self.frames)
         self.thread.start()
 
 
@@ -81,8 +83,12 @@ class Cam_class:
 
     def capture_iamge(self,image_name):
         print("taking image")
+        if not self.frames.empty():
+            img = self.frames.get()
 
-        img=self.thread.get_img()
+        else:
+            print("empy queue")
+            return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
         max_ret = self.MAX_RETRIES
@@ -139,11 +145,10 @@ class Cam_class:
 
 
 class Cam_thread(Thread):
-    def __init__(self, CAM):
+    def __init__(self, CAM, queue):
         ''' Constructor. '''
         Thread.__init__(self)
-        self.img=0
-
+        self.queue=queue
         self.CAM = CAM
 
     def run(self):
@@ -154,7 +159,7 @@ class Cam_thread(Thread):
             ret, img = self.CAM.read()
 
             if ret:
-                self.img=img
+                self.queue.put(img)
                 print("saved")
             else:
                 print("not saved")
@@ -163,5 +168,4 @@ class Cam_thread(Thread):
 
             sleep(0.01)
 
-    def get_img(self):
-        return self.img
+
