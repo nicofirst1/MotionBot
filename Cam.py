@@ -207,6 +207,7 @@ class Cam_movement(Thread):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
         if faces:
+            print("face detcted!")
             return True
 
         return False
