@@ -1,4 +1,6 @@
 from threading import Thread
+
+import os
 from skimage.measure import compare_ssim
 import cv2
 from time import sleep
@@ -138,6 +140,7 @@ class Cam_movement(Thread):
         self.send_id=24978334
         self.diff_threshold=0.7
         self.notification=True
+        self.image_name="different.png"
 
     def run(self):
 
@@ -171,3 +174,16 @@ class Cam_movement(Thread):
         print(score)
 
         return score
+
+    def send_image(self, img):
+
+        ret = cv2.imwrite(self.image_name, img)
+        if not ret:
+            self.bot.sendMessage(self.send_id, "Errore durante la scrittura dell'immagine")
+            return
+
+        with open(self.image_name, "rb") as file:
+            self.bot.sendPhoto(self.send_id, file)
+        os.remove(self.image_name)
+
+
