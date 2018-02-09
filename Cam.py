@@ -8,33 +8,13 @@ class Cam_class:
 
     def __init__(self):
         self.MAX_RETRIES=4
-        self.CAM=cv2.VideoCapture(0)
         self.frames = [0,0,0,0,0,0,0,0,0,0]
 
 
-        self.check_open_cam()
-        self.thread=Cam_thread(self.CAM,self.frames)
+        self.thread=Cam_thread(self.frames)
         self.thread.start()
 
 
-    def reopen_cam(self):
-        print("reopening cam")
-        self.CAM.release()
-        sleep(2)
-        self.CAM=cv2.VideoCapture(0)
-        self.check_open_cam()
-
-    def close_cam(self):
-        print("close cam")
-        self.CAM.release()
-
-    def check_open_cam(self):
-        print("checking cam")
-        if not self.CAM.isOpened():
-            print("cam was closed")
-            self.CAM.open(0)
-        else:
-            print("cam was open")
 
 
 
@@ -59,10 +39,8 @@ class Cam_class:
             # if max retries is exceeded exit and release the stream
 
             if max_ret == 0:
-                self.close_cam()
                 return False
 
-        self.close_cam()
         # sleep(2)
         print("Image taken")
         return True
@@ -91,16 +69,19 @@ class Cam_class:
             end = datetime.now()
 
             # When everything done, release the video capture and video write objects
-        self.close_cam()
         out.release()
 
 
 class Cam_thread(Thread):
-    def __init__(self, CAM, queue):
-        ''' Constructor. '''
+    def __init__(self, queue):
+
+        #init the thread
         Thread.__init__(self)
+
+
+        #get camera and queue
+        self.CAM=cv2.VideoCapture(0)
         self.queue=queue
-        self.CAM = CAM
 
     def run(self):
 
@@ -117,13 +98,29 @@ class Cam_thread(Thread):
                 #print("saved")
             else:
                 print("not saved")
-                self.CAM.release()
-                sleep(2)
-                self.CAM=cv2.VideoCapture(0)
-                sleep(2)
-                if not self.CAM.isOpened():
-                    self.CAM.open(0)
+                self.reopen_cam()
+    
 
             sleep(0.01)
 
+    def reopen_cam(self):
+        print("reopening cam")
+        self.CAM.release()
+        sleep(2)
+        self.CAM = cv2.VideoCapture(0)
+        sleep(2)
+
+        self.check_open_cam()
+
+    def close_cam(self):
+        print("close cam")
+        self.CAM.release()
+
+    def check_open_cam(self):
+        print("checking cam")
+        if not self.CAM.isOpened():
+            print("cam was closed")
+            self.CAM.open(0)
+        else:
+            print("cam was open")
 
