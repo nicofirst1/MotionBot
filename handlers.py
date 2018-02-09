@@ -62,6 +62,7 @@ def stream(bot, update):
 
 
     with open(video_name, "rb") as file:
+        print("file opened")
         bot.sendVideo(update.message.from_user.id, file)
     os.remove(video_name)
 
