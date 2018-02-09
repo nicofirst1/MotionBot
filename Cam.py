@@ -23,7 +23,6 @@ class Cam_class:
 
         if self.frames:
             img = self.frames[-1]
-            print(img)
 
         else:
             print("empy queue")
@@ -64,6 +63,7 @@ class Cam_class:
 
 
             if (end - start).seconds >= seconds:
+                print("Time end")
                 break
 
             end = datetime.now()
@@ -99,7 +99,7 @@ class Cam_thread(Thread):
             else:
                 print("not saved")
                 self.reopen_cam()
-    
+
 
             sleep(0.01)
 
