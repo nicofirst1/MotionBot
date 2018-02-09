@@ -1,4 +1,3 @@
-from collections import deque
 from threading import Thread
 
 import cv2
@@ -10,7 +9,7 @@ class Cam_class:
     def __init__(self):
         self.MAX_RETRIES=4
         self.CAM=cv2.VideoCapture(0)
-        self.frames = deque([0,0,0,0,0,0,0,0,0,0], maxlen=10)
+        self.frames = [0,0,0,0,0,0,0,0,0,0]
 
 
         self.check_open_cam()
