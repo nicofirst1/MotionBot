@@ -35,7 +35,7 @@ class Cam_class:
         return True
 
     def capture_video(self, video_name, seconds):
-        frame_width = 720
+        frame_width = 640
         frame_height = 480
         print(frame_height, frame_width)
         fps = 12
