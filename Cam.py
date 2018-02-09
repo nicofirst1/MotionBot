@@ -146,6 +146,8 @@ class Cam_movement(Thread):
         self.queue=[]
         self.queue_len=20
 
+        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
     def run(self):
 
 
@@ -159,12 +161,18 @@ class Cam_movement(Thread):
 
 
 
-            if self.are_different(initial_frame,end_frame) and self.notification:
-                self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
-                self.send_image(end_frame)
-                sleep(5)
+            # if self.are_different(initial_frame,end_frame) and self.notification:
+            #
+            #     self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+            #     self.send_image(end_frame)
+            #     sleep(5)
 
-
+            if self.are_different(initial_frame, end_frame) and self.notification:
+                prov=self.frame[-1]
+                while (not self.are_different(initial_frame, prov)):
+                    if self.detect_face(prov):
+                        self.send_image(prov)
+                    prov=self.frame[-1]
 
 
     def are_different(self, img1, img2):
@@ -194,3 +202,11 @@ class Cam_movement(Thread):
         os.remove(self.image_name)
 
 
+
+    def detect_face(self, img):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
+        if faces:
+            return True
+
+        return False

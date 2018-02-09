@@ -14,6 +14,9 @@
 ### CAPTURE VIDEO
 * http://answers.opencv.org/question/128081/python-frame-grabbing-from-ip-camera-and-process-in-a-different-thread/
 
+### Image similarity comparison
+* https://ece.uwaterloo.ca/~z70wang/publications/ssim.pdf
+
 ## With telegram
 * https://github.com/meinside/telegram-bot-opencv
 
