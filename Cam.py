@@ -153,33 +153,39 @@ class Cam_movement(Thread):
 
         while True:
 
-
-
-            initial_frame=self.frame[-1]
-            sleep(self.delay)
-            end_frame=self.frame[-1]
+            self.detect_motion()
 
 
 
-            # if self.are_different(initial_frame,end_frame) and self.notification:
-            #
-            #     self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
-            #     self.send_image(end_frame)
-            #     sleep(5)
+    def detect_motion(self):
+        initial_frame = self.frame[-1]
+        sleep(self.delay)
+        end_frame = self.frame[-1]
 
-            if self.are_different(initial_frame, end_frame) and self.notification:
-                prov=self.frame[-1]
-                found_face=False
-                while (not self.are_different(initial_frame, prov)):
-                    print("in while")
-                    if self.detect_face(prov):
-                        self.send_image(prov,"Faccia rilevata!")
-                        found_face=True
-                    prov=self.frame[-1]
-                if not found_face:
-                    self.send_image(end_frame,"Faccia non rilevata")
-                sleep(3)
+        if self.are_different(initial_frame, end_frame) and self.notification:
+            prov = self.frame[-1]
+            found_face = False
+            while (not self.are_different(initial_frame, prov)):
+                print("in while")
+                if self.detect_face(prov):
+                    self.send_image(prov, "Faccia rilevata!")
+                    found_face = True
+                prov = self.frame[-1]
+            if not found_face:
+                self.send_image(end_frame, "Faccia non rilevata")
+            sleep(3)
 
+    def detect_motion_old(self):
+
+        initial_frame = self.frame[-1]
+        sleep(self.delay)
+        end_frame = self.frame[-1]
+
+        if self.are_different(initial_frame,end_frame) and self.notification:
+
+            self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+            self.send_image(end_frame)
+            sleep(5)
 
     def are_different(self, img1, img2):
 
