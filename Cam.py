@@ -21,11 +21,11 @@ class Cam_class:
     def capture_image(self,image_name):
         print("taking image")
 
-        if self.frames:
+        if self.frames[-1]!=0:
             img = self.frames[-1]
 
         else:
-            print("empy queue")
+            print("empty queue")
             return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
@@ -67,6 +67,7 @@ class Cam_class:
                 break
 
             end = datetime.now()
+        print(out)
 
             # When everything done, release the video capture and video write objects
         out.release()
