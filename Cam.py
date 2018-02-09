@@ -1,5 +1,5 @@
 from threading import Thread
-
+from skimage.measure import compare_ssim
 import cv2
 from time import sleep
 from datetime import datetime
@@ -11,9 +11,14 @@ class Cam_class:
         self.frames = [0,0,0,0,0,0,0,0,0,0]
 
 
-        self.thread=Cam_thread(self.frames)
-        self.thread.start()
-        self.bot=bot
+        self.shotter=Cam_shotter(self.frames)
+        self.shotter.start()
+
+
+        self.motion=Cam_movement(self.frames,bot)
+        self.motion.start()
+
+
 
 
 
@@ -64,7 +69,8 @@ class Cam_class:
         out.release()
 
 
-class Cam_thread(Thread):
+class Cam_shotter(Thread):
+    """Class to take frames from camera"""
     def __init__(self, queue):
 
         #init the thread
@@ -118,3 +124,48 @@ class Cam_thread(Thread):
         else:
             print("cam was open")
 
+
+class Cam_movement(Thread):
+    """Class to detect movement from camera frames"""
+
+    def __init__(self, frames, bot):
+        # init the thread
+        Thread.__init__(self)
+
+        self.frame=frames
+        self.bot=bot
+        self.delay=1
+        self.send_id=24978334
+
+    def run(self):
+
+        initial_frame=0
+        end_frame=0
+        change=False
+
+
+        while True:
+
+            initial_frame=self.frame[-1]
+            sleep(self.delay)
+            end_frame=self.frame[-1]
+
+
+
+            if change:
+                self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+                change=False
+
+
+
+
+    def are_different(self, img1, img2):
+
+        return self.get_similarity(img1,img2)<1
+
+
+    def get_similarity(self, img1,img2):
+        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        (score, diff) = compare_ssim(img1, img2, full=True)
+        return score
