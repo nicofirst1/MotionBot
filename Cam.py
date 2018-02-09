@@ -20,11 +20,11 @@ class Cam_class:
 
     def capture_image(self,image_name):
         print("taking image")
+        img = self.frames[-1]
 
-        if self.frames:
-            img = self.frames[-1]
 
-        else:
+
+        if img==0:
             print("empy queue")
             return False
         # try to save the image
