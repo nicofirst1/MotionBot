@@ -38,8 +38,8 @@ class Cam_class:
         frame_width = 640
         frame_height = 480
         print(frame_height, frame_width)
-        fps = 12
-        out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MPEG'), fps,
+        fps = 20
+        out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), fps,
                               (frame_width, frame_height))
 
         start = datetime.now()
