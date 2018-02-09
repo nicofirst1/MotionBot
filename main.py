@@ -29,7 +29,7 @@ if __name__ == "__main__":
     disp.add_handler(conversation)
 
     disp.add_handler(CommandHandler("photo",get_camshot))
-    disp.add_handler(CommandHandler("video",stream))
+    disp.add_handler(CommandHandler("video",stream,pass_args=True))
 
 
     print("Polling...")

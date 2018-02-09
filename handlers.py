@@ -49,9 +49,24 @@ def get_camshot(bot, update):
 
 
 @elegible_user
-def stream(bot, update):
+def stream(bot, update,args):
     print("Video")
-    SECONDS=5
+    if not args:
+        SECONDS=5
+    else:
+        if not len(args)==1:
+            update.message.reply_text("Inserisci un solo numero di secondi")
+            return
+        try:
+            SECONDS=int(args[0])
+        except ValueError:
+            update.message.reply_text("Non hai inserito un numero valido")
+            return
+
+        if SECONDS>20:
+            update.message.reply_text("Il massimo numero di secodni è 20")
+            SECONDS=5
+
     video_name="video.mp4"
 
     update.message.reply_text("Attendi "+str(SECONDS)+" secondi...")
@@ -62,7 +77,6 @@ def stream(bot, update):
 
 
     with open(video_name, "rb") as file:
-        print("file opened")
         bot.sendVideo(update.message.from_user.id, file)
     os.remove(video_name)
 
