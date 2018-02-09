@@ -73,8 +73,8 @@ class Cam_thread(Thread):
         #get camera and queue
         self.CAM=cv2.VideoCapture(0)
         self.queue=queue
-        self.cam_h=self.CAM.get(cv2.CV_CAP_PROP_FRAME_HEIGHT)
-        self.cam_w=self.CAM.get(cv2.CV_CAP_PROP_FRAME_WIDTH)
+        self.cam_h=self.CAM.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+        self.cam_w=self.CAM.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
 
     def run(self):
 
