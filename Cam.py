@@ -84,7 +84,7 @@ class Cam_class:
     def capture_image(self,image_name):
         print("taking image")
 
-        if not self.frames.empty():
+        if self.frames:
             img = self.frames[-1]
 
         else:
