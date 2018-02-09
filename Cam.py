@@ -21,7 +21,7 @@ class Cam_class:
     def capture_image(self,image_name):
         print("taking image")
 
-        if self.frames[-1]!=0:
+        if not self.frames[-1]==0:
             img = self.frames[-1]
 
         else:
@@ -29,18 +29,7 @@ class Cam_class:
             return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
-        max_ret = self.MAX_RETRIES
-
-        while not ret:
-            ret = cv2.imwrite(image_name, img)
-            sleep(1)
-            max_ret -= 1
-            # if max retries is exceeded exit and release the stream
-
-            if max_ret == 0:
-                return False
-
-        # sleep(2)
+        if not ret:return False
         print("Image taken")
         return True
 
