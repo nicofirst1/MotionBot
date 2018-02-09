@@ -16,3 +16,6 @@ port =8081
 
 # CAPTURE VIDEO
 * http://answers.opencv.org/question/128081/python-frame-grabbing-from-ip-camera-and-process-in-a-different-thread/
+
+## With telegram
+* https://github.com/meinside/telegram-bot-opencv
