@@ -21,16 +21,26 @@ class Cam_class:
     def capture_image(self,image_name):
         print("taking image")
 
+        if self.frames:
+            img = self.frames[-1]
 
-        img = self.frames[-1]
-
-        if img==0:
-            print("empty queue")
+        else:
+            print("empy queue")
             return False
-                  
         # try to save the image
         ret = cv2.imwrite(image_name, img)
-        if not ret:return False
+        max_ret = self.MAX_RETRIES
+
+        while not ret:
+            ret = cv2.imwrite(image_name, img)
+            sleep(1)
+            max_ret -= 1
+            # if max retries is exceeded exit and release the stream
+
+            if max_ret == 0:
+                return False
+
+        # sleep(2)
         print("Image taken")
         return True
 
@@ -53,11 +63,9 @@ class Cam_class:
 
 
             if (end - start).seconds >= seconds:
-                print("Time end")
                 break
 
             end = datetime.now()
-        print(out)
 
             # When everything done, release the video capture and video write objects
         out.release()
