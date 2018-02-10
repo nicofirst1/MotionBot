@@ -268,7 +268,7 @@ class Cam_movement(Thread):
                 # update current time in while loop
                 end = datetime.now()
 
-                sleep(1/self.fps)
+                #sleep(1/self.fps)
 
             self.out.release()
             if not found_face:

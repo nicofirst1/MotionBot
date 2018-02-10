@@ -52,14 +52,14 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Nofity when movement is detected 
 - [X] Enable/disable notification
 - [X] Send different image
-- [ ] Send different video
+- [X] Send different video
 - [X] Detect face in image change
 - [ ] Draw rectangle around face
 
 # Issues
 
 ## Telegram gif not showing up on mobile
-### Issues
+### Issue
 Using 
 > codec= cv2.VideoWriter_fourcc(*'MP4V')
 out = cv2.VideoWriter(video_name, codec, fps,(640,480))
@@ -83,3 +83,11 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 ### Solutions
 * Changing codec to _cv2.VideoWriter_fourcc(*'avc1')_ and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
 * Final solution: Removed the codec calss and used **0x00000021** instead (with **.mp4** extension), found (here)[https://devtalk.nvidia.com/default/topic/1029451/-python-what-is-the-four-characters-fourcc-code-for-mp4-encoding-on-tx2/]
+
+## Video difference is laggy 
+### Issue
+The video difference is send when a difference in frame is detected, this detection is time costly thus writing a frame to the video object too slowly.
+This brings to a laggy gif file
+
+### Tried Fixes
+* Remove *sleep(1/self.fps)* from while loop...
