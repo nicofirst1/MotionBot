@@ -31,7 +31,7 @@ Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 -- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</b> above will highlith faces
 -- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 To set a flag just click on the corrispondent button.
-Note that <b>Face Photo<b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
+Note that <b>Face Photo</b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
 Current value are the following :"""
 
 @elegible_user
