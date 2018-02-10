@@ -17,7 +17,7 @@ class Cam_class:
         self.shotter.start()
 
 
-        self.motion=Cam_movement(self.shoter,bot)
+        self.motion=Cam_movement(self.shotter,bot)
         self.motion.start()
 
 
@@ -294,7 +294,7 @@ class Cam_movement(Thread):
             self.out.release()
             self.send_video(self.video_name, "Detecte movemente")
 
-    
+
             sleep(3)
 
     def detect_motion_old(self):
