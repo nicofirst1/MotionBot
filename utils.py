@@ -79,3 +79,15 @@ def elegible_user(func):
             return func(bot, update, *args, **kwargs)
 
     return check_if_user_can_interact
+
+
+def read_token_psw():
+    file_name="token_psw.txt"
+
+    with open(file_name, "rb") as file:
+        lines=file.readlines()
+
+    token=lines[0].split(b":")[1]
+    psw=lines[1].split(b":")[0]
+
+    return token,psw

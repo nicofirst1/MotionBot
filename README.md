@@ -1,4 +1,5 @@
 #SETUP
+## Package Setup
 This repo is currently working with **raspberry pi 3 model B** with **Python 3.5** and a **Logitech webcam**
 * First install the *fswebcam package* (you can check [this tutorial](https://www.raspberrypi.org/documentation/usage/webcams/)) with 
 `sudo apt-get install fswebcam`, check if the cam is working correctly by running `fswebcam image.jpg` (use `eog image.jpg` to view the image throught ssh)
@@ -7,6 +8,8 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 
+## Final Setup
+* Edit file **token_psw.txt**, insert your token and password after the *:*
 
 # HOW TO USE
 
@@ -56,7 +59,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Send different video
 - [X] Detect face in image change
 - [ ] Draw rectangle around face
-- [ ] Find something faster than ssim
+- [X] Find something faster than SSIM -> MSE
 
 # Issues
 
@@ -79,8 +82,8 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 ### Tried Fixes
 * Changing the resolution from *640,480* to any other resolution brings telegram to recognize the file as a video (not gif), but it still does not show up in the mobile version
 * Changing the file extension to *.mp4v* does not work 
-* Changing codec to cv2.VideoWriter_fourcc(*'MPEG') does not show gif on desktop too
-* Using **isColor=False** does not workù
+* Changing codec to _cv2.VideoWriter_fourcc(*'MPEG')_ does not show gif on desktop too
+* Using **isColor=False** does not work
 
 ### Solutions
 * Changing codec to _cv2.VideoWriter_fourcc(*'avc1')_ and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram

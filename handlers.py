@@ -5,11 +5,10 @@ from telegram.ext import ConversationHandler, Updater
 import os
 
 from Cam import Cam_class
-from utils import add_id, elegible_user
+from utils import add_id, elegible_user, read_token_psw
 
-psw = "SuperMegaFamBrand123!"
-TOKEN="""545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8"""
 
+TOKEN,psw=read_token_psw()
 
 
 
