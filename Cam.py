@@ -2,7 +2,7 @@ import threading
 from threading import Thread
 
 import os
-from skimage.measure import compare_ssim
+from skimage.measure import compare_ssim,compare_mse,compare_nrmse,compare_psnr
 import cv2
 from time import sleep
 from datetime import datetime
@@ -296,12 +296,12 @@ class Cam_movement(Thread):
 
 
     def get_similarity(self, img1, img2):
-        start = datetime.now()
+        #start = datetime.now()
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        start = datetime.now()
-        (score, diff) = compare_ssim(img1, img2, full=True)
+        #start = datetime.now()
+        (score, diff) = compare_mse(img1, img2, full=True)
         #print("SSIM : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         print(score)
