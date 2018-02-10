@@ -270,10 +270,11 @@ class Cam_movement(Thread):
 
 
             to_write = self.shotter.capture(False)
+            if self.get_faces:
+                to_write=self.face_on_video(to_write)
             for elem in to_write:
-                if not self.get_faces:
-                    self.out.write(elem)
-                else:
+                self.out.write(elem)
+
 
 
             self.out.release()
@@ -357,7 +358,7 @@ class Cam_movement(Thread):
                 for (x, y, w, h) in face:
                     ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     print(ret)
-                    
+
             new_frames.append(frame)
 
 
