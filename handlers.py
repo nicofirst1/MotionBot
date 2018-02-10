@@ -37,6 +37,8 @@ Current value are the following :"""
 @elegible_user
 def flag_setting_main(bot, update):
 
+    global FLAG_KEYBOARD
+
     print("Flag Main")
 
     to_send=complete_flags()

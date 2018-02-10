@@ -145,3 +145,4 @@ Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
 * Way more sensible than MSE (in a good way)
 * Not so sensitive to shadow changes
 * Change detected with score 24, while there was none 
+* Is triggered when camera auto adjust brightness
