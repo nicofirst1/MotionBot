@@ -37,7 +37,10 @@ Current value are the following :"""
 @elegible_user
 def flag_setting_main(bot, update):
 
-    update.message.reply_text(complete_flags(),reply_markup = FLAG_KEYBOARD, parse_mode="HTML")
+    print("Flag Main")
+
+    to_send=complete_flags()
+    update.message.reply_text(to_send,reply_markup = FLAG_KEYBOARD, parse_mode="HTML")
 
 
 def complete_flags():
@@ -72,11 +75,16 @@ def complete_flags():
     else:
         complete_falg += " ❌"
 
+    print(complete_flags,FLAG_SEND)
+
     return complete_falg
 
 
 def flag_setting_callback(bot,update):
     param = update.callback_query.data.split()[1]
+
+    print("Flag callback")
+
 
     if param=="motion":
         cam.motion.motion_flag=not cam.motion.motion_flag
