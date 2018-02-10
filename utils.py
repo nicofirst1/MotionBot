@@ -8,7 +8,7 @@ COMMANDS="""
 photo - send camshot
 start - start bot
 video - send video 
-notification - ON/OFF
+flag - set flags
 """
 
 def is_enabled(id):

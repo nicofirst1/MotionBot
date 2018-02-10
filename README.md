@@ -43,14 +43,19 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 ## Raspberry
 - [ ] cron job to start the bot at 8 
 
-## Code
-- [X] fix mp4 video on telegram mobile
-- [ ] Command to stop bot execution
+## General
 - [X] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
 - [ ] fix while score, exit when no difference are detected anymore
+- [ ] Stop/start cam_motion class by flag value
+
+## Telegram
+- [X] fix mp4 video on telegram mobile
+- [ ] Command to stop bot execution
+- [ ] Make custom inline keyboard to set flags
+
 
 ### Movement detection
 - [X] Nofity when movement is detected 

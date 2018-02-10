@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 
 import os
@@ -14,7 +14,88 @@ print("TOKEN : "+TOKEN+"\nPassword : "+psw)
 
 updater = Updater(TOKEN)
 disp = updater.dispatcher
+
 cam = Cam_class(updater.bot)
+
+
+FLAG_KEYBOARD= InlineKeyboardMarkup([
+    [InlineKeyboardButton("Motion Detection", callback_data="/flag motion")],
+    [InlineKeyboardButton("Face Video", callback_data="/flag face_video")],
+    [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo")]
+
+])
+
+FLAG_SEND="""
+Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
+-- <b>Motion Detection</b> : If set to <i>ON</i> the bot will notify, both with a message and with a video, you when a movement has been detected
+-- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</b> above will highlith faces
+-- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
+To set a flag just click on the corrispondent button.
+Note that <b>Face Photo<b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
+Current value are the following :"""
+
+@elegible_user
+def flag_setting_main(bot, update):
+
+    update.message.reply_text(complete_flags(),reply_markup = FLAG_KEYBOARD)
+
+
+def complete_flags():
+    global FLAG_SEND
+
+    complete_falg=FLAG_SEND
+
+    # get falg values
+    motion_detection = cam.motion.motion_flag
+    face_v = cam.motion.faces_video_flag
+    face_p = cam.motion.face_photo_flag
+
+    complete_falg += "\n-- <b>Motion Detection</b>"
+
+    # complete message
+    if motion_detection:
+        complete_falg += " ✅"
+    else:
+        complete_falg += " ❌"
+
+        complete_falg += "\n-- <b>Face Video</b>"
+
+    if face_v:
+        complete_falg += " ✅"
+    else:
+        complete_falg += " ❌"
+
+        complete_falg += "\n-- <b>Face Photo</b>"
+
+    if face_p:
+        complete_falg += " ✅"
+    else:
+        complete_falg += " ❌"
+
+    return complete_falg
+
+
+def flag_setting_callback(bot,update):
+    param = update.callback_query.data.split()[1]
+
+    if param=="motion":
+        cam.motion.motion_flag=not cam.motion.motion_flag
+    elif param=="face_video":
+        cam.motion.get_faces_video=not cam.motion.get_faces_video
+    elif param=="face_photo":
+        cam.motion.face_photo_flag=not cam.motion.face_photo_flag
+
+    to_change=complete_flags()
+
+
+
+
+    bot.edit_message_text(
+            chat_id=update.callback_query.message.chat_id,
+            text=to_change,
+            message_id=update.callback_query.message.message_id,
+            parse_mode="HTML"
+        )
 
 
 

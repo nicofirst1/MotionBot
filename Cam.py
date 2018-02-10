@@ -156,7 +156,6 @@ class Cam_movement(Thread):
 
         self.delay = 0.1
         self.diff_threshold = 30
-        self.notification = True
         self.image_name = "different.png"
 
         self.queue = []
@@ -172,8 +171,10 @@ class Cam_movement(Thread):
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
-        self.get_faces=True
-        self.get_face_video=True
+        self.faces_video_flag=True
+        self.face_photo_flag=True
+        self.motion_flag = True
+
 
     def run(self):
 
@@ -187,7 +188,7 @@ class Cam_movement(Thread):
         end_frame = self.frame[-1]
 
         # if the notification is enable and there is a difference between the two frames
-        if self.notification and self.are_different(initial_frame, end_frame):
+        if self.motion_flag and self.are_different(initial_frame, end_frame):
 
             # take a new (more recent) frame
             prov = self.frame[-1]
@@ -232,7 +233,7 @@ class Cam_movement(Thread):
         #calculate diversity
         score=self.are_different(initial_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
-        if self.notification and score:
+        if self.motion_flag and score:
 
             #send message
             self.motion_notifier(score)
@@ -268,7 +269,7 @@ class Cam_movement(Thread):
             print("End of while loop")
             to_write = self.shotter.capture(False)
 
-            if self.get_faces:
+            if self.faces_video_flag:
                 to_write, cropped_frames=self.face_on_video(to_write)
 
                 #if the face video is avaiable
@@ -286,11 +287,11 @@ class Cam_movement(Thread):
             sleep(3)
 
     def motion_notifier(self, score):
-        if self.get_faces and not self.get_face_video:
+        if self.faces_video_flag and not self.face_photo_flag:
             self.bot.sendMessage(self.send_id,
                                  "Movement detected with score : " + str(score) + "\nFace detection in ON..."
                                                                                   "it may take a minute or two")
-        elif self.get_face_video and self.get_faces:
+        elif self.face_photo_flag and self.faces_video_flag:
 
             self.bot.sendMessage(self.send_id,
                                  "Movement detected with score : " + str(score) + "\nFace detection and Face video are ON..."
@@ -304,7 +305,7 @@ class Cam_movement(Thread):
         sleep(self.delay)
         end_frame = self.frame[-1]
 
-        if self.are_different(initial_frame, end_frame) and self.notification:
+        if self.are_different(initial_frame, end_frame) and self.motion_flag:
             self.bot.sendMessage(self.send_id, "Movement detected")
             self.send_image(end_frame)
             sleep(5)
@@ -382,7 +383,7 @@ class Cam_movement(Thread):
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
 
                     #if user want the face video too crop the image where face is detected
-                    if self.get_face_video:
+                    if self.face_photo_flag:
                         crop_frames.append(frame[y:y+h, x:x+w])
 
             #append colored frames
