@@ -115,5 +115,6 @@ Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
 | Algorithm        | Time taken in seconds| Suggested range |
 | -------------    |:-------------:       |  -----:         |
 | GRAY SCALING     | 0.01                 |                 |
-| SSIM             | 0.5                  |   <   0.75      |
-| PSNR             | 0.03                 |   <   30        |
+| SSIM             | 0.5                  | x  <   0.75     |
+| PSNR             | 0.03                 | x  <   30       |
+| NRMSE            | 0.035                | x  >   0.3      |
