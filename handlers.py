@@ -46,38 +46,38 @@ def flag_setting_main(bot, update):
 def complete_flags():
     global FLAG_SEND
 
-    complete_falg=FLAG_SEND
+    complete_falg_str=FLAG_SEND
 
     # get falg values
     motion_detection = cam.motion.motion_flag
     face_v = cam.motion.faces_video_flag
     face_p = cam.motion.face_photo_flag
 
-    complete_falg += "\n-- <b>Motion Detection</b>"
+    complete_falg_str += "\n-- <b>Motion Detection</b>"
 
     # complete message
     if motion_detection:
-        complete_falg += " ✅"
+        complete_falg_str += " ✅"
     else:
-        complete_falg += " ❌"
+        complete_falg_str += " ❌"
 
-        complete_falg += "\n-- <b>Face Video</b>"
+        complete_falg_str += "\n-- <b>Face Video</b>"
 
     if face_v:
-        complete_falg += " ✅"
+        complete_falg_str += " ✅"
     else:
-        complete_falg += " ❌"
+        complete_falg_str += " ❌"
 
-        complete_falg += "\n-- <b>Face Photo</b>"
+        complete_falg_str += "\n-- <b>Face Photo</b>"
 
     if face_p:
-        complete_falg += " ✅"
+        complete_falg_str += " ✅"
     else:
-        complete_falg += " ❌"
+        complete_falg_str += " ❌"
 
-    print(complete_flags,FLAG_SEND)
+    print(complete_falg_str,FLAG_SEND)
 
-    return complete_falg
+    return complete_falg_str
 
 
 def flag_setting_callback(bot,update):
