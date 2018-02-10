@@ -333,16 +333,16 @@ class Cam_movement(Thread):
         else:
 
             #make the list odd
-            if(len(image_list))%2!=0: image_list.pop()
+            if(len(image_list))%2==0: image_list.pop()
 
             middle = int(float(len(image_list)) / 2 -0.5)
 
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
             hColor = 3
+            print(temporalWindowSize, imgToDenoiseIndex)
 
-            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor)
+            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize, hColor=hColor)
         print("denosed")
 
         return denoised
