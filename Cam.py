@@ -245,13 +245,15 @@ class Cam_movement(Thread):
             self.shotter.capture(True)
 
             # while the current frame and the initial one are different (aka some movement detected)
-            while (self.are_different(initial_frame, prov)):
+            while (score):
 
                 #print("in while")
                 # check for the presence of a face in the frame
                 # if self.detect_face(prov):
                 #     found_face = True
 
+
+                score=self.are_different(initial_frame, prov)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -263,7 +265,6 @@ class Cam_movement(Thread):
                 # update current time in while loop
                 end = datetime.now()
 
-                # sleep(1/self.fps)
 
             to_write = self.shotter.capture(False)
             for elem in to_write:

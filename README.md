@@ -41,7 +41,6 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 # TODO
 
 ## Raspberry
-- [ ] cron job to update when gitlab difference detected
 - [ ] cron job to start the bot at 8 
 
 ## Code
