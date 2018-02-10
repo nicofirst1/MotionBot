@@ -360,7 +360,7 @@ class Cam_movement(Thread):
             if len(face)>0:
                 for (x, y, w, h) in face:
                     ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                    print(ret)
+                    #print(ret)
 
             new_frames.append(frame)
 
