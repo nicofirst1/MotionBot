@@ -93,3 +93,6 @@ SSIM takes about 0.5 seconds for every image, while gray scale takes 0.01 second
 ### Tried Fixes
 * Remove *sleep(1/self.fps)* from while loop...not working
 * Remove face detection...not working
+
+### Solution
+* Taking the frames in the Cam_shotter class resolved the issue

@@ -161,7 +161,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.5
-        self.diff_threshold = 0.8
+        self.diff_threshold = 0.75
         self.notification = True
         self.image_name = "different.png"
 
@@ -235,6 +235,9 @@ class Cam_movement(Thread):
         # if the notification is enable and there is a difference between the two frames
         if self.notification and self.are_different(initial_frame, end_frame):
 
+            #send message
+            self.bot.sendMessage(self.send_id, "Movement detected")
+
             # take a new (more recent) frame
             prov = self.frame[-1]
 
@@ -272,7 +275,7 @@ class Cam_movement(Thread):
                 self.out.write(elem)
 
             self.out.release()
-            self.send_video(self.video_name, "Movement detected")
+            self.send_video(self.video_name)
 
             sleep(3)
 
