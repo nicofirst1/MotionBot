@@ -42,7 +42,7 @@ def flag_setting_main(bot, update):
     print("Flag Main")
 
     to_send=complete_flags()
-    update.message.reply_text(to_send)
+    update.message.reply_text(to_send,reply_markup=FLAG_KEYBOARD)
 
 
 def complete_flags():
