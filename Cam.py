@@ -288,19 +288,22 @@ class Cam_movement(Thread):
 
             sleep(3)
 
-    def motion_notifier(self, score):
-        if self.faces_video_flag and not self.face_photo_flag:
-            self.bot.sendMessage(self.send_id,
-                                 "Movement detected with score : " + str(score) + "\nFace detection in ON..."
-                                                                                  "it may take a minute or two")
-        elif self.face_photo_flag and self.faces_video_flag:
+    def motion_notifier(self, score, degub=False):
 
-            self.bot.sendMessage(self.send_id,
-                                 "Movement detected with score : " + str(
-                                     score) + "\nFace detection and Face video are ON..."
-                                              "it may take a while")
-        else:
-            self.bot.sendMessage(self.send_id, "Movement detected with score : " + str(score))
+        to_send="Movement detected!\n"
+        if degub:
+            to_send+="Score is "+str(score)+"\n"
+
+
+
+
+        if self.faces_video_flag and not self.face_photo_flag:
+            to_send+="<b>Face Video</b> is ON...it may take a minute or two"
+        elif self.face_photo_flag and self.faces_video_flag:
+            to_send+="Both <b>Face Video</b> and <b>Face Photo</b> are  ON...it may take a while"
+
+
+        self.bot.sendMessage(self.send_id, to_send,parse_mode="HTML")
 
     def detect_motion_old(self):
 
@@ -352,7 +355,7 @@ class Cam_movement(Thread):
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
             hColor = 3
-            print(temporalWindowSize, imgToDenoiseIndex)
+            #print(temporalWindowSize, imgToDenoiseIndex)
 
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize, hColor=hColor)
         print("denosed")

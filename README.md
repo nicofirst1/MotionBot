@@ -13,6 +13,11 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 
 # HOW TO USE
 
+To start the bot simply use
+`pyhton main.py`
+If you want to run it even when you close the ssh connection use
+`nohop python main.py &`
+
 ## Avaiable telgram commands
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
 * /photo - get a snapshot from the camera and send it trhought telegram 
@@ -51,11 +56,13 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [ ] fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
+- [ ] create profiling function
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
 - [ ] Command to stop bot execution
 - [X] Make custom inline keyboard to set flags
+- [ ] User friendly motion detection notification
 
 
 ### Movement detection
@@ -67,7 +74,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Draw rectangle around face
 - [X] Find something faster than SSIM -> MSE
 - [X] Get face photo
-- [ ] Enlarge and unblur face phots
+- [X] Denoise photo
 - [X] Wait after cam is opened
 - [ ] Get face video 
 - [ ] find a confidence method for faces in video 

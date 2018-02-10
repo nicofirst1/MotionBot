@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from datetime import datetime
 from functools import wraps
 
 MAX_RETRIES = 8
@@ -95,3 +95,17 @@ def read_token_psw():
 
     #return converted to string
     return token.decode("utf-8") ,psw.decode("utf-8")
+
+
+def profile(func):
+    @wraps(func)
+
+    def profile(**kwargs):
+
+        start=datetime.now()
+
+        func(**kwargs)
+
+        end=datetime.now()
+
+        millisec=(end-start).microseconds
