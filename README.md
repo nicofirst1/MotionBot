@@ -50,6 +50,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] use Cam_shotter to get video
 - [ ] fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
+- [ ] reorganize prints
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile

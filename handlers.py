@@ -61,21 +61,21 @@ def complete_flags():
     else:
         complete_falg_str += " ❌"
 
-        complete_falg_str += "\n-- <b>Face Video</b>"
+    complete_falg_str += "\n-- <b>Face Video</b>"
 
     if face_v:
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
-        complete_falg_str += "\n-- <b>Face Photo</b>"
+    complete_falg_str += "\n-- <b>Face Photo</b>"
 
     if face_p:
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
-    print(complete_falg_str,FLAG_SEND)
+    print(complete_falg_str)
 
     return complete_falg_str
 
