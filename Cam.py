@@ -167,10 +167,10 @@ class Cam_movement(Thread):
         self.max_seconds_retries=5
 
         self.video_name = "detect_motion_video.mp4"
-        frame_width = 640
-        frame_height = 480
+
+        self.resolution=(640,480) #width,height
         self.fps = 30
-        self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, (frame_width, frame_height))
+        self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
     def run(self):
 
@@ -245,7 +245,7 @@ class Cam_movement(Thread):
             end = datetime.now()
 
             #create the file
-            self.out.open(self.video_name)
+            self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
