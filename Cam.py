@@ -43,6 +43,7 @@ class Cam_class:
         return True
 
     def capture_video(self, video_name, seconds):
+        #set camera resolution, fps and codec
         frame_width = 640
         frame_height = 480
         fps = 20
@@ -51,21 +52,27 @@ class Cam_class:
 
         print("created writer")
 
+        #get start and end time
         start = datetime.now()
         end = datetime.now()
 
 
         while (True):
 
+            #get the most recent frame
             frame=self.frames[-1]
+            #write it to file
             out.write(frame)
             print("writing")
 
+            #if writing has exceeded max seconds stop
             if (end - start).seconds >= seconds:
                 break
 
+            #update time
             end = datetime.now()
 
+            #sleep for the right amount of seconds 
             sleep(1/fps)
 
         # When everything done, release the video capture and video write objects
