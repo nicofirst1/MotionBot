@@ -90,7 +90,9 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 ### Issue
 The video difference is send when a difference in frame is detected, this detection is time costly thus writing a frame to the video object too slowly.
 This brings to a laggy gif file.
+GRAY SCALING takes 0.01 seconds
 SSIM takes about 0.5 seconds for every image, while gray scale takes 0.01 seconds
+PSNR takes 0.04 seconds for every image
 
 ### Tried Fixes
 * Remove *sleep(1/self.fps)* from while loop...not working
@@ -104,3 +106,14 @@ If you are having an error like:
 > VIDEOIO ERROR: V4L: index 0 is not correct!
 
 Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
+
+# Infos
+
+## Time taken
+
+
+| Algorithm        | Time taken in seconds| Suggested range |
+| -------------    |:-------------:       |  -----:         |
+| GRAY SCALING     | 0.01                 |                 |
+| SSIM             | 0.5                  |   <   0.75      |
+| PSNR             | 0.03                 |   <   30        |

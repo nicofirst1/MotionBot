@@ -302,7 +302,7 @@ class Cam_movement(Thread):
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
         start = datetime.now()
         #(score, diff) = compare_ssim(img1, img2, full=True)
-        score=compare_psnr(img1,img2)
+        score=compare_nrmse(img1,img2)
         print("COMPAIRISON : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         print(score)
