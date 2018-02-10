@@ -76,7 +76,7 @@ def stream(bot, update,args):
             update.message.reply_text("The maximum seconds is "+str(max_seconds)+"...setting deafult 5s")
             SECONDS=5
 
-    video_name="video.mov"
+    video_name="video.mp4"
 
     update.message.reply_text("Wait "+str(SECONDS)+" seconds...")
 

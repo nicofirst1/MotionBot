@@ -78,4 +78,7 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 * Changing the resolution from *640,480* to any other resolution brings telegram to recognize the file as a video (not gif), but it still does not show up in the mobile version
 * Changing the file extension to *.mp4v* does not work 
 * Changing codec to cv2.VideoWriter_fourcc(*'MPEG') does not show gif on desktop too
-* Using **isColor=False** does not work
+* Using **isColor=False** does not workù
+
+### Solutions
+* Changing codec to **cv2.VideoWriter_fourcc(*'avc1')** and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
