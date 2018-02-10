@@ -269,9 +269,12 @@ class Cam_movement(Thread):
                 end = datetime.now()
 
 
+            print("End of while loop")
             to_write = self.shotter.capture(False)
+
             if self.get_faces:
                 to_write=self.face_on_video(to_write)
+
             for elem in to_write:
                 self.out.write(elem)
 
@@ -360,6 +363,8 @@ class Cam_movement(Thread):
                     print(ret)
 
             new_frames.append(frame)
+
+        return new_frames
 
 
 
