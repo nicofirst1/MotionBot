@@ -28,7 +28,7 @@ FLAG_KEYBOARD= InlineKeyboardMarkup([
 FLAG_SEND="""
 Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 -- <b>Motion Detection</b> : If set to <i>ON</i> the bot will notify, both with a message and with a video, you when a movement has been detected
--- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</b> above will highlith faces
+-- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
 -- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 To set a flag just click on the corrispondent button.
 Note that <b>Face Photo</b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
