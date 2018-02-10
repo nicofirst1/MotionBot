@@ -58,8 +58,9 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Send different image
 - [X] Send different video
 - [X] Detect face in image change
-- [ ] Draw rectangle around face
+- [X] Draw rectangle around face
 - [X] Find something faster than SSIM -> MSE
+- [ ] Get face video 
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)
 - [ ] Classify person
@@ -122,11 +123,18 @@ Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
 | -------------    |:-------------:       |  -----:         |
 | GRAY SCALING     | 0.01                 |                 |
 | SSIM             | 0.5                  | x  <   0.75     |
-| PSNR             | 0.03                 | x  <   20       |
+| PSNR             | 0.03                 | x  <   30       |
 | NRMSE            | 0.035                | x  >   0.3      |
 | MSE              | 0.025                | x  > 500       |
 
-## Errors for image difference
+## Image difference log
+
 ### MSE
-Change in shadow with value 3919
-It does not detect image far away persons
+* Change in shadow with value 3919
+* It does not detect image far away persons
+* Switched to PSNR
+
+## PSNR
+* Way more sensible than MSE (in a good way)
+* Not so sensitive to shadow changes
+* Change detected with score 24, while there was none 

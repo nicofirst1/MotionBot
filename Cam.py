@@ -173,6 +173,7 @@ class Cam_movement(Thread):
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
         self.get_faces=True
+        self.get_face_video=True
 
     def run(self):
 
@@ -272,15 +273,25 @@ class Cam_movement(Thread):
             to_write = self.shotter.capture(False)
 
             if self.get_faces:
-                to_write=self.face_on_video(to_write)
+                to_write, cropped_frames=self.face_on_video(to_write)
 
+                #if the face video is avaiable
+                if len(cropped_frames)>0:
+                    #write it, release the stream
+                    for elem in cropped_frames:
+                        self.out.write(elem)
+
+                    self.out.release()
+                    #send the video and open a new one
+                    self.send_video(self.video_name,"Face video")
+                    self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+
+            #send the original video too
             for elem in to_write:
                 self.out.write(elem)
-
-
-
             self.out.release()
             self.send_video(self.video_name)
+
 
             sleep(3)
 
@@ -310,10 +321,10 @@ class Cam_movement(Thread):
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        start = datetime.now()
+        #start = datetime.now()
         #(score, diff) = compare_ssim(img1, img2, full=True)
         score=compare_psnr(img1,img2)
-        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
+        #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         print(score)
 
@@ -351,19 +362,34 @@ class Cam_movement(Thread):
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
-        new_frames=[]
+        colored_frames=[]
+        crop_frames=[]
+
+        #for every frame in the video
         for frame in frames:
 
+            #detect if there is a face
             face=self.detect_face(frame)
 
+            #if there is a face
             if len(face)>0:
+                #get the corners of the faces
                 for (x, y, w, h) in face:
+                    #draw a rectangle around the corners
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
-                    #print(ret)
 
-            new_frames.append(frame)
+                    #if user want the face video too crop the image where face is detected
+                    if self.get_face_video:
+                        crop_frames.append(frame[y:y+h, x:x+w])
 
-        return new_frames
+            #append colored frames
+            colored_frames.append(frame)
+
+
+
+        print("end of face detection")
+
+        return colored_frames, crop_frames
 
 
 
