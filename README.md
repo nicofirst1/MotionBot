@@ -61,6 +61,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Draw rectangle around face
 - [X] Find something faster than SSIM -> MSE
 - [ ] Get face video 
+- [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)
 - [ ] Classify person

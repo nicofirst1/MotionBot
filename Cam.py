@@ -274,13 +274,7 @@ class Cam_movement(Thread):
                 #if the face video is avaiable
                 if len(cropped_frames)>0:
                     #write it, release the stream
-                    for elem in cropped_frames:
-                        self.out.write(elem)
-
-                    self.out.release()
-                    #send the video and open a new one
-                    self.send_video(self.video_name,"Face video")
-                    self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+                    self.send_image(cropped_frames[0],"Frames : "+str(len(cropped_frames)))
 
             #send the original video too
             for elem in to_write:
