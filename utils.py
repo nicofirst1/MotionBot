@@ -93,4 +93,4 @@ def read_token_psw():
     psw=lines[1].split(b"=")[1].strip(b"\n")
     print(token,psw)
 
-    return str(token),str(psw)
+    return token.decode("utf-8") ,psw.decode("utf-8") 
