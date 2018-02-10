@@ -245,7 +245,7 @@ class Cam_movement(Thread):
             end = datetime.now()
 
             #create the file
-            self.out.open()
+            self.out.open(self.video_name)
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
