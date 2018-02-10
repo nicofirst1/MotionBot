@@ -347,7 +347,7 @@ class Cam_movement(Thread):
             print("face detcted!")
             return faces
 
-        return False
+        return ()
 
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
@@ -357,7 +357,7 @@ class Cam_movement(Thread):
 
             face=self.detect_face(frame)
 
-            if face:
+            if face.any():
                 for (x, y, w, h) in face:
                     ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     print(ret)
