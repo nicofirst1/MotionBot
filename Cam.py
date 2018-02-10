@@ -172,6 +172,8 @@ class Cam_movement(Thread):
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
+        self.get_faces=True
+
     def run(self):
 
         while True:
@@ -254,6 +256,7 @@ class Cam_movement(Thread):
 
 
                 score=self.are_different(initial_frame, prov)
+                print(score)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -268,7 +271,10 @@ class Cam_movement(Thread):
 
             to_write = self.shotter.capture(False)
             for elem in to_write:
-                self.out.write(elem)
+                if not self.get_faces:
+                    self.out.write(elem)
+                else:
+
 
             self.out.release()
             self.send_video(self.video_name)
@@ -306,7 +312,7 @@ class Cam_movement(Thread):
         score=compare_mse(img1,img2)
         #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        print(score)
+        #print(score)
 
         return score
 
@@ -335,6 +341,26 @@ class Cam_movement(Thread):
         faces = self.face_cascade.detectMultiScale(img)
         if len(faces) > 0:
             print("face detcted!")
-            return True
+            return faces
 
         return False
+
+    def face_on_video(self, frames):
+        """This funcion add a rectangle on recognized faces"""
+
+        new_frames=[]
+        for frame in frames:
+
+            face=self.detect_face(frame)
+
+            if face:
+                for (x, y, w, h) in face:
+                    ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    print(ret)
+                    
+            new_frames.append(frame)
+
+
+
+
+

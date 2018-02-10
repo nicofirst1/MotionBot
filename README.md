@@ -62,7 +62,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Find something faster than SSIM -> MSE
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)
-
+- [ ] Classify person
 
 # Issues
 
