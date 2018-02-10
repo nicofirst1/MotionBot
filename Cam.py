@@ -158,35 +158,47 @@ class Cam_movement(Thread):
 
 
     def detect_motion(self):
+        # get initial frame and and frame after delay seconds
         initial_frame = self.frame[-1]
         sleep(self.delay)
         end_frame = self.frame[-1]
 
+
+        # if the notification is enable and there is a difference between the two frames
         if self.notification and self.are_different(initial_frame, end_frame) :
 
+            #take a new (more recent) frame
             prov = self.frame[-1]
             found_face = False
 
+            #take the time
             start=datetime.now()
             end=datetime.now()
 
+            #while the current frame and the initial one are different (aka some movement detected)
             while ( self.are_different(initial_frame, prov)):
+
                 print("in while")
+                #check for the presence of a face in the frame
                 if self.detect_face(prov):
-                    self.send_image(prov, "Faccia rilevata!")
+                    # if face is detected send photo and exit while
+                    self.send_image(prov, "Face detected!")
                     found_face = True
                     break
 
-
+                #take another frame
                 prov = self.frame[-1]
 
+                #if time is exceeded exit while
                 if(end-start).seconds>self.max_seconds_retries:
                     print("max seconds exceeded")
                     break
+
+                #update current time in while loop
                 end = datetime.now()
 
             if not found_face:
-                self.send_image(end_frame, "Faccia non rilevata")
+                self.send_image(end_frame, "Face not detected")
             sleep(3)
 
     def detect_motion_old(self):
@@ -197,7 +209,7 @@ class Cam_movement(Thread):
 
         if self.are_different(initial_frame,end_frame) and self.notification:
 
-            self.bot.sendMessage(self.send_id, "Ho rilevato un movimento!")
+            self.bot.sendMessage(self.send_id, "Movement detected")
             self.send_image(end_frame)
             sleep(5)
 
@@ -220,7 +232,7 @@ class Cam_movement(Thread):
 
         ret = cv2.imwrite(self.image_name, img)
         if not ret:
-            self.bot.sendMessage(self.send_id, "Errore durante la scrittura dell'immagine")
+            self.bot.sendMessage(self.send_id, "There has been an error while writing the image")
             return
 
         if msg:
