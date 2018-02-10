@@ -155,7 +155,7 @@ class Cam_movement(Thread):
         self.bot=bot
         self.send_id=24978334
 
-        self.delay=0.3
+        self.delay=0.5
         self.diff_threshold=0.8
         self.notification=True
         self.image_name="different.png"
