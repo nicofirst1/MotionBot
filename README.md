@@ -1,3 +1,11 @@
+#SETUP
+This repo is currently working with **raspberry pi 3 model B** with **Python 3.5**
+* You need to follow [this](https://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
+To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
+* Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
+* Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
+
+
 # HOW TO USE
 
 ## Avaiable telgram commands
@@ -43,3 +51,24 @@
 - [ ] Send different video
 - [X] Detect face in image change
 - [ ] Draw rectangle around face
+
+# Issues
+
+## Telegram gif not showing up on mobile
+### Issues
+Using 
+> out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), fps,(640,480))
+out.write(frame)
+
+
+Generate a .mp4 video with is shown as a *gif* in telegram. While the desktop version has no problem viewing it the mobile version 
+displays a blank file wich can be seen only by downloading the .mp4.
+
+While generating the file *OpenCv* yelds the following warning
+> OpenCV: FFMPEG: tag 0x5634504d/'MP4V' is not supported with codec id 13 and format 'mp4 / MP4 (MPEG-4 Part 14)'
+OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
+
+
+### Tried Fixes
+* Changing the resolution from *640,480* to any other resolution brings telegram to recognize the file as a video (not gif), but it still does not show up in the mobile version
+* Changing the file extension to *.mp4v* does not work 

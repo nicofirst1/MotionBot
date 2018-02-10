@@ -140,7 +140,7 @@ class Cam_movement(Thread):
 
         self.delay=0.3
         self.diff_threshold=0.8
-        self.notification=True
+        self.notification=False
         self.image_name="different.png"
 
         self.queue=[]
