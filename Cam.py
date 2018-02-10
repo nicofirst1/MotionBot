@@ -175,9 +175,9 @@ class Cam_movement(Thread):
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
-        self.faces_video_flag = False
-        self.face_photo_flag = False
-        self.motion_flag = False
+        self.faces_video_flag = True
+        self.face_photo_flag = True
+        self.motion_flag = True
 
     def run(self):
 
