@@ -157,7 +157,7 @@ class Cam_movement(Thread):
 
         self.delay=0.3
         self.diff_threshold=0.8
-        self.notification=False
+        self.notification=True
         self.image_name="different.png"
 
         self.queue=[]
@@ -169,9 +169,9 @@ class Cam_movement(Thread):
         self.video_name = "detect_motion_video.mp4"
         frame_width = 640
         frame_height = 480
-        fps = 20
+        self.fps = 30
 
-        self.out = cv2.VideoWriter(self.video_name, 0x00000021, fps, (frame_width, frame_height))
+        self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, (frame_width, frame_height))
 
     def run(self):
 
@@ -253,6 +253,7 @@ class Cam_movement(Thread):
                 if self.detect_face(prov):
                     found_face = True
 
+                #write frame to video file
                 self.out.write(prov)
                 # take another frame
                 prov = self.frame[-1]
@@ -264,6 +265,8 @@ class Cam_movement(Thread):
 
                 # update current time in while loop
                 end = datetime.now()
+
+                sleep(1/self.fps)
 
             if not found_face:
                 self.send_video(self.video_name,"Face not found")

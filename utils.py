@@ -5,9 +5,10 @@ from functools import wraps
 MAX_RETRIES = 8
 
 COMMANDS="""
-photo - invia una foto
-start - inizzializza il bot
-video - manda un video 
+photo - send camshot
+start - start bot
+video - send video 
+notification - ON/OFF
 """
 
 def is_enabled(id):
