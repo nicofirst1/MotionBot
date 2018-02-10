@@ -50,6 +50,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
+- [ ] fix while score, exit when no difference are detected anymore
 
 ### Movement detection
 - [X] Nofity when movement is detected 
@@ -59,6 +60,9 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Detect face in image change
 - [ ] Draw rectangle around face
 - [X] Find something faster than SSIM -> MSE
+- [ ] detect movement direction (right,left)
+- [ ] detect movement direction (incoming, outcoming)
+
 
 # Issues
 
