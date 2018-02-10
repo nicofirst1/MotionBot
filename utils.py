@@ -89,8 +89,8 @@ def read_token_psw():
 
     print(lines)
 
-    token=lines[0].split(b"=")[1]
-    psw=lines[1].split(b"=")[1]
+    token=lines[0].split(b"=")[1].strip(b"\n")
+    psw=lines[1].split(b"=")[1].strip(b"\n")
     print(token,psw)
 
     return str(token),str(psw)
