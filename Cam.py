@@ -31,7 +31,7 @@ class Cam_class:
         img = self.frames[-1]
 
         if isinstance(img, int):
-            print("empy queue")
+            print("empty queue")
             return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
@@ -45,10 +45,11 @@ class Cam_class:
     def capture_video(self, video_name, seconds):
         frame_width = 640
         frame_height = 480
-        print(frame_height, frame_width)
         fps = 20
         codec=cv2.cv2.VideoWriter_fourcc(*'MPEG') # cv2.VideoWriter_fourcc(*'MP4V')
         out = cv2.VideoWriter(video_name, codec, fps,(frame_width, frame_height))
+
+        print("created writer")
 
         start = datetime.now()
         end = datetime.now()
@@ -58,7 +59,7 @@ class Cam_class:
 
             frame=self.frames[-1]
             out.write(frame)
-
+            print("writing")
 
             if (end - start).seconds >= seconds:
                 break
