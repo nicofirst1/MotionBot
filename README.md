@@ -1,8 +1,12 @@
-# To take an image and view it
-`fswebcam image.jpg`
-`eog image.jpg`
+# HOW TO USE
 
-* https://www.raspberrypi.org/documentation/usage/webcams/
+## Avaiable telgram commands
+* /start - strat the bot and provide the password (you get only one chanche to type the correct one)
+* /photo - get a snapshot from the camera and send it trhought telegram 
+* /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
+* /notification - you can dis/enable the notification from the movement detection part
+
+
 
 
 # USEFUL LINKS
@@ -25,9 +29,12 @@
 
 ## Raspberry
 - [ ] cron job to update when gitlab difference detected
+- [ ] cron job to start the bot at 8 
 
 ## Code
 - [ ] fix mp4 video on telegram mobile
+- [ ] Command to stop bot execution
+- [ ] Get token and psw from file
 
 ### Movement detection
 - [X] Nofity when movement is detected 
@@ -35,3 +42,4 @@
 - [X] Send different image
 - [ ] Send different video
 - [X] Detect face in image change
+- [ ] Draw rectangle around face
