@@ -332,10 +332,22 @@ class Cam_movement(Thread):
 
         else:
 
-            #make the list odd
-            if(len(image_list))%2==0: image_list.pop()
+            # make the list odd
+            if (len(image_list)) % 2 == 0: image_list.pop()
 
-            middle = int(float(len(image_list)) / 2 -0.5)
+            middle = int(float(len(image_list)) / 2 - 0.5)
+
+            #getting smallest images size
+            width=99999
+            heigth=99999
+
+            for img in image_list:
+                size=tuple(img.shape[1::-1])
+                if size[0]<width: width=size[0]
+                if size[1]<heigth:heigth=size[1]
+
+            #resizing all images to the smallest one
+            image_list=[cv2.resize(elem,(width,heigth)) for elem in image_list]
 
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
