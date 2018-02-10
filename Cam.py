@@ -49,9 +49,9 @@ class Cam_class:
         fps = 20
         print("initializing writer")
 
-        codec=cv2.VideoWriter_fourcc(*'MP4V') # cv2.VideoWriter_fourcc(*'MP4V')
+        codec=cv2.VideoWriter_fourcc(*'avc1') # cv2.VideoWriter_fourcc(*'MP4V')
         print("a")
-        out = cv2.VideoWriter(video_name, codec, fps,(frame_width, frame_height),isColor=False)
+        out = cv2.VideoWriter(video_name, codec, fps,(frame_width, frame_height))
 
         print("writer initialized")
 
