@@ -87,8 +87,8 @@ def read_token_psw():
     with open(file_name, "rb") as file:
         lines=file.readlines()
 
-    token=lines[0].split(b":")[1]
-    psw=lines[1].split(b":")[0]
+    token=lines[0].split(b"=")[1]
+    psw=lines[1].split(b"=")[0]
     print(token,psw)
 
     return token,psw

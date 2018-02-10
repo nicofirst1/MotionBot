@@ -9,7 +9,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 
 ## Final Setup
-* Edit file **token_psw.txt**, insert your token and password after the *:*
+* Edit file **token_psw.txt**, insert your token and password after the *=*
 
 # HOW TO USE
 
