@@ -47,10 +47,12 @@ class Cam_class:
         frame_width = 640
         frame_height = 480
         fps = 20
+        print("initializing writer")
+
         codec=cv2.cv2.VideoWriter_fourcc(*'MPEG') # cv2.VideoWriter_fourcc(*'MP4V')
         out = cv2.VideoWriter(video_name, codec, fps,(frame_width, frame_height))
 
-        print("created writer")
+        print("writer initialized")
 
         #get start and end time
         start = datetime.now()
@@ -72,7 +74,7 @@ class Cam_class:
             #update time
             end = datetime.now()
 
-            #sleep for the right amount of seconds 
+            #sleep for the right amount of seconds
             sleep(1/fps)
 
         # When everything done, release the video capture and video write objects
