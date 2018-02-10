@@ -19,9 +19,10 @@ cam = Cam_class(updater.bot)
 
 
 FLAG_KEYBOARD= InlineKeyboardMarkup([
-    [InlineKeyboardButton("Motion Detection", callback_data="/flag motion")],
-    [InlineKeyboardButton("Face Video", callback_data="/flag face_video")],
-    [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo")]
+    [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
+    InlineKeyboardButton("Face Video", callback_data="/flag face_video")],
+    [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo"),
+     InlineKeyboardButton("Done", callback_data="/flag done")]
 
 ])
 
@@ -84,6 +85,8 @@ def complete_flags():
 def flag_setting_callback(bot,update):
     param = update.callback_query.data.split()[1]
 
+    global FLAG_KEYBOARD
+
     print("Flag callback")
 
 
@@ -93,6 +96,13 @@ def flag_setting_callback(bot,update):
         cam.motion.get_faces_video=not cam.motion.get_faces_video
     elif param=="face_photo":
         cam.motion.face_photo_flag=not cam.motion.face_photo_flag
+    elif param=="done":
+        bot.delete_message(
+            chat_id=update.callback_query.message.chat_id,
+            message_id=update.callback_query.message.message_id
+        )
+        return
+
 
     to_change=complete_flags()
 
@@ -103,7 +113,8 @@ def flag_setting_callback(bot,update):
             chat_id=update.callback_query.message.chat_id,
             text=to_change,
             message_id=update.callback_query.message.message_id,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=FLAG_KEYBOARD
         )
 
 
