@@ -47,7 +47,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [ ] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
-- [ ] use Cam_shotter to get video
+- [X] use Cam_shotter to get video
 
 ### Movement detection
 - [X] Nofity when movement is detected 
@@ -97,3 +97,9 @@ SSIM takes about 0.5 seconds for every image, while gray scale takes 0.01 second
 
 ### Solution
 * Taking the frames in the Cam_shotter class resolved the issue
+
+### Issue 
+If you are having an error like:
+> VIDEOIO ERROR: V4L: index 0 is not correct!
+
+Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi

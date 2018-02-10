@@ -70,7 +70,8 @@ class Cam_shotter(Thread):
         Thread.__init__(self)
 
         # get camera and queue
-        self.CAM = cv2.VideoCapture(0)
+        self.cam_idx=74
+        self.CAM = cv2.VideoCapture(self.cam_idx)
         self.queue = queue
         self.capture_bool = False
         self.capture_queue = []
@@ -121,7 +122,7 @@ class Cam_shotter(Thread):
         self.CAM.release()
         sleep(2)
         # capture stream
-        self.CAM = cv2.VideoCapture(0)
+        self.CAM = cv2.VideoCapture(self.cam_idx)
         sleep(2)
         # chech if camera is opened
         self.check_open_cam()
