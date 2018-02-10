@@ -252,8 +252,8 @@ class Cam_movement(Thread):
 
                 print("in while")
                 # check for the presence of a face in the frame
-                if self.detect_face(prov):
-                    found_face = True
+                # if self.detect_face(prov):
+                #     found_face = True
 
                 #write frame to video file
                 self.out.write(prov)

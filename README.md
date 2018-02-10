@@ -90,4 +90,5 @@ The video difference is send when a difference in frame is detected, this detect
 This brings to a laggy gif file
 
 ### Tried Fixes
-* Remove *sleep(1/self.fps)* from while loop...
+* Remove *sleep(1/self.fps)* from while loop...not working
+* Remove face detection...
