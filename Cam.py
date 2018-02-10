@@ -21,7 +21,7 @@ class Cam_class:
         self.motion.start()
 
     def capture_image(self, image_name):
-        print("taking image")
+        #print("taking image")
         img = self.frames[-1]
 
         if isinstance(img, int):
@@ -33,7 +33,7 @@ class Cam_class:
         # if the image was not saved return false
         if not ret: return False
 
-        print("Image taken")
+        #print("Image taken")
         return True
 
     def capture_video(self, video_name, seconds):
@@ -41,11 +41,11 @@ class Cam_class:
         frame_width = 640
         frame_height = 480
         fps = 20
-        print("initializing writer")
+        #print("initializing writer")
 
         out = cv2.VideoWriter(video_name, 0x00000021, fps, (frame_width, frame_height))
 
-        print("writer initialized")
+       # print("writer initialized")
 
         #start capturing frames
         self.shotter.capture(True)
@@ -80,6 +80,8 @@ class Cam_shotter(Thread):
     def run(self):
         """Main thread loop"""
 
+        first_ret=False
+
         while True:
 
             # read frame form camera
@@ -87,6 +89,12 @@ class Cam_shotter(Thread):
 
             # if frame has been read correctly add it to the end of the list
             if ret:
+                #if it is the first time that the class reads an image
+                if not first_ret:
+                    print("camera connected")
+                    first_ret=True
+                    #sleep to wait for auto-focus/brightness
+                    sleep(3)
                 # pop first element
                 self.queue.pop(0)
                 # append image at last
@@ -96,7 +104,7 @@ class Cam_shotter(Thread):
                 # print("saved")
             else:
                 # try to reopen the camera
-                print("not saved")
+                #print("not saved")
                 self.reopen_cam()
 
             # sleep(0.01)
@@ -117,7 +125,7 @@ class Cam_shotter(Thread):
 
     def reopen_cam(self):
         """Function to reopen the camera"""
-        print("reopening cam")
+        #print("reopening cam")
         # release the camera
         self.CAM.release()
         sleep(2)
@@ -129,17 +137,16 @@ class Cam_shotter(Thread):
 
     def close_cam(self):
         """Function to release teh camera stream"""
-        print("close cam")
+        #print("close cam")
         self.CAM.release()
 
     def check_open_cam(self):
         """Function to open the camera stream"""
-        print("checking cam")
+        #print("checking cam")
         if not self.CAM.isOpened():
-            print("cam was closed")
+            #print("cam was closed")
             self.CAM.open(0)
-        else:
-            print("cam was open")
+
 
 
 class Cam_movement(Thread):
@@ -358,7 +365,7 @@ class Cam_movement(Thread):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(img)
         if len(faces) > 0:
-            print("face detcted!")
+            #print("face detcted!")
             return faces
 
         return ()
@@ -377,6 +384,7 @@ class Cam_movement(Thread):
 
             #if there is a face
             if len(face)>0:
+                print(str(len(face))+" detected!")
                 #get the corners of the faces
                 for (x, y, w, h) in face:
                     #draw a rectangle around the corners

@@ -1,7 +1,7 @@
 from telegram.ext import (
     ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
 
-from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater, notification, face_detection, \
+from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback
 
 if __name__ == "__main__":

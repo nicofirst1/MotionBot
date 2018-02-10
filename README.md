@@ -55,7 +55,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 ## Telegram
 - [X] fix mp4 video on telegram mobile
 - [ ] Command to stop bot execution
-- [ ] Make custom inline keyboard to set flags
+- [X] Make custom inline keyboard to set flags
 
 
 ### Movement detection

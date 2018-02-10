@@ -40,7 +40,7 @@ def flag_setting_main(bot, update):
 
     global FLAG_KEYBOARD
 
-    print("Flag Main")
+    #print("Flag Main")
 
     to_send=complete_flags()
     update.message.reply_text(to_send,reply_markup=FLAG_KEYBOARD,parse_mode="HTML")
@@ -87,13 +87,13 @@ def flag_setting_callback(bot,update):
 
     global FLAG_KEYBOARD
 
-    print("Flag callback")
+    #print("Flag callback")
 
 
     if param=="motion":
         cam.motion.motion_flag=not cam.motion.motion_flag
     elif param=="face_video":
-        cam.motion.get_faces_video=not cam.motion.get_faces_video
+        cam.motion.faces_video_flag=not cam.motion.faces_video_flag
     elif param=="face_photo":
         cam.motion.face_photo_flag=not cam.motion.face_photo_flag
     elif param=="done":
@@ -120,7 +120,7 @@ def flag_setting_callback(bot,update):
 
 
 def start(bot, update):
-    print("start")
+    #print("start")
     update.message.reply_text("Welcome... to start insert the password")
     return 1
 
@@ -188,42 +188,4 @@ def stream(bot, update,args):
     with open(video_name, "rb") as file:
         bot.sendVideo(update.message.from_user.id, file)
     os.remove(video_name)
-
-
-
-@elegible_user
-def notification(bot, update, args):
-    if not args:
-        update.message.reply_text("You have not specified ON/OFF")
-        return
-
-    if args[0].lower()=="on":
-        cam.motion.notification=True
-        update.message.reply_text("Notification enabled")
-
-
-    elif args[0].lower()=="off":
-        cam.motion.notification=False
-        update.message.reply_text("Notification disabled")
-
-    else:
-        update.message.reply_text("You must use this command followed by ON/OFF")
-
-
-def face_detection(bot,update, args):
-    if not args:
-        update.message.reply_text("You have not specified ON/OFF")
-        return
-
-    if args[0].lower() == "on":
-        cam.motion.get_faces = True
-        update.message.reply_text("Face detection enabled")
-
-
-    elif args[0].lower() == "off":
-        cam.motion.get_faces = False
-        update.message.reply_text("Face detection disabled")
-
-    else:
-        update.message.reply_text("You must use this command followed by ON/OFF")
 
