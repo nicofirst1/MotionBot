@@ -61,7 +61,8 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 ## Telegram gif not showing up on mobile
 ### Issues
 Using 
-> out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), fps,(640,480))
+> codec= cv2.VideoWriter_fourcc(*'MP4V')
+out = cv2.VideoWriter(video_name, codec, fps,(640,480))
 out.write(frame)
 
 
@@ -76,3 +77,4 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 ### Tried Fixes
 * Changing the resolution from *640,480* to any other resolution brings telegram to recognize the file as a video (not gif), but it still does not show up in the mobile version
 * Changing the file extension to *.mp4v* does not work 
+* Changing codec to cv2.VideoWriter_fourcc(*'MPEG') does not show gif on desktop too
