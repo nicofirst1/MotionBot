@@ -87,8 +87,9 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 ## Video difference is laggy 
 ### Issue
 The video difference is send when a difference in frame is detected, this detection is time costly thus writing a frame to the video object too slowly.
-This brings to a laggy gif file
+This brings to a laggy gif file.
+SSIM takes about 0.5 seconds for every image, while gray scale takes 0.01 seconds
 
 ### Tried Fixes
 * Remove *sleep(1/self.fps)* from while loop...not working
-* Remove face detection...
+* Remove face detection...not working

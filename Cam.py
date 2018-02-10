@@ -17,7 +17,7 @@ class Cam_class:
         self.shotter.start()
 
 
-        self.motion=Cam_movement(self.frames,bot)
+        self.motion=Cam_movement(self.shoter,bot)
         self.motion.start()
 
 
@@ -91,6 +91,8 @@ class Cam_shotter(Thread):
         #get camera and queue
         self.CAM=cv2.VideoCapture(0)
         self.queue=queue
+        self.capture_bool=False
+        self.capture_queue=[]
 
     def run(self):
         """Main thread loop"""
@@ -107,6 +109,8 @@ class Cam_shotter(Thread):
                 self.queue.pop(0)
                 #append image at last
                 self.queue.append(img)
+                if self.capture_bool:
+                    self.capture_queue.append(img)
                 #print("saved")
             else:
                 #try to reopen the camera
@@ -115,6 +119,18 @@ class Cam_shotter(Thread):
 
 
             #sleep(0.01)
+
+    #lock capture
+    def capture(self, capture ):
+
+        if capture:
+
+            self.capture_queue=[]
+            self.capture_bool=True
+        else:
+            self.capture_bool=False
+            return self.capture_queue
+
 
     def reopen_cam(self):
         """Function to reopen the camera"""
@@ -147,11 +163,12 @@ class Cam_shotter(Thread):
 class Cam_movement(Thread):
     """Class to detect movement from camera frames"""
 
-    def __init__(self, frames, bot):
+    def __init__(self, shotter, bot):
         # init the thread
         Thread.__init__(self)
 
-        self.frame=frames
+        self.shotter=shotter
+        self.frame=shotter.frames
         self.bot=bot
         self.send_id=24978334
 
@@ -238,7 +255,6 @@ class Cam_movement(Thread):
 
             # take a new (more recent) frame
             prov = self.frame[-1]
-            found_face = False
 
             # take the time
             start = datetime.now()
@@ -246,6 +262,9 @@ class Cam_movement(Thread):
 
             #create the file
             self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+            self.shotter.capture(True)
+
+
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
@@ -255,8 +274,6 @@ class Cam_movement(Thread):
                 # if self.detect_face(prov):
                 #     found_face = True
 
-                #write frame to video file
-                self.out.write(prov)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -270,12 +287,14 @@ class Cam_movement(Thread):
 
                 #sleep(1/self.fps)
 
-            self.out.release()
-            if not found_face:
-                self.send_video(self.video_name,"Face not found")
-            else:
-                self.send_video(self.video_name,"Face found")
+            to_write=self.shotter.capture(False)
+            for elem in to_write:
+                self.out.write(elem)
 
+            self.out.release()
+            self.send_video(self.video_name, "Detecte movemente")
+
+    
             sleep(3)
 
     def detect_motion_old(self):
