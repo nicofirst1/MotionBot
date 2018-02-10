@@ -162,7 +162,7 @@ class Cam_movement(Thread):
         sleep(self.delay)
         end_frame = self.frame[-1]
 
-        if self.are_different(initial_frame, end_frame) and self.notification:
+        if self.notification and self.are_different(initial_frame, end_frame) :
 
             prov = self.frame[-1]
             found_face = False
