@@ -9,7 +9,7 @@ from utils import add_id, elegible_user, read_token_psw
 
 
 TOKEN,psw=read_token_psw()
-
+print("TOKEN : "+TOKEN+"\nPassword : "+psw)
 
 
 updater = Updater(TOKEN)

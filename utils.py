@@ -82,15 +82,16 @@ def elegible_user(func):
 
 
 def read_token_psw():
+    """Function to read token and password from file"""
     file_name="token_psw.txt"
 
+    #read file
     with open(file_name, "rb") as file:
         lines=file.readlines()
 
-    print(lines)
-
+    #take token and password
     token=lines[0].split(b"=")[1].strip(b"\n")
     psw=lines[1].split(b"=")[1].strip(b"\n")
-    print(token,psw)
 
-    return token.decode("utf-8") ,psw.decode("utf-8") 
+    #return converted to string
+    return token.decode("utf-8") ,psw.decode("utf-8")
