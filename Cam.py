@@ -228,8 +228,8 @@ class Cam_movement(Thread):
         sleep(self.delay)
         end_frame = self.frame[-1]
 
+        #calculate diversity
         score=self.are_different(initial_frame, end_frame)
-        print(score)
         # if the notification is enable and there is a difference between the two frames
         if self.notification and score:
 
@@ -255,7 +255,7 @@ class Cam_movement(Thread):
             while (score):
 
                 score=self.are_different(initial_frame, prov)
-                print(score)
+                #print(score)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -310,12 +310,12 @@ class Cam_movement(Thread):
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        #start = datetime.now()
+        start = datetime.now()
         #(score, diff) = compare_ssim(img1, img2, full=True)
         score=compare_psnr(img1,img2)
-        #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
+        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        #print(score)
+        print(score)
 
         return score
 
