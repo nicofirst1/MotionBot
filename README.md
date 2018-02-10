@@ -16,7 +16,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 To start the bot simply use
 `pyhton main.py`
 If you want to run it even when you close the ssh connection use
-`nohop python main.py &`
+`nohup python main.py &`
 
 ## Avaiable telgram commands
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
@@ -62,7 +62,7 @@ If you want to run it even when you close the ssh connection use
 - [X] fix mp4 video on telegram mobile
 - [ ] Command to stop bot execution
 - [X] Make custom inline keyboard to set flags
-- [ ] User friendly motion detection notification
+- [X] User friendly motion detection notification
 
 
 ### Movement detection
