@@ -42,7 +42,7 @@ def flag_setting_main(bot, update):
     print("Flag Main")
 
     to_send=complete_flags()
-    update.message.reply_text(to_send,reply_markup = FLAG_KEYBOARD, parse_mode="HTML")
+    update.message.reply_text(to_send, parse_mode="HTML")
 
 
 def complete_flags():
@@ -77,7 +77,6 @@ def complete_flags():
     else:
         complete_falg_str += " ❌"
 
-    print(complete_falg_str)
 
     return complete_falg_str
 
