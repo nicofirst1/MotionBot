@@ -155,7 +155,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 500
+        self.diff_threshold = 30
         self.notification = True
         self.image_name = "different.png"
 
@@ -233,7 +233,11 @@ class Cam_movement(Thread):
         if self.notification and score:
 
             #send message
-            self.bot.sendMessage(self.send_id, "Movement detected with score : "+str(score))
+            if self.get_faces:
+                self.bot.sendMessage(self.send_id, "Movement detected with score : "+str(score)+"\nFace detection in ON..."
+                                                        "it may take a minute or two")
+            else:
+                self.bot.sendMessage(self.send_id, "Movement detected with score : " + str(score))
 
             # take a new (more recent) frame
             prov = self.frame[-1]
@@ -248,12 +252,6 @@ class Cam_movement(Thread):
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
-
-                #print("in while")
-                # check for the presence of a face in the frame
-                # if self.detect_face(prov):
-                #     found_face = True
-
 
                 score=self.are_different(initial_frame, prov)
                 print(score)
@@ -313,7 +311,7 @@ class Cam_movement(Thread):
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
         #start = datetime.now()
         #(score, diff) = compare_ssim(img1, img2, full=True)
-        score=compare_mse(img1,img2)
+        score=compare_psnr(img1,img2)
         #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         #print(score)
@@ -359,7 +357,7 @@ class Cam_movement(Thread):
 
             if len(face)>0:
                 for (x, y, w, h) in face:
-                    ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
                     #print(ret)
 
             new_frames.append(frame)

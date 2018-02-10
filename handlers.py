@@ -108,3 +108,21 @@ def notification(bot, update, args):
     else:
         update.message.reply_text("You must use this command followed by ON/OFF")
 
+
+def face_detection(bot,update, args):
+    if not args:
+        update.message.reply_text("You have not specified ON/OFF")
+        return
+
+    if args[0].lower() == "on":
+        cam.motion.get_faces = True
+        update.message.reply_text("Face detection enabled")
+
+
+    elif args[0].lower() == "off":
+        cam.motion.get_faces = False
+        update.message.reply_text("Face detection disabled")
+
+    else:
+        update.message.reply_text("You must use this command followed by ON/OFF")
+
