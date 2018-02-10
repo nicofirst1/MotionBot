@@ -70,7 +70,7 @@ class Cam_shotter(Thread):
         Thread.__init__(self)
 
         # get camera and queue
-        self.cam_idx=74
+        self.cam_idx=0
         self.CAM = cv2.VideoCapture(self.cam_idx)
         self.queue = queue
         self.capture_bool = False
