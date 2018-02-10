@@ -155,7 +155,7 @@ class Cam_movement(Thread):
         self.bot=bot
         self.send_id=24978334
 
-        self.delay=0.2
+        self.delay=0.3
         self.diff_threshold=0.8
         self.notification=True
         self.image_name="different.png"
@@ -166,11 +166,11 @@ class Cam_movement(Thread):
         self.face_cascade = cv2.CascadeClassifier('/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt.xml')
         self.max_seconds_retries=5
 
-        # self.video_name = "detect_motion_video.mp4"
-        # frame_width = 640
-        # frame_height = 480
-        # self.fps = 30
-        # self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, (frame_width, frame_height))
+        self.video_name = "detect_motion_video.mp4"
+        frame_width = 640
+        frame_height = 480
+        self.fps = 30
+        self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, (frame_width, frame_height))
 
     def run(self):
 
@@ -236,8 +236,6 @@ class Cam_movement(Thread):
         # if the notification is enable and there is a difference between the two frames
         if self.notification and self.are_different(initial_frame, end_frame):
 
-            print("detected motion")
-
             # take a new (more recent) frame
             prov = self.frame[-1]
             found_face = False
@@ -245,12 +243,6 @@ class Cam_movement(Thread):
             # take the time
             start = datetime.now()
             end = datetime.now()
-
-            video_name = "detect_motion_video.mp4"
-            frame_width = 640
-            frame_height = 480
-            fps = 30
-            out = cv2.VideoWriter(video_name, 0x00000021, fps, (frame_width, frame_height))
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
@@ -261,7 +253,7 @@ class Cam_movement(Thread):
                     found_face = True
 
                 #write frame to video file
-                out.write(prov)
+                self.out.write(prov)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -273,12 +265,13 @@ class Cam_movement(Thread):
                 # update current time in while loop
                 end = datetime.now()
 
-                sleep(1/fps)
+                sleep(1/self.fps)
 
+            self.out.release()
             if not found_face:
-                self.send_video(video_name,"Face not found")
+                self.send_video(self.video_name,"Face not found")
             else:
-                self.send_video(video_name,"Face found")
+                self.send_video(self.video_name,"Face found")
 
             sleep(3)
 
