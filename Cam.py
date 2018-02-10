@@ -225,11 +225,12 @@ class Cam_movement(Thread):
         sleep(self.delay)
         end_frame = self.frame[-1]
 
+        score=self.are_different(initial_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
-        if self.notification and self.are_different(initial_frame, end_frame):
+        if self.notification and score:
 
             #send message
-            self.bot.sendMessage(self.send_id, "Movement detected")
+            self.bot.sendMessage(self.send_id, "Movement detected with score : "+str(score))
 
             # take a new (more recent) frame
             prov = self.frame[-1]
@@ -286,8 +287,12 @@ class Cam_movement(Thread):
     def are_different(self, img1, img2):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
+        similarity=self.get_similarity(img1,img2)
+        if similarity<self.diff_threshold:
+            return similarity
 
-        return self.get_similarity(img1, img2) < self.diff_threshold
+        else: return False
+
 
     def get_similarity(self, img1, img2):
         start = datetime.now()
