@@ -50,6 +50,7 @@ class Cam_class:
         print("initializing writer")
 
         codec=cv2.cv2.VideoWriter_fourcc(*'MPEG') # cv2.VideoWriter_fourcc(*'MP4V')
+        print("a")
         out = cv2.VideoWriter(video_name, codec, fps,(frame_width, frame_height))
 
         print("writer initialized")
