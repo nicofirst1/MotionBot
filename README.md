@@ -42,7 +42,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [ ] cron job to start the bot at 8 
 
 ## Code
-- [ ] fix mp4 video on telegram mobile
+- [X] fix mp4 video on telegram mobile
 - [ ] Command to stop bot execution
 - [ ] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
@@ -81,4 +81,5 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 * Using **isColor=False** does not workù
 
 ### Solutions
-* Changing codec to **cv2.VideoWriter_fourcc(*'avc1')** and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
+* Changing codec to _cv2.VideoWriter_fourcc(*'avc1')_ and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
+* Final solution: Removed the codec calss and used **0x00000021** instead (with **.mp4** extension), found (here)[https://devtalk.nvidia.com/default/topic/1029451/-python-what-is-the-four-characters-fourcc-code-for-mp4-encoding-on-tx2/]
