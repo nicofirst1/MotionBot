@@ -1,4 +1,4 @@
-#SETUP
+# SETUP
 ## Package Setup
 This repo is currently working with **raspberry pi 3 model B** with **Python 3.5** and a **Logitech webcam**
 * First install the *fswebcam package* (you can check [this tutorial](https://www.raspberrypi.org/documentation/usage/webcams/)) with 
@@ -50,7 +50,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] use Cam_shotter to get video
 - [ ] fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
-- [ ] reorganize prints
+- [X] reorganize prints
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
@@ -67,7 +67,8 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [X] Draw rectangle around face
 - [X] Find something faster than SSIM -> MSE
 - [X] Get face photo
-- [ ] Wait after cam is opened
+- [ ] Enlarge and unblur face phots
+- [X] Wait after cam is opened
 - [ ] Get face video 
 - [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left)
@@ -122,6 +123,15 @@ If you are having an error like:
 > VIDEOIO ERROR: V4L: index 0 is not correct!
 
 Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
+
+### Warning
+
+Encountered when the cam_movement class first start to compute difference between images
+>python3.5/site-packages/skimage/measure/simple_metrics.py:142: RuntimeWarning: divide by zero encountered in double_scalars
+  return 10 * np.log10((data_range ** 2) / err)
+
+When the cam_shotter class compl
+
 
 # Infos
 

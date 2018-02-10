@@ -2,7 +2,7 @@ import threading
 from threading import Thread
 
 import os
-from skimage.measure import compare_ssim,compare_mse,compare_nrmse,compare_psnr
+from skimage.measure import compare_ssim, compare_mse, compare_nrmse, compare_psnr
 import cv2
 from time import sleep
 from datetime import datetime
@@ -21,7 +21,7 @@ class Cam_class:
         self.motion.start()
 
     def capture_image(self, image_name):
-        #print("taking image")
+        # print("taking image")
         img = self.frames[-1]
 
         if isinstance(img, int):
@@ -33,7 +33,7 @@ class Cam_class:
         # if the image was not saved return false
         if not ret: return False
 
-        #print("Image taken")
+        # print("Image taken")
         return True
 
     def capture_video(self, video_name, seconds):
@@ -41,24 +41,22 @@ class Cam_class:
         frame_width = 640
         frame_height = 480
         fps = 20
-        #print("initializing writer")
+        # print("initializing writer")
 
         out = cv2.VideoWriter(video_name, 0x00000021, fps, (frame_width, frame_height))
 
-       # print("writer initialized")
+        # print("writer initialized")
 
-        #start capturing frames
+        # start capturing frames
         self.shotter.capture(True)
-        #sleep
+        # sleep
         sleep(seconds)
-        #get catured frames
-        to_write=self.shotter.capture(False)
-        #write frame to file and release
+        # get catured frames
+        to_write = self.shotter.capture(False)
+        # write frame to file and release
         for elem in to_write:
             out.write(elem)
         out.release()
-
-
 
 
 class Cam_shotter(Thread):
@@ -70,17 +68,17 @@ class Cam_shotter(Thread):
         Thread.__init__(self)
 
         # get camera and queue
-        self.cam_idx=0
+        self.cam_idx = 0
         self.CAM = cv2.VideoCapture(self.cam_idx)
         self.queue = queue
         self.capture_bool = False
         self.capture_queue = []
-        self.lock=threading.Lock()
+        self.lock = threading.Lock()
 
     def run(self):
         """Main thread loop"""
 
-        first_ret=False
+        first_ret = False
 
         while True:
 
@@ -89,11 +87,11 @@ class Cam_shotter(Thread):
 
             # if frame has been read correctly add it to the end of the list
             if ret:
-                #if it is the first time that the class reads an image
+                # if it is the first time that the class reads an image
                 if not first_ret:
                     print("camera connected")
-                    first_ret=True
-                    #sleep to wait for auto-focus/brightness
+                    first_ret = True
+                    # sleep to wait for auto-focus/brightness
                     sleep(3)
                 # pop first element
                 self.queue.pop(0)
@@ -104,7 +102,7 @@ class Cam_shotter(Thread):
                 # print("saved")
             else:
                 # try to reopen the camera
-                #print("not saved")
+                # print("not saved")
                 self.reopen_cam()
 
             # sleep(0.01)
@@ -125,7 +123,7 @@ class Cam_shotter(Thread):
 
     def reopen_cam(self):
         """Function to reopen the camera"""
-        #print("reopening cam")
+        # print("reopening cam")
         # release the camera
         self.CAM.release()
         sleep(2)
@@ -137,16 +135,15 @@ class Cam_shotter(Thread):
 
     def close_cam(self):
         """Function to release teh camera stream"""
-        #print("close cam")
+        # print("close cam")
         self.CAM.release()
 
     def check_open_cam(self):
         """Function to open the camera stream"""
-        #print("checking cam")
+        # print("checking cam")
         if not self.CAM.isOpened():
-            #print("cam was closed")
+            # print("cam was closed")
             self.CAM.open(0)
-
 
 
 class Cam_movement(Thread):
@@ -178,10 +175,9 @@ class Cam_movement(Thread):
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
-        self.faces_video_flag=False
-        self.face_photo_flag=False
+        self.faces_video_flag = False
+        self.face_photo_flag = False
         self.motion_flag = False
-
 
     def run(self):
 
@@ -237,12 +233,12 @@ class Cam_movement(Thread):
         sleep(self.delay)
         end_frame = self.frame[-1]
 
-        #calculate diversity
-        score=self.are_different(initial_frame, end_frame)
+        # calculate diversity
+        score = self.are_different(initial_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
         if self.motion_flag and score:
 
-            #send message
+            # send message
             self.motion_notifier(score)
 
             # take a new (more recent) frame
@@ -259,8 +255,8 @@ class Cam_movement(Thread):
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
-                score=self.are_different(initial_frame, prov)
-                #print(score)
+                score = self.are_different(initial_frame, prov)
+                # print(score)
                 # take another frame
                 prov = self.frame[-1]
 
@@ -272,24 +268,23 @@ class Cam_movement(Thread):
                 # update current time in while loop
                 end = datetime.now()
 
-
             print("End of while loop")
             to_write = self.shotter.capture(False)
 
             if self.faces_video_flag:
-                to_write, cropped_frames=self.face_on_video(to_write)
+                to_write, cropped_frames = self.face_on_video(to_write)
 
-                #if the face video is avaiable
-                if len(cropped_frames)>0:
-                    #write it, release the stream
-                    self.send_image(cropped_frames[0],"Frames : "+str(len(cropped_frames)))
+                # if the face video is avaiable
+                if len(cropped_frames) > 0:
+                    # write it, release the stream
+                    denoised=self.denoise_img(cropped_frames)
+                    self.send_image(denoised, "Frames : " + str(len(cropped_frames)))
 
-            #send the original video too
+            # send the original video too
             for elem in to_write:
                 self.out.write(elem)
             self.out.release()
             self.send_video(self.video_name)
-
 
             sleep(3)
 
@@ -301,8 +296,9 @@ class Cam_movement(Thread):
         elif self.face_photo_flag and self.faces_video_flag:
 
             self.bot.sendMessage(self.send_id,
-                                 "Movement detected with score : " + str(score) + "\nFace detection and Face video are ON..."
-                                                                                  "it may take a while")
+                                 "Movement detected with score : " + str(
+                                     score) + "\nFace detection and Face video are ON..."
+                                              "it may take a while")
         else:
             self.bot.sendMessage(self.send_id, "Movement detected with score : " + str(score))
 
@@ -320,24 +316,48 @@ class Cam_movement(Thread):
     def are_different(self, img1, img2):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
-        similarity=self.get_similarity(img1,img2)
-        if similarity<self.diff_threshold:
+        similarity = self.get_similarity(img1, img2)
+        if similarity < self.diff_threshold:
             return similarity
 
-        else: return False
+        else:
+            return False
 
+    def denoise_img(self, image_list):
+
+        print("denoising")
+
+        if len(image_list)==1:
+            denoised = cv2.fastNlMeansDenoisingColored(image_list[1], None, 10, 10, 7, 21)
+
+        else:
+
+            #make the list odd
+            if(len(image_list))%2!=0: image_list.pop()
+
+            middle = int(float(len(image_list)) / 2 -0.5)
+
+            imgToDenoiseIndex = middle
+            temporalWindowSize = len(image_list)
+            hColor = 3
+
+            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
+                                                            hColor=hColor)
+        print("denosed")
+
+        return denoised
 
     def get_similarity(self, img1, img2):
-        #start = datetime.now()
+        # start = datetime.now()
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        #start = datetime.now()
-        #(score, diff) = compare_ssim(img1, img2, full=True)
-        score=compare_psnr(img1,img2)
-        #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
+        # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
+        # start = datetime.now()
+        # (score, diff) = compare_ssim(img1, img2, full=True)
+        score = compare_psnr(img1, img2)
+        # print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        #print(score)
+        # print(score)
 
         return score
 
@@ -365,7 +385,7 @@ class Cam_movement(Thread):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(img)
         if len(faces) > 0:
-            #print("face detcted!")
+            # print("face detcted!")
             return faces
 
         return ()
@@ -373,37 +393,32 @@ class Cam_movement(Thread):
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
-        colored_frames=[]
-        crop_frames=[]
+        colored_frames = []
+        crop_frames = []
+        faces=0
 
-        #for every frame in the video
+        # for every frame in the video
         for frame in frames:
 
-            #detect if there is a face
-            face=self.detect_face(frame)
+            # detect if there is a face
+            face = self.detect_face(frame)
 
-            #if there is a face
-            if len(face)>0:
-                print(str(len(face))+" detected!")
-                #get the corners of the faces
+            # if there is a face
+            if len(face) > 0:
+                # get the corners of the faces
+                faces+=1
                 for (x, y, w, h) in face:
-                    #draw a rectangle around the corners
+                    # draw a rectangle around the corners
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
 
-                    #if user want the face video too crop the image where face is detected
+                    # if user want the face video too crop the image where face is detected
                     if self.face_photo_flag:
-                        crop_frames.append(frame[y:y+h, x:x+w])
+                        crop_frames.append(frame[y:y + h, x:x + w])
 
-            #append colored frames
+            # append colored frames
             colored_frames.append(frame)
 
+        print(str(faces) + " detected!")
 
-
-        print("end of face detection")
 
         return colored_frames, crop_frames
-
-
-
-
-
