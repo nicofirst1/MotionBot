@@ -37,7 +37,7 @@ Current value are the following :"""
 @elegible_user
 def flag_setting_main(bot, update):
 
-    update.message.reply_text(complete_flags(),reply_markup = FLAG_KEYBOARD)
+    update.message.reply_text(complete_flags(),reply_markup = FLAG_KEYBOARD, parse_mode="HTML")
 
 
 def complete_flags():
