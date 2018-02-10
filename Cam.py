@@ -300,12 +300,12 @@ class Cam_movement(Thread):
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        start = datetime.now()
+        #start = datetime.now()
         #(score, diff) = compare_ssim(img1, img2, full=True)
         score=compare_mse(img1,img2)
-        print("COMPAIRISON : " + str((datetime.now() - start).microseconds) + " microseconds")
+        #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        print(score)
+        #print(score)
 
         return score
 
