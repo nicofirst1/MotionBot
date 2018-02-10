@@ -237,6 +237,8 @@ class Cam_movement(Thread):
         # if the notification is enable and there is a difference between the two frames
         if self.notification and self.are_different(initial_frame, end_frame):
 
+            print("detected motion")
+
             # take a new (more recent) frame
             prov = self.frame[-1]
             found_face = False
