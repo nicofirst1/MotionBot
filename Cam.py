@@ -49,8 +49,6 @@ class Cam_class:
         fps = 20
         print("initializing writer")
 
-        codec=cv2.VideoWriter_fourcc(*'avc1') # cv2.VideoWriter_fourcc(*'MP4V')
-        print("a")
         out = cv2.VideoWriter(video_name,  0x00000021, fps,(frame_width, frame_height))
 
         print("writer initialized")
@@ -66,7 +64,7 @@ class Cam_class:
             frame=self.frames[-1]
             #write it to file
             out.write(frame)
-            print("writing")
+            #print("writing")
 
             #if writing has exceeded max seconds stop
             if (end - start).seconds >= seconds:
@@ -95,12 +93,15 @@ class Cam_shotter(Thread):
         self.queue=queue
 
     def run(self):
+        """Main thread loop"""
 
 
         while True:
 
+            #read frame form camera
             ret, img = self.CAM.read()
 
+            #if frame has been read correctly add it to the end of the list
             if ret:
                 # pop first element
                 self.queue.pop(0)
@@ -108,6 +109,7 @@ class Cam_shotter(Thread):
                 self.queue.append(img)
                 #print("saved")
             else:
+                #try to reopen the camera
                 print("not saved")
                 self.reopen_cam()
 
@@ -115,21 +117,25 @@ class Cam_shotter(Thread):
             #sleep(0.01)
 
     def reopen_cam(self):
+        """Function to reopen the camera"""
         print("reopening cam")
+        #release the camera
         self.CAM.release()
         sleep(2)
+        #capture stream
         self.CAM = cv2.VideoCapture(0)
         sleep(2)
-
+        #chech if camera is opened
         self.check_open_cam()
-        self.h=self.CAM.get(4)
-        self.w=self.CAM.get(3)
+
 
     def close_cam(self):
+        """Function to release teh camera stream"""
         print("close cam")
         self.CAM.release()
 
     def check_open_cam(self):
+        """Function to open the camera stream"""
         print("checking cam")
         if not self.CAM.isOpened():
             print("cam was closed")
@@ -159,16 +165,24 @@ class Cam_movement(Thread):
 
         self.face_cascade = cv2.CascadeClassifier('/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt.xml')
         self.max_seconds_retries=5
+
+        self.video_name = "detect_motion_video.mp4"
+        frame_width = 640
+        frame_height = 480
+        fps = 20
+
+        self.out = cv2.VideoWriter(self.video_name, 0x00000021, fps, (frame_width, frame_height))
+
     def run(self):
 
 
         while True:
 
-            self.detect_motion()
+            self.detect_motion_video()
 
 
 
-    def detect_motion(self):
+    def detect_motion_photo(self):
         # get initial frame and and frame after delay seconds
         initial_frame = self.frame[-1]
         sleep(self.delay)
@@ -185,6 +199,8 @@ class Cam_movement(Thread):
             #take the time
             start=datetime.now()
             end=datetime.now()
+
+
 
             #while the current frame and the initial one are different (aka some movement detected)
             while ( self.are_different(initial_frame, prov)):
@@ -210,6 +226,50 @@ class Cam_movement(Thread):
 
             if not found_face:
                 self.send_image(end_frame, "Face not detected")
+            sleep(3)
+
+    def detect_motion_video(self):
+        # get initial frame and and frame after delay seconds
+        initial_frame = self.frame[-1]
+        sleep(self.delay)
+        end_frame = self.frame[-1]
+
+        # if the notification is enable and there is a difference between the two frames
+        if self.notification and self.are_different(initial_frame, end_frame):
+
+            # take a new (more recent) frame
+            prov = self.frame[-1]
+            found_face = False
+
+            # take the time
+            start = datetime.now()
+            end = datetime.now()
+
+            # while the current frame and the initial one are different (aka some movement detected)
+            while (self.are_different(initial_frame, prov)):
+
+                print("in while")
+                # check for the presence of a face in the frame
+                if self.detect_face(prov):
+                    found_face = True
+
+                self.out.write(prov)
+                # take another frame
+                prov = self.frame[-1]
+
+                # if time is exceeded exit while
+                if (end - start).seconds > self.max_seconds_retries:
+                    print("max seconds exceeded")
+                    break
+
+                # update current time in while loop
+                end = datetime.now()
+
+            if not found_face:
+                self.send_video(self.video_name,"Face not found")
+            else:
+                self.send_video(self.video_name,"Face found")
+
             sleep(3)
 
     def detect_motion_old(self):
@@ -253,6 +313,12 @@ class Cam_movement(Thread):
         os.remove(self.image_name)
 
 
+    def send_video(self, video_name,msg=""):
+
+        with open(video_name, "rb") as file:
+            if msg: self.bot.sendMessage(self.send_id,msg)
+            self.bot.sendVideo(self.send_id, file)
+        os.remove(video_name)
 
     def detect_face(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
