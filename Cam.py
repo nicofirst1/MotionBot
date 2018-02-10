@@ -155,7 +155,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 30
+        self.diff_threshold = 50
         self.notification = True
         self.image_name = "different.png"
 
@@ -229,6 +229,7 @@ class Cam_movement(Thread):
         end_frame = self.frame[-1]
 
         score=self.are_different(initial_frame, end_frame)
+        print(score)
         # if the notification is enable and there is a difference between the two frames
         if self.notification and score:
 
