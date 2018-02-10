@@ -357,7 +357,7 @@ class Cam_movement(Thread):
 
             face=self.detect_face(frame)
 
-            if face.any():
+            if len(face)>0:
                 for (x, y, w, h) in face:
                     ret=cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     print(ret)
