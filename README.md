@@ -47,6 +47,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 - [ ] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
+- [ ] use Cam_shotter to get video
 
 ### Movement detection
 - [X] Nofity when movement is detected 

@@ -1,3 +1,4 @@
+import threading
 from threading import Thread
 
 import os
@@ -46,30 +47,18 @@ class Cam_class:
 
         print("writer initialized")
 
-        # get start and end time
-        start = datetime.now()
-        end = datetime.now()
-
-        while (True):
-
-            # get the most recent frame
-            frame = self.frames[-1]
-            # write it to file
-            out.write(frame)
-            # print("writing")
-
-            # if writing has exceeded max seconds stop
-            if (end - start).seconds >= seconds:
-                break
-
-            # update time
-            end = datetime.now()
-
-            # sleep for the right amount of seconds
-            sleep(1 / fps)
-
-        # When everything done, release the video capture and video write objects
+        #start capturing frames
+        self.shotter.capture(True)
+        #sleep
+        sleep(seconds)
+        #get catured frames
+        to_write=self.shotter.capture(False)
+        #write frame to file and release
+        for elem in to_write:
+            out.write(elem)
         out.release()
+
+
 
 
 class Cam_shotter(Thread):
@@ -85,6 +74,7 @@ class Cam_shotter(Thread):
         self.queue = queue
         self.capture_bool = False
         self.capture_queue = []
+        self.lock=threading.Lock()
 
     def run(self):
         """Main thread loop"""
@@ -110,16 +100,19 @@ class Cam_shotter(Thread):
 
             # sleep(0.01)
 
-    # lock capture
     def capture(self, capture):
 
-        if capture:
-
-            self.capture_queue = []
-            self.capture_bool = True
-        else:
-            self.capture_bool = False
-            return self.capture_queue
+        try:
+            if capture:
+                self.lock.acquire()
+                self.capture_queue = []
+                self.capture_bool = True
+            else:
+                self.capture_bool = False
+                self.lock.release()
+                return self.capture_queue
+        except:
+            self.lock.release()
 
     def reopen_cam(self):
         """Function to reopen the camera"""
@@ -161,7 +154,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.5
-        self.diff_threshold = 0.75 
+        self.diff_threshold = 0.75
         self.notification = True
         self.image_name = "different.png"
 
