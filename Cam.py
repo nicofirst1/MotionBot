@@ -272,7 +272,7 @@ class Cam_movement(Thread):
                 self.out.write(elem)
 
             self.out.release()
-            self.send_video(self.video_name, "Detecte movemente")
+            self.send_video(self.video_name, "Movement detected")
 
             sleep(3)
 
@@ -297,10 +297,10 @@ class Cam_movement(Thread):
         start = datetime.now()
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
+        #print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
         start = datetime.now()
         (score, diff) = compare_ssim(img1, img2, full=True)
-        print("SSIM : " + str((datetime.now() - start).microseconds) + " microseconds")
+        #print("SSIM : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         print(score)
 
