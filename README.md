@@ -47,7 +47,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 ## Code
 - [X] fix mp4 video on telegram mobile
 - [ ] Command to stop bot execution
-- [ ] Get token and psw from file
+- [X] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
@@ -122,3 +122,7 @@ Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
 | PSNR             | 0.03                 | x  <   30       |
 | NRMSE            | 0.035                | x  >   0.3      |
 | MSE              | 0.025                | x  > 2000       |
+
+## Errors for image difference
+### MSE
+Change in shadow with value 3919

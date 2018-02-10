@@ -247,7 +247,7 @@ class Cam_movement(Thread):
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
 
-                print("in while")
+                #print("in while")
                 # check for the presence of a face in the frame
                 # if self.detect_face(prov):
                 #     found_face = True
@@ -305,7 +305,7 @@ class Cam_movement(Thread):
         score=compare_mse(img1,img2)
         #print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        #print(score)
+        print(score)
 
         return score
 
