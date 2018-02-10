@@ -155,7 +155,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 50
+        self.diff_threshold = 20
         self.notification = True
         self.image_name = "different.png"
 
@@ -299,7 +299,7 @@ class Cam_movement(Thread):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
         similarity=self.get_similarity(img1,img2)
-        if similarity>self.diff_threshold:
+        if similarity<self.diff_threshold:
             return similarity
 
         else: return False
