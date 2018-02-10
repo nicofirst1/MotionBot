@@ -235,11 +235,7 @@ class Cam_movement(Thread):
         if self.notification and score:
 
             #send message
-            if self.get_faces:
-                self.bot.sendMessage(self.send_id, "Movement detected with score : "+str(score)+"\nFace detection in ON..."
-                                                        "it may take a minute or two")
-            else:
-                self.bot.sendMessage(self.send_id, "Movement detected with score : " + str(score))
+            self.motion_notifier(score)
 
             # take a new (more recent) frame
             prov = self.frame[-1]
@@ -294,6 +290,19 @@ class Cam_movement(Thread):
 
 
             sleep(3)
+
+    def motion_notifier(self, score):
+        if self.get_faces and not self.get_face_video:
+            self.bot.sendMessage(self.send_id,
+                                 "Movement detected with score : " + str(score) + "\nFace detection in ON..."
+                                                                                  "it may take a minute or two")
+        elif self.get_face_video and self.get_faces:
+
+            self.bot.sendMessage(self.send_id,
+                                 "Movement detected with score : " + str(score) + "\nFace detection and Face video are ON..."
+                                                                                  "it may take a while")
+        else:
+            self.bot.sendMessage(self.send_id, "Movement detected with score : " + str(score))
 
     def detect_motion_old(self):
 
