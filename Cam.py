@@ -339,14 +339,12 @@ class Cam_movement(Thread):
         similarity = self.get_similarity(img1, img2)
         if not custom_score:
             if similarity < self.diff_threshold:
-                print(similarity,self.diff_threshold)
                 return similarity
 
             else:
                 return False
         else:
             if similarity < custom_score:
-                print(similarity, custom_score)
                 return similarity
 
             else:
