@@ -92,6 +92,9 @@ def flag_setting_callback(bot,update):
 
     if param=="motion":
         cam.motion.motion_flag=not cam.motion.motion_flag
+        if not cam.motion.motion_flag:
+            cam.motion.face_photo_flag=False
+            cam.motion.faces_video_flag=False
     elif param=="face_video":
         cam.motion.faces_video_flag=not cam.motion.faces_video_flag
     elif param=="face_photo":
