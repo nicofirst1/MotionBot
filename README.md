@@ -82,6 +82,8 @@ If you want to run it even when you close the ssh connection use
 - [X] Get face photo
 - [X] Denoise photo
 - [X] Wait after cam is opened
+- [ ] Take frames for video from are_different
+- [ ] Find out if background has changed (sum of image mean < threshold)
 - [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)

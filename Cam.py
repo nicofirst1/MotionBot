@@ -172,7 +172,7 @@ class Cam_movement(Thread):
 
         self.face_cascade = cv2.CascadeClassifier(
             '/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt_tree.xml')
-        self.max_seconds_retries = 5
+        self.max_seconds_retries = 10
 
         self.video_name = "detect_motion_video.mp4"
 
@@ -399,11 +399,11 @@ class Cam_movement(Thread):
                 # and update the text
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                self.send_image(frameDelta)
-                self.send_image(thresh_original, "Threshold Original")
-                self.send_image(thresh, "Threshold Dilated")
-                self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
-
+                # self.send_image(frameDelta)
+                # self.send_image(thresh_original, "Threshold Original")
+                # self.send_image(thresh, "Threshold Dilated")
+                # self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
+                #
 
 
 
