@@ -187,10 +187,13 @@ class Cam_movement(Thread):
     def run(self):
 
         #wait for cam shotter to start
-        while not self.shotter.camera_connected and self.frame[-1]!=0:
+        while not self.shotter.camera_connected:
             sleep(0.5)
 
         initial_frame=self.frame[-1]
+        while initial_frame==0:
+            initial_frame=self.frame[-1]
+
         print(initial_frame)
         frame = imutils.resize(initial_frame, width=500)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
