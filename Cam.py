@@ -379,6 +379,7 @@ class Cam_movement(Thread):
         frameDelta = cv2.absdiff(grd_truth, gray)
         thresh = cv2.threshold(frameDelta, 70, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C)[1]
 
+        self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=2)
