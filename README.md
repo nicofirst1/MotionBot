@@ -7,6 +7,7 @@ This repo is currently working with **raspberry pi 3 model B** with **Python 3.5
 To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
+* Install image utils with `sudo pip install imutils`
 
 ## Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=*
