@@ -401,6 +401,7 @@ class Cam_movement(Thread):
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 self.send_image(frameDelta)
                 self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
+                self.send_image(thresh, "Threshold")
 
 
 
