@@ -332,7 +332,6 @@ class Cam_movement(Thread):
             self.send_image(end_frame)
             sleep(5)
 
-    @profiler
     def are_different(self, img1, img2, custom_score=0):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
