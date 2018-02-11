@@ -191,7 +191,7 @@ class Cam_movement(Thread):
             sleep(0.5)
 
         initial_frame=self.frame[-1]
-        while initial_frame==0:
+        while isinstance(initial_frame,int):
             initial_frame=self.frame[-1]
 
         print(initial_frame)
