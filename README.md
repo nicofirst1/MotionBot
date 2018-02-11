@@ -181,3 +181,5 @@ Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the iss
 
 ## SSIM
 * Using gaussian_weights=True -> time increases to 0.7 seconds
+
+### Passing to  cv2.absdiff
