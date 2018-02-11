@@ -400,6 +400,8 @@ class Cam_movement(Thread):
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
+        self.send_image(img2)
+
         return found_area
 
     def denoise_img(self, image_list):
