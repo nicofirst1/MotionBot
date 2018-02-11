@@ -22,7 +22,7 @@ If you want to run it even when you close the ssh connection use
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
 * /photo - get a snapshot from the camera and send it trhought telegram 
 * /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
-* /notification - you can dis/enable the notification from the movement detection part
+* /flags - you can dis/enable the notification from the movement detection 
 
 
 
@@ -53,7 +53,7 @@ If you want to run it even when you close the ssh connection use
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
-- [ ] fix while score, exit when no difference are detected anymore
+- [ ] Fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
 - [ ] create profiling function

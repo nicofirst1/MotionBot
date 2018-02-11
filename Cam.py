@@ -22,6 +22,7 @@ class Cam_class:
         self.motion = Cam_movement(self.shotter, bot)
         self.motion.start()
 
+
     def capture_image(self, image_name):
         # print("taking image")
         img = self.frames[-1]
@@ -59,6 +60,7 @@ class Cam_class:
         for elem in to_write:
             out.write(elem)
         out.release()
+
 
 
 class Cam_shotter(Thread):
