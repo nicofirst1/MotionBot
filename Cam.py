@@ -159,7 +159,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 30
+        self.diff_threshold = 30.0
         self.image_name = "different.png"
 
         self.queue = []
@@ -206,6 +206,8 @@ class Cam_movement(Thread):
 
             foud_face=False
             self.shotter.capture(True)
+
+            print("INITIAL SCORE : "+str(score))
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
@@ -309,9 +311,9 @@ class Cam_movement(Thread):
 
 
         if self.faces_video_flag and not self.face_photo_flag:
-            to_send+="<b>Face Video</b> is ON...it may take a minute or two"
+            to_send+="<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
         elif self.face_photo_flag and self.faces_video_flag:
-            to_send+="Both <b>Face Video</b> and <b>Face Photo</b> are  ON...it may take a while"
+            to_send+="Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
 
 
         self.bot.sendMessage(self.send_id, to_send,parse_mode="HTML")
@@ -332,6 +334,7 @@ class Cam_movement(Thread):
         if isinstance(img1, int) or isinstance(img2, int): return False
         similarity = self.get_similarity(img1, img2)
         if similarity < self.diff_threshold:
+            print(similarity,self.diff_threshold)
             return similarity
 
         else:
@@ -444,7 +447,7 @@ class Cam_movement(Thread):
             # append colored frames
             colored_frames.append(frame)
 
-        print(str(faces) + " detected!")
+        print(str(faces) + " frames with faces detected")
 
 
         return colored_frames, crop_frames
