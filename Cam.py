@@ -163,7 +163,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 27.0
+        self.diff_threshold = 30.0
         self.image_name = "different.png"
 
         self.queue = []
@@ -270,7 +270,7 @@ class Cam_movement(Thread):
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
-                score = self.are_different(initial_frame, prov,25)
+                score = self.are_different(initial_frame, prov)
                 print(score)
                 # take another frame
                 prov = self.frame[-1]
