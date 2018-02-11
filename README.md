@@ -39,6 +39,9 @@ If you want to run it even when you close the ssh connection use
 ### Image similarity comparison
 * https://ece.uwaterloo.ca/~z70wang/publications/ssim.pdf
 
+### Motion detection
+* https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
+
 ## With telegram
 * https://github.com/meinside/telegram-bot-opencv
 
@@ -176,4 +179,4 @@ Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the iss
 * No good in poor light condition
 
 ## SSIM
-* Using gaussian_weights=True
+* Using gaussian_weights=True -> time increases to 0.7 seconds

@@ -22,7 +22,6 @@ class Cam_class:
         self.motion = Cam_movement(self.shotter, bot)
         self.motion.start()
 
-
     def capture_image(self, image_name):
         # print("taking image")
         img = self.frames[-1]
@@ -60,7 +59,6 @@ class Cam_class:
         for elem in to_write:
             out.write(elem)
         out.release()
-
 
 
 class Cam_shotter(Thread):
@@ -165,6 +163,7 @@ class Cam_movement(Thread):
         self.delay = 0.1
         self.diff_threshold = 0
         self.image_name = "different.png"
+        self.min_area = 50
 
         self.queue = []
         self.queue_len = 20
@@ -208,10 +207,10 @@ class Cam_movement(Thread):
             start = datetime.now()
             end = datetime.now()
 
-            foud_face=False
+            foud_face = False
             self.shotter.capture(True)
 
-            print("INITIAL SCORE : "+str(score))
+            print("INITIAL SCORE : " + str(score))
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
@@ -253,44 +252,25 @@ class Cam_movement(Thread):
             # send message
             self.motion_notifier(score)
 
-            #do not capture video nor photo, just notification
+            # do not capture video nor photo, just notification
             if not self.faces_video_flag and not self.face_photo_flag:
                 sleep(3)
                 return
 
-            # take a new (more recent) frame
-            prov = self.frame[-1]
-
-            # take the time
-            start = datetime.now()
-            end = datetime.now()
-
             # create the file
             if self.faces_video_flag:
-
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
+            #start saving the frames
             self.shotter.capture(True)
 
-           # self.send_image(initial_frame,"initial frame")
-           # self.send_image(end_frame,"end frame")
+            # self.send_image(initial_frame,"initial frame")
+            # self.send_image(end_frame,"end frame")
+
             # while the current frame and the initial one are different (aka some movement detected)
-            while (score):
+            self.loop_difference(score, initial_frame, self.max_seconds_retries)
 
-                score = self.are_different(initial_frame, prov)
-                print(score)
-                # take another frame
-                prov = self.frame[-1]
-
-                # if time is exceeded exit while
-                if (end - start).seconds > self.max_seconds_retries:
-                    print("max seconds exceeded")
-                    break
-
-                # update current time in while loop
-                end = datetime.now()
-
-            print("End of while loop")
+            #save the taken frames
             to_write = self.shotter.capture(False)
 
             if self.faces_video_flag or self.face_photo_flag:
@@ -299,10 +279,10 @@ class Cam_movement(Thread):
                 # if the face video is avaiable
                 if len(cropped_frames) > 0 and self.face_photo_flag:
                     # write it, release the stream
-                    denoised=self.denoise_img(cropped_frames)
+                    denoised = self.denoise_img(cropped_frames)
                     self.send_image(denoised, "Frames : " + str(len(cropped_frames)))
-                elif len(cropped_frames)==0:
-                    self.bot.sendMessage(self.send_id,"No faces found")
+                elif len(cropped_frames) == 0:
+                    self.bot.sendMessage(self.send_id, "No faces found")
 
             # send the original video too
             if self.faces_video_flag:
@@ -315,23 +295,42 @@ class Cam_movement(Thread):
 
     def motion_notifier(self, score, degub=True):
 
-        to_send="Movement detected!\n"
+        to_send = "Movement detected!\n"
         if degub:
-            to_send+="Score is "+str(score)+"\n"
-
-
-
+            to_send += "Score is " + str(score) + "\n"
 
         if self.faces_video_flag and not self.face_photo_flag:
-            to_send+="<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
+            to_send += "<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
         elif self.face_photo_flag and self.faces_video_flag:
-            to_send+="Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
+            to_send += "Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
 
+        self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
 
-        self.bot.sendMessage(self.send_id, to_send,parse_mode="HTML")
+    def loop_difference(self, initial_score, initial_frame, seconds):
 
+        start = datetime.now()
+        end = datetime.now()
+        print("Start of difference loop")
+        while (initial_score):
 
-    def are_different(self, img1, img2, custom_score=0):
+            prov = self.frame[-1]
+
+            score = self.are_different(initial_frame, prov)
+
+            # take another frame
+            print(score)
+
+            # if time is exceeded exit while
+            if (end - start).seconds > seconds:
+                print("max seconds exceeded")
+                break
+
+            # update current time in while loop
+            end = datetime.now()
+
+        print("End of difference loop")
+
+    def are_different_old(self, img1, img2, custom_score=0):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
         similarity = self.get_similarity(img1, img2)
@@ -342,17 +341,48 @@ class Cam_movement(Thread):
             else:
                 return False
         else:
-            if similarity <custom_score:
+            if similarity < custom_score:
                 return similarity
 
             else:
                 return False
 
+    def are_different(self, grd_truth, img2):
+
+        # blur and convert to grayscale
+        gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        # compute the absolute difference between the current frame and
+        # first frame
+        frameDelta = cv2.absdiff(grd_truth, gray)
+        thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
+
+        # dilate the thresholded image to fill in holes, then find contours
+        # on thresholded image
+        thresh = cv2.dilate(thresh, None, iterations=2)
+        (cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                                     cv2.CHAIN_APPROX_SIMPLE)
+
+        # loop over the contours
+        for c in cnts:
+            # if the contour is too small, ignore it
+            print("AREA : " + str(cv2.contourArea(c)))
+            if cv2.contourArea(c) < self.min_area:
+                return False
+
+            # compute the bounding box for the contour, draw it on the frame,
+            # and update the text
+            (x, y, w, h) = cv2.boundingRect(c)
+            cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        return True
+
     def denoise_img(self, image_list):
 
         print("denoising")
 
-        if len(image_list)==1:
+        if len(image_list) == 1:
             denoised = cv2.fastNlMeansDenoisingColored(image_list[1], None, 10, 10, 7, 21)
 
         else:
@@ -362,24 +392,25 @@ class Cam_movement(Thread):
 
             middle = int(float(len(image_list)) / 2 - 0.5)
 
-            #getting smallest images size
-            width=99999
-            heigth=99999
+            # getting smallest images size
+            width = 99999
+            heigth = 99999
 
             for img in image_list:
-                size=tuple(img.shape[1::-1])
-                if size[0]<width: width=size[0]
-                if size[1]<heigth:heigth=size[1]
+                size = tuple(img.shape[1::-1])
+                if size[0] < width: width = size[0]
+                if size[1] < heigth: heigth = size[1]
 
-            #resizing all images to the smallest one
-            image_list=[cv2.resize(elem,(width,heigth)) for elem in image_list]
+            # resizing all images to the smallest one
+            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
 
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
             hColor = 3
-            #print(temporalWindowSize, imgToDenoiseIndex)
+            # print(temporalWindowSize, imgToDenoiseIndex)
 
-            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize, hColor=hColor)
+            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
+                                                            hColor=hColor)
         print("denosed")
 
         return denoised
@@ -392,8 +423,8 @@ class Cam_movement(Thread):
         img2 = cv2.equalizeHist(img2)
         # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
         start = datetime.now()
-        (score, diff) = compare_ssim(img1, img2, full=True,gaussian_weights=True)
-        #score = compare_psnr(img1, img2)
+        (score, diff) = compare_ssim(img1, img2, full=True, gaussian_weights=True)
+        # score = compare_psnr(img1, img2)
         print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         print(score)
@@ -409,10 +440,9 @@ class Cam_movement(Thread):
 
         with open(self.image_name, "rb") as file:
             if msg:
-                self.bot.sendPhoto(self.send_id, file,caption=msg)
+                self.bot.sendPhoto(self.send_id, file, caption=msg)
             else:
                 self.bot.sendPhoto(self.send_id, file)
-
 
         os.remove(self.image_name)
 
@@ -424,7 +454,7 @@ class Cam_movement(Thread):
                 self.bot.sendVideo(self.send_id, file)
             os.remove(video_name)
         except FileNotFoundError:
-            self.bot.sendMessage(self.send_id,"There was an error uploading the file")
+            self.bot.sendMessage(self.send_id, "There was an error uploading the file")
 
     def detect_face(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -440,7 +470,7 @@ class Cam_movement(Thread):
 
         colored_frames = []
         crop_frames = []
-        faces=0
+        faces = 0
 
         # for every frame in the video
         for frame in frames:
@@ -451,7 +481,7 @@ class Cam_movement(Thread):
             # if there is a face
             if len(face) > 0:
                 # get the corners of the faces
-                faces+=1
+                faces += 1
                 for (x, y, w, h) in face:
                     # draw a rectangle around the corners
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
@@ -464,6 +494,5 @@ class Cam_movement(Thread):
             colored_frames.append(frame)
 
         print(str(faces) + " frames with faces detected")
-
 
         return colored_frames, crop_frames
