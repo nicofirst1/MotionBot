@@ -377,13 +377,13 @@ class Cam_movement(Thread):
         # compute the absolute difference between the current frame and
         # first frame
         frameDelta = cv2.absdiff(grd_truth, gray)
-        thresh = cv2.threshold(frameDelta, 150, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
         #self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=3)
-        (cnts, _, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        (_, cnts, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
         found_area=False
