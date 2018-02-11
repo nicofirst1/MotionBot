@@ -164,7 +164,7 @@ class Cam_movement(Thread):
         self.delay = 0.1
         self.diff_threshold = 0
         self.image_name = "different.png"
-        self.min_area = 50
+        self.min_area = 1300
         self.ground_frame=0
 
         self.queue = []
@@ -377,7 +377,7 @@ class Cam_movement(Thread):
         # compute the absolute difference between the current frame and
         # first frame
         frameDelta = cv2.absdiff(grd_truth, gray)
-        thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.threshold(frameDelta, 25, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C)[1]
 
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
