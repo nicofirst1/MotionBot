@@ -379,7 +379,7 @@ class Cam_movement(Thread):
         frameDelta = cv2.absdiff(grd_truth, gray)
         thresh = cv2.threshold(frameDelta, 150, 255, cv2.THRESH_BINARY)[1]
 
-        self.send_image(frameDelta,"frameDelta")
+        #self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=2)
@@ -399,8 +399,11 @@ class Cam_movement(Thread):
                 # and update the text
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                self.send_image(frameDelta, "Thresh : " + str(thresh))
+                self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
 
-        self.send_image(img2)
+
+
 
         return found_area
 
