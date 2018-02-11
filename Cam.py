@@ -259,11 +259,12 @@ class Cam_movement(Thread):
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
             self.shotter.capture(True)
 
+            self.send_image(initial_frame,"initial frame")
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
                 score = self.are_different(initial_frame, prov)
-                # print(score)
+                print(score)
                 # take another frame
                 prov = self.frame[-1]
 
