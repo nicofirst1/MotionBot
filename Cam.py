@@ -396,7 +396,7 @@ class Cam_movement(Thread):
         #score = compare_psnr(img1, img2)
         print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
-        # print(score)
+        print(score)
 
         return score
 
