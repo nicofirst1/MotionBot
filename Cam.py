@@ -270,7 +270,7 @@ class Cam_movement(Thread):
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
-                score = self.are_different(initial_frame, prov,22)
+                score = self.are_different(initial_frame, prov,25)
                 print(score)
                 # take another frame
                 prov = self.frame[-1]
