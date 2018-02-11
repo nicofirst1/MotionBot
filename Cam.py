@@ -187,7 +187,7 @@ class Cam_movement(Thread):
     def run(self):
 
         #wait for cam shotter to start
-        while not self.shotter.camera_connected and not isinstance(self.frame[-1],int):
+        while not self.shotter.camera_connected and isinstance(self.frame[-1],int):
             sleep(0.5)
 
         initial_frame=self.frame[-1]
