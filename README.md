@@ -172,3 +172,4 @@ Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the iss
 * Not so sensitive to shadow changes
 * Change detected with score 24, while there was none 
 * Is triggered when camera auto adjust brightness
+* In bright places it becomes very sensitive
