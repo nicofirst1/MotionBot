@@ -265,8 +265,8 @@ class Cam_movement(Thread):
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
             self.shotter.capture(True)
 
-            self.send_image(initial_frame,"initial frame")
-            self.send_image(end_frame,"end frame")
+           # self.send_image(initial_frame,"initial frame")
+           # self.send_image(end_frame,"end frame")
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
