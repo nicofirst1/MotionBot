@@ -173,3 +173,4 @@ Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the iss
 * Change detected with score 24, while there was none 
 * Is triggered when camera auto adjust brightness
 * In bright places it becomes very sensitive -> the use of an *equalizeHist* seems to resolve the problem
+* No good in poor light condition

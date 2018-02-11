@@ -253,6 +253,11 @@ class Cam_movement(Thread):
             # send message
             self.motion_notifier(score)
 
+            #do not capture video nor photo, just notification
+            if not self.faces_video_flag and not self.face_photo_flag:
+                sleep(3)
+                return
+
             # take a new (more recent) frame
             prov = self.frame[-1]
 
@@ -262,7 +267,9 @@ class Cam_movement(Thread):
 
             # create the file
             if self.faces_video_flag:
+
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+
             self.shotter.capture(True)
 
            # self.send_image(initial_frame,"initial frame")
@@ -323,16 +330,6 @@ class Cam_movement(Thread):
 
         self.bot.sendMessage(self.send_id, to_send,parse_mode="HTML")
 
-    def detect_motion_old(self):
-
-        initial_frame = self.frame[-1]
-        sleep(self.delay)
-        end_frame = self.frame[-1]
-
-        if self.are_different(initial_frame, end_frame) and self.motion_flag:
-            self.bot.sendMessage(self.send_id, "Movement detected")
-            self.send_image(end_frame)
-            sleep(5)
 
     def are_different(self, img1, img2, custom_score=0):
 
@@ -395,8 +392,8 @@ class Cam_movement(Thread):
         img2 = cv2.equalizeHist(img2)
         # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
         # start = datetime.now()
-        # (score, diff) = compare_ssim(img1, img2, full=True)
-        score = compare_psnr(img1, img2)
+        (score, diff) = compare_ssim(img1, img2, full=True,gaussian_weights=True)
+        #score = compare_psnr(img1, img2)
         # print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         # print(score)
@@ -421,10 +418,13 @@ class Cam_movement(Thread):
 
     def send_video(self, video_name, msg=""):
 
-        with open(video_name, "rb") as file:
-            if msg: self.bot.sendMessage(self.send_id, msg)
-            self.bot.sendVideo(self.send_id, file)
-        os.remove(video_name)
+        try:
+            with open(video_name, "rb") as file:
+                if msg: self.bot.sendMessage(self.send_id, msg)
+                self.bot.sendVideo(self.send_id, file)
+            os.remove(video_name)
+        except FileNotFoundError:
+            self.bot.sendMessage(self.send_id,"There was an error uploading the file")
 
     def detect_face(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
