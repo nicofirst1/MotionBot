@@ -370,8 +370,8 @@ class Cam_movement(Thread):
         #print("Calculation image difference")
 
         # blur and convert to grayscale
-        frame = imutils.resize(img2, width=500)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #frame = imutils.resize(img2, width=500)
+        gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
         # compute the absolute difference between the current frame and
@@ -400,9 +400,9 @@ class Cam_movement(Thread):
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 self.send_image(frameDelta)
-                self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
                 self.send_image(thresh_original, "Threshold Original")
                 self.send_image(thresh, "Threshold Dilated")
+                self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
 
 
 
