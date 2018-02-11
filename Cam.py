@@ -6,6 +6,7 @@ from skimage.measure import compare_ssim, compare_mse, compare_nrmse, compare_ps
 import cv2
 from time import sleep
 from datetime import datetime
+import imutils
 
 from utils import profiler
 
@@ -190,7 +191,8 @@ class Cam_movement(Thread):
             sleep(0.5)
 
         initial_frame=self.frame[-1]
-        gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
+        frame = imutils.resize(initial_frame, width=500)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame=gray
 
