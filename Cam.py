@@ -185,21 +185,27 @@ class Cam_movement(Thread):
             self.detect_motion_video()
 
     def detect_motion_photo(self):
-        # get initial frame and and frame after delay seconds
         initial_frame = self.frame[-1]
         sleep(self.delay)
         end_frame = self.frame[-1]
 
+        # calculate diversity
+        score = self.are_different(initial_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
-        if self.motion_flag and self.are_different(initial_frame, end_frame):
+        if self.motion_flag and score:
+
+            # send message
+            self.motion_notifier(score)
 
             # take a new (more recent) frame
             prov = self.frame[-1]
-            found_face = False
 
             # take the time
             start = datetime.now()
             end = datetime.now()
+
+            foud_face=False
+            self.shotter.capture(True)
 
             # while the current frame and the initial one are different (aka some movement detected)
             while (self.are_different(initial_frame, prov)):
@@ -249,7 +255,8 @@ class Cam_movement(Thread):
             end = datetime.now()
 
             # create the file
-            self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+            if self.faces_video_flag:
+                self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
             self.shotter.capture(True)
 
             # while the current frame and the initial one are different (aka some movement detected)
@@ -271,20 +278,23 @@ class Cam_movement(Thread):
             print("End of while loop")
             to_write = self.shotter.capture(False)
 
-            if self.faces_video_flag:
+            if self.faces_video_flag or self.face_photo_flag:
                 to_write, cropped_frames = self.face_on_video(to_write)
 
                 # if the face video is avaiable
-                if len(cropped_frames) > 0:
+                if len(cropped_frames) > 0 and self.face_photo_flag:
                     # write it, release the stream
                     denoised=self.denoise_img(cropped_frames)
                     self.send_image(denoised, "Frames : " + str(len(cropped_frames)))
+                elif len(cropped_frames)==0:
+                    self.bot.sendMessage(self.send_id,"No faces found")
 
             # send the original video too
-            for elem in to_write:
-                self.out.write(elem)
-            self.out.release()
-            self.send_video(self.video_name)
+            if self.faces_video_flag:
+                for elem in to_write:
+                    self.out.write(elem)
+                self.out.release()
+                self.send_video(self.video_name)
 
             sleep(3)
 

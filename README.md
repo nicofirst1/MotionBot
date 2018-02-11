@@ -139,6 +139,12 @@ Encountered when the cam_movement class first start to compute difference betwee
 
 When the cam_shotter class compl
 
+### Issue
+Using the *haarcascades/haarcascade_frontalface_alt.xml* with *CascadeClassifier* yelds a great number of false-positive
+
+### Solution 
+Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the issue
+
 
 # Infos
 
