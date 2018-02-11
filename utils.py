@@ -97,7 +97,7 @@ def read_token_psw():
     return token.decode("utf-8") ,psw.decode("utf-8")
 
 
-def profile(func):
+def profiler(func):
     @wraps(func)
 
     def profile(**kwargs):
@@ -108,4 +108,6 @@ def profile(func):
 
         end=datetime.now()
 
-        millisec=(end-start).microseconds
+        micro=(end-start).microseconds
+
+        print("{:,}".format(micro)+" miscroseconds")
