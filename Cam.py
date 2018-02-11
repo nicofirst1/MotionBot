@@ -195,7 +195,7 @@ class Cam_movement(Thread):
         while isinstance(initial_frame,int):
             initial_frame=self.frame[-1]
 
-        print(initial_frame)
+        #print(initial_frame)
         frame = imutils.resize(initial_frame, width=500)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
