@@ -164,6 +164,7 @@ class Cam_movement(Thread):
         self.diff_threshold = 0
         self.image_name = "different.png"
         self.min_area = 50
+        self.ground_frame=0
 
         self.queue = []
         self.queue_len = 20
@@ -183,6 +184,12 @@ class Cam_movement(Thread):
         self.motion_flag = True
 
     def run(self):
+
+        initial_frame=self.frame[-1]
+        gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        self.ground_frame=gray
+
 
         while True:
             self.detect_motion_video()
@@ -240,12 +247,12 @@ class Cam_movement(Thread):
 
     def detect_motion_video(self):
         # get initial frame and and frame after delay seconds
-        initial_frame = self.frame[-1]
+        #initial_frame = self.frame[-1]
         sleep(self.delay)
         end_frame = self.frame[-1]
 
         # calculate diversity
-        score = self.are_different(initial_frame, end_frame)
+        score = self.are_different(self.ground_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
         if self.motion_flag and score:
 
@@ -268,7 +275,7 @@ class Cam_movement(Thread):
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, initial_frame, self.max_seconds_retries)
+            self.loop_difference(score, self.ground_frame)
 
             #save the taken frames
             to_write = self.shotter.capture(False)
