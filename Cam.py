@@ -76,11 +76,11 @@ class Cam_shotter(Thread):
         self.capture_bool = False
         self.capture_queue = []
         self.lock = threading.Lock()
+        self.camera_connected=False
 
     def run(self):
         """Main thread loop"""
 
-        first_ret = False
 
         while True:
 
@@ -90,9 +90,9 @@ class Cam_shotter(Thread):
             # if frame has been read correctly add it to the end of the list
             if ret:
                 # if it is the first time that the class reads an image
-                if not first_ret:
+                if not self.camera_connected:
                     print("camera connected")
-                    first_ret = True
+                    self.camera_connected = True
                     # sleep to wait for auto-focus/brightness
                     sleep(3)
                 # pop first element
@@ -184,6 +184,10 @@ class Cam_movement(Thread):
         self.motion_flag = True
 
     def run(self):
+
+        #wait for cam shotter to start
+        while not self.shotter.camera_connected:
+            sleep(0.5)
 
         initial_frame=self.frame[-1]
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
