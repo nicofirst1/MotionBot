@@ -367,6 +367,7 @@ class Cam_movement(Thread):
                 return False
 
     def are_different(self, grd_truth, img2):
+        print("Calculation image difference")
 
         # blur and convert to grayscale
         frame = imutils.resize(img2, width=500)
