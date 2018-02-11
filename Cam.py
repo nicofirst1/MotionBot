@@ -266,7 +266,7 @@ class Cam_movement(Thread):
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
-                score = self.are_different(initial_frame, prov)
+                score = self.are_different(initial_frame, prov,20)
                 print(score)
                 # take another frame
                 prov = self.frame[-1]
@@ -330,16 +330,24 @@ class Cam_movement(Thread):
             self.send_image(end_frame)
             sleep(5)
 
-    def are_different(self, img1, img2):
+    def are_different(self, img1, img2, custom_score=0):
 
         if isinstance(img1, int) or isinstance(img2, int): return False
         similarity = self.get_similarity(img1, img2)
-        if similarity < self.diff_threshold:
-            print(similarity,self.diff_threshold)
-            return similarity
+        if not custom_score:
+            if similarity < self.diff_threshold:
+                print(similarity,self.diff_threshold)
+                return similarity
 
+            else:
+                return False
         else:
-            return False
+            if similarity < custom_score:
+                print(similarity, custom_score)
+                return similarity
+
+            else:
+                return False
 
     def denoise_img(self, image_list):
 
