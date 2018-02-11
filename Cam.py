@@ -190,6 +190,7 @@ class Cam_movement(Thread):
         while not self.shotter.camera_connected:
             sleep(0.5)
 
+        #wait for the frame queue to be full
         initial_frame=self.frame[-1]
         while isinstance(initial_frame,int):
             initial_frame=self.frame[-1]
@@ -199,6 +200,7 @@ class Cam_movement(Thread):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame=gray
+        self.send_image(gray,"Ground image")
 
 
         while True:
@@ -285,7 +287,7 @@ class Cam_movement(Thread):
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame)
+            self.loop_difference(score, self.ground_frame,self.max_seconds_retries)
 
             #save the taken frames
             to_write = self.shotter.capture(False)
