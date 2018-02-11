@@ -391,10 +391,10 @@ class Cam_movement(Thread):
         img1 = cv2.equalizeHist(img1)
         img2 = cv2.equalizeHist(img2)
         # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        # start = datetime.now()
+        start = datetime.now()
         (score, diff) = compare_ssim(img1, img2, full=True,gaussian_weights=True)
         #score = compare_psnr(img1, img2)
-        # print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
+        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
 
         # print(score)
 
