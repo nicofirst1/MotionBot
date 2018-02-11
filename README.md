@@ -57,6 +57,7 @@ If you want to run it even when you close the ssh connection use
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
 - [ ] create profiling function
+- [ ] implement a logger
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
@@ -77,7 +78,6 @@ If you want to run it even when you close the ssh connection use
 - [X] Get face photo
 - [X] Denoise photo
 - [X] Wait after cam is opened
-- [ ] Get face video 
 - [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)
@@ -172,4 +172,4 @@ Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the iss
 * Not so sensitive to shadow changes
 * Change detected with score 24, while there was none 
 * Is triggered when camera auto adjust brightness
-* In bright places it becomes very sensitive
+* In bright places it becomes very sensitive -> the use of an *equalizeHist* seems to resolve the problem
