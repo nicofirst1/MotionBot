@@ -262,6 +262,7 @@ class Cam_movement(Thread):
             self.shotter.capture(True)
 
             self.send_image(initial_frame,"initial frame")
+            self.send_image(end_frame,"end frame")
             # while the current frame and the initial one are different (aka some movement detected)
             while (score):
 
@@ -397,10 +398,13 @@ class Cam_movement(Thread):
             self.bot.sendMessage(self.send_id, "There has been an error while writing the image")
             return
 
-        if msg:
-            self.bot.sendMessage(self.send_id, msg)
         with open(self.image_name, "rb") as file:
-            self.bot.sendPhoto(self.send_id, file)
+            if msg:
+                self.bot.sendPhoto(self.send_id, file,caption=msg)
+            else:
+                self.bot.sendPhoto(self.send_id, file)
+
+
         os.remove(self.image_name)
 
     def send_video(self, video_name, msg=""):
