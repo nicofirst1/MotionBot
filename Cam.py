@@ -385,18 +385,21 @@ class Cam_movement(Thread):
         (_, cnts, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
+        found_area=False
         for c in cnts:
             # if the contour is too small, ignore it
             print("AREA : " + str(cv2.contourArea(c)))
             if cv2.contourArea(c) < self.min_area:
-                return False
+                continue
 
-            # compute the bounding box for the contour, draw it on the frame,
-            # and update the text
-            (x, y, w, h) = cv2.boundingRect(c)
-            cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            else:
+                found_area=True
+                # compute the bounding box for the contour, draw it on the frame,
+                # and update the text
+                (x, y, w, h) = cv2.boundingRect(c)
+                cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        return True
+        return found_area
 
     def denoise_img(self, image_list):
 
