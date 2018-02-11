@@ -367,7 +367,7 @@ class Cam_movement(Thread):
                 return False
 
     def are_different(self, grd_truth, img2):
-        print("Calculation image difference")
+        #print("Calculation image difference")
 
         # blur and convert to grayscale
         frame = imutils.resize(img2, width=500)
@@ -382,7 +382,7 @@ class Cam_movement(Thread):
         #self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
-        thresh = cv2.dilate(thresh, None, iterations=2)
+        thresh = cv2.dilate(thresh, None, iterations=3)
         (_, cnts, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
@@ -399,7 +399,7 @@ class Cam_movement(Thread):
                 # and update the text
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                self.send_image(frameDelta, "Thresh : " + str(thresh))
+                self.send_image(frameDelta)
                 self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
 
 
