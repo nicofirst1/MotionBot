@@ -63,7 +63,7 @@ If you want to run it even when you close the ssh connection use
 - [ ] Command to stop bot execution
 - [X] Make custom inline keyboard to set flags
 - [X] User friendly motion detection notification
-- [ ] Send caption with image
+- [X] Send caption with image
 
 
 ### Movement detection

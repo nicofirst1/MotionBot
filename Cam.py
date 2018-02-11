@@ -159,7 +159,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 30.0
+        self.diff_threshold = 27.0
         self.image_name = "different.png"
 
         self.queue = []
@@ -231,7 +231,7 @@ class Cam_movement(Thread):
                 # update current time in while loop
                 end = datetime.now()
 
-            if not found_face:
+            if not foud_face:
                 self.send_image(end_frame, "Face not detected")
             sleep(3)
 
@@ -302,7 +302,7 @@ class Cam_movement(Thread):
 
             sleep(3)
 
-    def motion_notifier(self, score, degub=False):
+    def motion_notifier(self, score, degub=True):
 
         to_send="Movement detected!\n"
         if degub:
