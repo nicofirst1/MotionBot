@@ -163,7 +163,7 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 30.0
+        self.diff_threshold = 0
         self.image_name = "different.png"
 
         self.queue = []
@@ -342,7 +342,7 @@ class Cam_movement(Thread):
             else:
                 return False
         else:
-            if similarity < custom_score:
+            if similarity <custom_score:
                 return similarity
 
             else:
