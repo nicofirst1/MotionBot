@@ -112,6 +112,7 @@ def flag_setting_callback(bot,update):
 
     elif param=="debug":
         cam.motion.debug_flag=not cam.motion.debug_flag
+
     elif param=="done":
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,

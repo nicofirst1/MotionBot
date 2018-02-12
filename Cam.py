@@ -314,7 +314,7 @@ class Cam_movement(Thread):
 
             sleep(3)
 
-    def motion_notifier(self, score, degub=True):
+    def motion_notifier(self, score, degub=False):
 
         to_send = "Movement detected!\n"
         if degub:
