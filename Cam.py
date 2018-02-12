@@ -281,16 +281,17 @@ class Cam_movement(Thread):
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
             #start saving the frames
-            self.shotter.capture(True)
+            #self.shotter.capture(True)
+            to_write=[]
 
             # self.send_image(initial_frame,"initial frame")
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame,self.max_seconds_retries)
+            self.loop_difference(score, self.ground_frame,self.max_seconds_retries,to_write)
 
             #save the taken frames
-            to_write = self.shotter.capture(False)
+            #to_write = self.shotter.capture(False)
 
             if self.faces_video_flag or self.face_photo_flag:
                 to_write, cropped_frames = self.face_on_video(to_write)
@@ -325,7 +326,7 @@ class Cam_movement(Thread):
 
         self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
 
-    def loop_difference(self, initial_score, initial_frame, seconds):
+    def loop_difference(self, initial_score, initial_frame,to_write, seconds):
 
         start = datetime.now()
         end = datetime.now()
@@ -335,6 +336,7 @@ class Cam_movement(Thread):
             prov = self.frame[-1]
 
             score = self.are_different(initial_frame, prov)
+            to_write.append(prov)
 
             # take another frame
             print(score)
