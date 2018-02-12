@@ -327,6 +327,15 @@ class Cam_movement(Thread):
 
         self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
 
+
+    def reset_ground(self):
+
+
+        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        self.ground_frame = gray
+        self.send_image(gray, "New ground image")
+
     def loop_difference(self, initial_score, initial_frame,to_write, seconds):
 
         start = datetime.now()
