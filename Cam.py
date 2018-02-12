@@ -288,7 +288,7 @@ class Cam_movement(Thread):
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame,self.max_seconds_retries,to_write)
+            self.loop_difference(score, self.ground_frame,to_write,self.max_seconds_retries)
 
             #save the taken frames
             #to_write = self.shotter.capture(False)
