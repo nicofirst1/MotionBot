@@ -183,6 +183,7 @@ class Cam_movement(Thread):
         self.faces_video_flag = True
         self.face_photo_flag = True
         self.motion_flag = True
+        self.debug_flag=False
 
     def run(self):
 
@@ -334,13 +335,15 @@ class Cam_movement(Thread):
         print("Start of difference loop")
         while (score):
 
+
+            #take another fram
             prov = self.frame[-1]
 
+            #check if images are different
             score = self.are_different(initial_frame, prov)
+            #write the frame
             to_write.append(prov)
 
-            # take another frame
-            print(score)
 
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
@@ -402,10 +405,12 @@ class Cam_movement(Thread):
                 # and update the text
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                self.send_image(frameDelta)
-                self.send_image(thresh_original, "Threshold Original")
-                self.send_image(thresh, "Threshold Dilated")
-                self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
+
+                if self.debug_flag:
+                    self.send_image(frameDelta)
+                    self.send_image(thresh_original, "Threshold Original")
+                    self.send_image(thresh, "Threshold Dilated")
+                    self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
 
 
 

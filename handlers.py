@@ -20,8 +20,9 @@ cam = Cam_class(updater.bot)
 
 FLAG_KEYBOARD= InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
-    InlineKeyboardButton("Face Video", callback_data="/flag face_video")],
-    [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo"),
+    InlineKeyboardButton("Face Video", callback_data="/flag face_video"),
+     InlineKeyboardButton("Face Photo", callback_data="/flag face_photo")],
+    [InlineKeyboardButton("Debug", callback_data="/flag debug"),
      InlineKeyboardButton("Done", callback_data="/flag done")]
 
 ])
@@ -29,8 +30,9 @@ FLAG_KEYBOARD= InlineKeyboardMarkup([
 FLAG_SEND="""
 Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 -- <b>Motion Detection</b> : If set to <i>ON</i> the bot will notify, both with a message and with a video, you when a movement has been detected
--- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
--- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
+---- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
+---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
+-- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 To set a flag just click on the corrispondent button.
 Note that <b>Face Photo</b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
 Current value are the following :"""
@@ -55,6 +57,7 @@ def complete_flags():
     motion_detection = cam.motion.motion_flag
     face_v = cam.motion.faces_video_flag
     face_p = cam.motion.face_photo_flag
+    debug=cam.motion.debug_flag
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
 
@@ -74,6 +77,13 @@ def complete_flags():
     complete_falg_str += "\n-- <b>Face Photo</b>"
 
     if face_p:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+    complete_falg_str += "\n-- <b>Debug</b>"
+
+    if debug:
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
@@ -99,6 +109,9 @@ def flag_setting_callback(bot,update):
         cam.motion.faces_video_flag=not cam.motion.faces_video_flag
     elif param=="face_photo":
         cam.motion.face_photo_flag=not cam.motion.face_photo_flag
+
+    elif param=="debug":
+        cam.motion.debug_flag=not cam.motion.debug_flag
     elif param=="done":
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,
