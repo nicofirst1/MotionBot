@@ -69,6 +69,7 @@ If you want to run it even when you close the ssh connection use
 - [X] Make custom inline keyboard to set flags
 - [X] User friendly motion detection notification
 - [X] Send caption with image
+- [X] Command to reset ground image
 
 
 ### Movement detection
@@ -82,6 +83,7 @@ If you want to run it even when you close the ssh connection use
 - [X] Get face photo
 - [X] Denoise photo
 - [X] Wait after cam is opened
+- [ ] Reste ground image programmaticly
 - [ ] Take frames for video from are_different
 - [ ] Find out if background has changed (sum of image mean < threshold)
 - [ ] find a confidence method for faces in video 
