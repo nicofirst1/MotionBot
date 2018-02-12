@@ -330,8 +330,9 @@ class Cam_movement(Thread):
 
         start = datetime.now()
         end = datetime.now()
+        score=initial_score
         print("Start of difference loop")
-        while (initial_score):
+        while (score):
 
             prov = self.frame[-1]
 
