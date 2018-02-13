@@ -314,6 +314,8 @@ class Cam_movement(Thread):
             # send the original video too
             if self.faces_video_flag and not self.resetting_ground:
                 for elem in to_write:
+                    cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
                     self.out.write(elem)
                 self.out.release()
                 self.send_video(self.video_name)
