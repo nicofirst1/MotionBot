@@ -315,7 +315,7 @@ class Cam_movement(Thread):
             if self.faces_video_flag and not self.resetting_ground:
                 for elem in to_write:
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
                     self.out.write(elem)
                 self.out.release()
                 self.send_video(self.video_name)
@@ -362,7 +362,8 @@ class Cam_movement(Thread):
 
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
-                print("max seconds exceeded")
+                print("max seconds exceeded...checking for background changes")
+                self.check_bk_changes(prov,3)
                 break
 
             # update current time in while loop
@@ -386,6 +387,30 @@ class Cam_movement(Thread):
 
             else:
                 return False
+
+    def check_bk_changes(self, initial_frame,seconds):
+        start = datetime.now()
+        end = datetime.now()
+        score=1
+        while (score):
+
+            # take another fram
+            prov = self.frame[-1]
+
+            # check if images are different
+            score = self.are_different(initial_frame, prov)
+
+            # if time is exceeded exit while
+            if (end - start).seconds > seconds:
+                print("max seconds exceeded")
+                self.reset_ground()
+                return True
+
+            # update current time in while loop
+            end = datetime.now()
+
+        return False
+
 
     def are_different(self, grd_truth, img2):
         #print("Calculation image difference")
