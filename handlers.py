@@ -2,7 +2,7 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 
-import os
+import os,sys
 
 from Cam import Cam_class
 from utils import add_id, elegible_user, read_token_psw
@@ -50,7 +50,6 @@ def reset_ground(bot,update):
 
     cam.motion.reset_ground()
     update.message.reply_text("Ground image has been reset")
-
 
 
 def complete_flags():
@@ -200,3 +199,10 @@ def stream(bot, update, args):
     with open(video_name, "rb") as file:
         bot.sendVideo(update.message.from_user.id, file)
     os.remove(video_name)
+
+
+@elegible_user
+def stop_execution(bot, update):
+
+    update.message.reply_text("Stopping surveillance")
+    sys.exit(0)

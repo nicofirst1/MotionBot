@@ -2,7 +2,7 @@ from telegram.ext import (
     ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
 
 from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater, \
-    flag_setting_main, flag_setting_callback, reset_ground
+    flag_setting_main, flag_setting_callback, reset_ground, stop_execution
 
 if __name__ == "__main__":
 
@@ -22,6 +22,7 @@ if __name__ == "__main__":
     disp.add_handler(CommandHandler("video",stream,pass_args=True))
     disp.add_handler(CommandHandler("flags",flag_setting_main))
     disp.add_handler(CommandHandler("resetg",reset_ground))
+    disp.add_handler(CommandHandler("stop",stop_execution))
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
 
     print("Polling...")

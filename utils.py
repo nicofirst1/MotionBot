@@ -8,8 +8,9 @@ COMMANDS="""
 photo - send camshot
 start - start bot
 video - send video 
-flag - set flags
+flags - set flags
 resetg - reset the groung image
+stop - stop surveillance execution
 """
 
 def is_enabled(id):
