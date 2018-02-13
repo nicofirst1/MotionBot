@@ -1,6 +1,7 @@
 # coding=utf-8
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
+import logging
 
 import os,sys
 
@@ -12,6 +13,8 @@ print("TOKEN : " + TOKEN + "\nPassword : " + psw)
 
 updater = Updater(TOKEN)
 disp = updater.dispatcher
+logging.basicConfig(filename='logger.log',level=logging.DEBUG)
+logging.debug('This message should go to the log file')
 
 cam = Cam_class(updater.bot)
 
