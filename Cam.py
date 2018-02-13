@@ -282,17 +282,17 @@ class Cam_movement(Thread):
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
             #start saving the frames
-            #self.shotter.capture(True)
+            self.shotter.capture(True)
             to_write=[]
 
             # self.send_image(initial_frame,"initial frame")
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame,to_write,self.max_seconds_retries)
+            self.loop_difference(score, self.ground_frame,self.max_seconds_retries)
 
             #save the taken frames
-            #to_write = self.shotter.capture(False)
+            to_write = self.shotter.capture(False)
 
             if self.faces_video_flag or self.face_photo_flag:
                 to_write, cropped_frames = self.face_on_video(to_write)
@@ -315,7 +315,7 @@ class Cam_movement(Thread):
             sleep(3)
 
     def motion_notifier(self, score, degub=False):
-
+        """Function to notify user dor a detected movement"""
         to_send = "Movement detected!\n"
         if degub:
             to_send += "Score is " + str(score) + "\n"
@@ -329,14 +329,15 @@ class Cam_movement(Thread):
 
 
     def reset_ground(self):
-
+        """function to reset the ground truth image"""
 
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
         self.send_image(gray, "New ground image")
 
-    def loop_difference(self, initial_score, initial_frame,to_write, seconds):
+    def loop_difference(self, initial_score, initial_frame, seconds):
+        """Loop until the current frame is the same as the ground image or time is exceeded"""
 
         start = datetime.now()
         end = datetime.now()
@@ -344,15 +345,11 @@ class Cam_movement(Thread):
         print("Start of difference loop")
         while (score):
 
-
             #take another fram
             prov = self.frame[-1]
 
             #check if images are different
             score = self.are_different(initial_frame, prov)
-            #write the frame
-            to_write.append(prov)
-
 
             # if time is exceeded exit while
             if (end - start).seconds > seconds:

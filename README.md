@@ -70,6 +70,7 @@ If you want to run it even when you close the ssh connection use
 - [X] User friendly motion detection notification
 - [X] Send caption with image
 - [X] Command to reset ground image
+- [ ] Reset ground image motion tasks
 
 
 ### Movement detection

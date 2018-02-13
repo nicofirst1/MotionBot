@@ -9,6 +9,7 @@ photo - send camshot
 start - start bot
 video - send video 
 flag - set flags
+resetg - reset the groung image
 """
 
 def is_enabled(id):
