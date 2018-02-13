@@ -185,6 +185,8 @@ class Cam_movement(Thread):
         self.motion_flag = True
         self.debug_flag=False
 
+        self.resetting_ground=False
+
     def run(self):
 
         #wait for cam shotter to start
@@ -259,6 +261,11 @@ class Cam_movement(Thread):
             sleep(3)
 
     def detect_motion_video(self):
+
+        #whait for resetting to be over
+        while self.resetting_ground:
+            continue
+
         # get initial frame and and frame after delay seconds
         #initial_frame = self.frame[-1]
         sleep(self.delay)
@@ -267,7 +274,7 @@ class Cam_movement(Thread):
         # calculate diversity
         score = self.are_different(self.ground_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames
-        if self.motion_flag and score:
+        if self.motion_flag and score and not self.resetting_ground:
 
             # send message
             self.motion_notifier(score)
@@ -283,7 +290,6 @@ class Cam_movement(Thread):
 
             #start saving the frames
             self.shotter.capture(True)
-            to_write=[]
 
             # self.send_image(initial_frame,"initial frame")
             # self.send_image(end_frame,"end frame")
@@ -306,7 +312,7 @@ class Cam_movement(Thread):
                     self.bot.sendMessage(self.send_id, "No faces found")
 
             # send the original video too
-            if self.faces_video_flag:
+            if self.faces_video_flag and not self.resetting_ground:
                 for elem in to_write:
                     self.out.write(elem)
                 self.out.release()
@@ -330,11 +336,12 @@ class Cam_movement(Thread):
 
     def reset_ground(self):
         """function to reset the ground truth image"""
-
+        self.resetting_ground=True
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
         self.send_image(gray, "New ground image")
+        self.resetting_ground=False
 
     def loop_difference(self, initial_score, initial_frame, seconds):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
@@ -343,7 +350,7 @@ class Cam_movement(Thread):
         end = datetime.now()
         score=initial_score
         print("Start of difference loop")
-        while (score):
+        while (score and not self.resetting_ground):
 
             #take another fram
             prov = self.frame[-1]
