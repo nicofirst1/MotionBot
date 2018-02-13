@@ -1,6 +1,6 @@
 from telegram.ext import (
     ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
-
+import logging
 from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback, reset_ground, stop_execution
 
@@ -26,4 +26,5 @@ if __name__ == "__main__":
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
 
     print("Polling...")
+    logging.info("Start polling")
     updater.start_polling()

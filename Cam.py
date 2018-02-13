@@ -6,7 +6,7 @@ from skimage.measure import compare_ssim, compare_mse, compare_nrmse, compare_ps
 import cv2
 from time import sleep
 from datetime import datetime
-import imutils
+import logging
 
 from utils import profiler
 
@@ -22,6 +22,7 @@ class Cam_class:
 
         self.motion = Cam_movement(self.shotter, bot)
         self.motion.start()
+        logging.debug("Cam_class started")
 
     def capture_image(self, image_name):
         # print("taking image")
@@ -79,6 +80,8 @@ class Cam_shotter(Thread):
         self.lock = threading.Lock()
         self.camera_connected=False
 
+        logging.debug("Cam_shotter started")
+
     def run(self):
         """Main thread loop"""
 
@@ -93,6 +96,7 @@ class Cam_shotter(Thread):
                 # if it is the first time that the class reads an image
                 if not self.camera_connected:
                     print("camera connected")
+                    logging.debug("Camera connected")
                     self.camera_connected = True
                     # sleep to wait for auto-focus/brightness
                     sleep(3)
@@ -187,6 +191,9 @@ class Cam_movement(Thread):
 
         self.resetting_ground=False
 
+
+        logging.debug("Cam_movement started")
+
     def run(self):
 
         #wait for cam shotter to start
@@ -276,6 +283,7 @@ class Cam_movement(Thread):
         # if the notification is enable and there is a difference between the two frames
         if self.motion_flag and score and not self.resetting_ground:
 
+            logging.info("Movement detected")
             # send message
             self.motion_notifier(score)
 
