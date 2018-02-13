@@ -11,6 +11,7 @@ video - send video
 flags - set flags
 resetg - reset the groung image
 stop - stop surveillance execution
+log - send the logger file
 """
 
 def is_enabled(id):
