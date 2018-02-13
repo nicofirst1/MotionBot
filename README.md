@@ -85,8 +85,8 @@ If you want to run it even when you close the ssh connection use
 - [X] Denoise photo
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
+- [ ] Fix date display
 - [ ] Reset ground image programmaticly
-- [ ] Find out if background has changed (sum of image mean < threshold)
 - [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left)
 - [ ] detect movement direction (incoming, outcoming)

@@ -164,7 +164,7 @@ class Cam_movement(Thread):
         self.delay = 0.1
         self.diff_threshold = 0
         self.image_name = "different.png"
-        self.min_area = 1300
+        self.min_area = 2000
         self.ground_frame=0
 
         self.queue = []
@@ -428,14 +428,14 @@ class Cam_movement(Thread):
         #self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
-        thresh = cv2.dilate(thresh_original, None, iterations=5)
+        thresh = cv2.dilate(thresh_original, None, iterations=6)
         (_, cnts, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
         found_area=False
         for c in cnts:
             # if the contour is too small, ignore it
-            print("AREA : " + str(cv2.contourArea(c)))
+            #print("AREA : " + str(cv2.contourArea(c)))
             if cv2.contourArea(c) < self.min_area:
                 continue
 
