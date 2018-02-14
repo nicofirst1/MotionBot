@@ -13,7 +13,8 @@ print("TOKEN : " + TOKEN + "\nPassword : " + psw)
 
 updater = Updater(TOKEN)
 disp = updater.dispatcher
-logging.basicConfig(filename='logger.log',level=logging.DEBUG,format='%(asctime)s : %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p')
+logger = logging.getLogger('motionlog')
+
 cam = Cam_class(updater.bot)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
@@ -205,7 +206,7 @@ def stream(bot, update, args):
 @elegible_user
 def stop_execution(bot, update):
 
-    logging.info("Stopping execution")
+    logger.info("Stopping execution")
     update.message.reply_text("Stopping surveillance")
     sys.exit(0)
 
@@ -213,7 +214,7 @@ def stop_execution(bot, update):
 def send_log(bot,update):
 
     if("logger.log" in os.listdir(".")):
-        with open("logger.log","rb") as file:
+        with open("motion.log","rb") as file:
             bot.sendDocument(update.message.chat_id, file)
 
     else:

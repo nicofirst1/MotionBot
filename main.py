@@ -4,6 +4,17 @@ import logging
 from handlers import start, get_psw, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log
 
+
+
+logger = logging.getLogger('motionlog')
+hdlr = logging.FileHandler('motion.log')
+formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(logging.DEBUG)
+
+
+
 if __name__ == "__main__":
 
 
@@ -27,5 +38,5 @@ if __name__ == "__main__":
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
 
     print("Polling...")
-    logging.info("Start polling")
+    logger.info("Start polling")
     updater.start_polling()
