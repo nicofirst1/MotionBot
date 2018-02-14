@@ -168,7 +168,7 @@ class Cam_movement(Thread):
         self.delay = 0.1
         self.diff_threshold = 0
         self.image_name = "different.png"
-        self.min_area = 2000
+        self.min_area = 3000
         self.ground_frame=0
 
         self.queue = []
@@ -205,8 +205,6 @@ class Cam_movement(Thread):
         while isinstance(initial_frame,int):
             initial_frame=self.frame[-1]
 
-        #print(initial_frame)
-        #frame = imutils.resize(initial_frame, width=500)
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame=gray
@@ -427,6 +425,8 @@ class Cam_movement(Thread):
         #frame = imutils.resize(img2, width=500)
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        print(gray.shape, grd_truth.shape)
 
         # compute the absolute difference between the current frame and
         # first frame
