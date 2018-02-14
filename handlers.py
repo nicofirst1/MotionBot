@@ -39,6 +39,7 @@ Current value are the following :"""
 
 @elegible_user
 def flag_setting_main(bot, update):
+    """Telegram command to set the flags for the motion detection"""
     global FLAG_KEYBOARD
 
     # print("Flag Main")
@@ -49,12 +50,14 @@ def flag_setting_main(bot, update):
 
 @elegible_user
 def reset_ground(bot,update):
+    """Telegram command to reset the ground truth image (the background)"""
 
     cam.motion.reset_ground()
     update.message.reply_text("Ground image has been reset")
 
 
 def complete_flags():
+    """Function to return the changed flag text"""
     global FLAG_SEND
 
     complete_falg_str = FLAG_SEND
@@ -98,6 +101,7 @@ def complete_flags():
 
 
 def flag_setting_callback(bot, update):
+    """Function to respond to the user choiche for the flag setting"""
     param = update.callback_query.data.split()[1]
 
     global FLAG_KEYBOARD
@@ -136,31 +140,24 @@ def flag_setting_callback(bot, update):
 
 
 def start(bot, update):
+    """Telegram command to start the bot ( it takes part of the conversation handler)"""
     # print("start")
     update.message.reply_text("Welcome... to start insert the password")
     return 1
 
 
-def get_psw(bot, update):
-    user_psw = update.message.text
-
-    if not user_psw == psw:
-        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
-        add_id(update.message.from_user.id, 0)
-    else:
-        update.message.reply_text("Correct password!")
-        add_id(update.message.from_user.id, 1)
-
-
 def annulla(bot, update):
+    """Fallback function for the conversation handler"""
     update.message.reply_text("Error")
     return ConversationHandler.END
 
 
 @elegible_user
 def get_camshot(bot, update):
+    """Telegram command to get a camshot from the camera"""
     image = "image.png"
     ret = cam.capture_image(image)
+    logger.info("Taking a camshot")
 
     if ret:
         with open(image, "rb") as file:
@@ -172,6 +169,7 @@ def get_camshot(bot, update):
 
 @elegible_user
 def stream(bot, update, args):
+    """Telegram command to take a video from the camera"""
     print("Video")
     max_seconds = 20
     if not args:
@@ -196,6 +194,7 @@ def stream(bot, update, args):
 
     cam.capture_video(video_name, SECONDS)
 
+    logger.info("Sending a "+str(SECONDS)+" seconds video")
     print("Capture complete")
 
     with open(video_name, "rb") as file:
@@ -205,6 +204,7 @@ def stream(bot, update, args):
 
 @elegible_user
 def stop_execution(bot, update):
+    """Telegram command to stop the bot execution """
 
     logger.info("Stopping execution")
     update.message.reply_text("Stopping surveillance")
@@ -212,6 +212,7 @@ def stop_execution(bot, update):
 
 @elegible_user
 def send_log(bot,update):
+    """Telegram command to send the logger file"""
 
     if("logger.log" in os.listdir(".")):
         with open("motion.log","rb") as file:

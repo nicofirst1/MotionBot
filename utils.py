@@ -114,3 +114,14 @@ def profiler(func):
         micro=(end-start).microseconds
 
         print("{:,}".format(micro)+" miscroseconds")
+
+def get_psw(bot, update):
+    user_psw = update.message.text
+
+    if not user_psw == psw:
+        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
+        add_id(update.message.from_user.id, 0)
+    else:
+        update.message.reply_text("Correct password!")
+        add_id(update.message.from_user.id, 1)
+
