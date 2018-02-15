@@ -178,8 +178,13 @@ class Cam_movement(Thread):
         self.min_area = 3000
         self.ground_frame = 0
 
-        self.face_cascade = cv2.CascadeClassifier(
-            '/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt_tree.xml')
+        self.frontal_face_cascade = cv2.CascadeClassifier(
+            '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_frontalface.xml')
+
+
+        self.profile_face_cascade = cv2.CascadeClassifier(
+            '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/ lbpcascade_profileface.xml')
+        
         self.max_seconds_retries = 10
 
         self.video_name = "detect_motion_video.mp4"
@@ -437,7 +442,7 @@ class Cam_movement(Thread):
 
     def detect_face(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(img)
+        faces = self.frontal_face_cascade.detectMultiScale(img)
         if len(faces) > 0:
             # print("face detcted!")
             return faces
