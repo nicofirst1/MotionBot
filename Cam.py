@@ -463,25 +463,25 @@ class Cam_movement(Thread):
             frame_count += 1
             new_frames.append(frame)
 
-        # Every 128 frames (the default batch size), batch process the list of frames to find faces
-            batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
+    # Every 128 frames (the default batch size), batch process the list of frames to find faces
+        batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
 
-            # Now let's list all the faces we found in all 128 frames
-            for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
-                number_of_faces_in_frame = len(face_locations)
+        # Now let's list all the faces we found in all 128 frames
+        for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
+            number_of_faces_in_frame = len(face_locations)
 
-                print("Found {} face(s)".format(number_of_faces_in_frame))
+            print("Found {} face(s)".format(number_of_faces_in_frame))
 
-                for face_location in face_locations:
-                    # Print the location of each face in this frame
-                    x, y, w, h = face_location
+            for face_location in face_locations:
+                # Print the location of each face in this frame
+                x, y, w, h = face_location
 
-                    #get the face cropped image
-                    if self.face_photo_flag:
-                        faces.append(frame[y:y + h, x:x + w])
+                #get the face cropped image
+                if self.face_photo_flag:
+                    faces.append(frame[y:y + h, x:x + w])
 
-                    #draw a rectangle around the face
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                #draw a rectangle around the face
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         if len(faces)>0:
             face=self.denoise_img(faces)
