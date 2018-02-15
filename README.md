@@ -23,6 +23,7 @@ Where the input pin is the GPIO0
 
 ## Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=*
+* Edit the fallback_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
 
 # HOW TO USE
 
