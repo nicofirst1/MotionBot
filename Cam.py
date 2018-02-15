@@ -260,7 +260,7 @@ class Cam_movement(Thread):
             if self.face_photo_flag:
                 #take the face and send it
                 to_write, face=self.face_on_video(to_write)
-               
+
                 if face:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
@@ -313,16 +313,22 @@ class Cam_movement(Thread):
         print("End of difference loop")
 
     def check_bk_changes(self, initial_frame, seconds):
+        #taking time
         start = datetime.now()
         end = datetime.now()
+        #setting initial variables
         score = 1
+
+        #setting initial frame
+        gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
         while score:
 
-            # take another fram
+            # take another frame
             prov = self.frame[-1]
 
             # check if images are different
-            score = self.are_different(initial_frame, prov)
+            score = self.are_different(gray, prov)
 
             # if time is exceeded exit while
             if (end - start).seconds > seconds:

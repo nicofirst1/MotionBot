@@ -64,13 +64,9 @@ There are currently 4 flags which you can set inside the bot.
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
-- [X] Fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
-- [ ] create profiling function
 - [X] implement a logger
-- [X] New thread class for image/video/message sending
-- [ ] New thread function to get face in video
 
 
 ## Telegram
@@ -82,10 +78,11 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Command to reset ground image
 - [X] Reset ground image -> stops motion tasks
 - [X] Add command to send background image
+- [ ] Fix send background command
 
 ### Camera movement
 - [ ] Use step motor with GPIO to move the camera
-- [ ] Take a video while the camera performs a 180* rotation
+- [ ] Take a video while the camera performs a 180° rotation
 - [ ] Integrate movement with background reset
 
 ### Movement detection
@@ -101,13 +98,20 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
 - [ ] Fix are_different loop
-- [ ] save countour list
 - [ ] Fix date display
 - [ ] Reset ground image programmaticly
 - [ ] find a confidence method for faces in video 
 - [ ] detect movement direction (right,left) (position of areas)
 - [ ] detect movement direction (incoming, outcoming) (sum of areas)
 - [ ] Classify person
+
+### Optimization
+- [X] New thread class for image/video/message sending
+- [X] Fix while score, exit when no difference are detected anymore
+- [ ] Save countour list
+- [ ] Implement profiling function
+
+- [ ] ~~New thread function to get face in video~~
 
 # Issues
 
@@ -184,6 +188,15 @@ Cv Error: /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp
 ### Tried Fixes
 * Sorround difference with try catch
 
+### Issue
+If you recieve the following message when starting the program with `python main.py`:
+>libv4l2: error setting pixformat: Device or resource busy
+VIDEOIO ERROR: libv4l unable to ioctl S_FMT
+libv4l2: error setting pixformat: Device or resource busy
+libv4l1: error setting pixformat: Device or resource busy
+VIDEOIO ERROR: libv4l unable to ioctl VIDIOCSPICT
+
+Use `killall pyhton` (This will stop every pyhton process currently running)
 
 # Infos
 
