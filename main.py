@@ -37,7 +37,7 @@ if __name__ == "__main__":
     disp.add_handler(CommandHandler("resetg",reset_ground))
     disp.add_handler(CommandHandler("stop",stop_execution))
     disp.add_handler(CommandHandler("log",send_log))
-    disp.add_handler(CommandHandler("bkgroung",send_ground))
+    disp.add_handler(CommandHandler("bkground",send_ground))
     #Adding CallcbackQuery
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
 

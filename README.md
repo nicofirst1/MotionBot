@@ -61,7 +61,7 @@ If you want to run it even when you close the ssh connection use
 - [X] reorganize prints
 - [ ] create profiling function
 - [X] implement a logger
-- [ ] New thread class for image/video/message sending
+- [X] New thread class for image/video/message sending
 - [ ] New thread function to get face in video
 
 

@@ -282,8 +282,6 @@ class Cam_movement(Thread):
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
-        print(str(gray.shape))
-        print(str(self.ground_frame.shape))
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
 

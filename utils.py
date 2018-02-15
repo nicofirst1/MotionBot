@@ -12,7 +12,7 @@ flags - set flags
 resetg - reset the groung image
 stop - stop surveillance execution
 log - send the logger file
-bkgroung - send the background image
+bkground - send the background image
 """
 
 def is_enabled(id):

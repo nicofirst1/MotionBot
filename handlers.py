@@ -157,7 +157,7 @@ def get_camshot(bot, update):
     """Telegram command to get a camshot from the camera"""
     image = "image.png"
     ret = cam.capture_image(image)
-    logger.info("Taking a camshot")
+    logger.info("photo command called")
 
     if ret:
         with open(image, "rb") as file:
@@ -171,6 +171,8 @@ def get_camshot(bot, update):
 def stream(bot, update, args):
     """Telegram command to take a video from the camera"""
     print("Video")
+    logger.info("video command called")
+
     max_seconds = 20
     if not args:
         SECONDS = 5
@@ -205,14 +207,16 @@ def stream(bot, update, args):
 @elegible_user
 def stop_execution(bot, update):
     """Telegram command to stop the bot execution """
+    logger.info("stop command called")
 
     logger.info("Stopping execution")
-    update.message.reply_text("Stopping surveillance")
+    cam.telegram_handler.send_message("Stopping surveillance")
     sys.exit(0)
 
 @elegible_user
 def send_log(bot,update):
     """Telegram command to send the logger file"""
+    logger.info("log command called")
 
     if("motion.log" in os.listdir(".")):
         with open("motion.log","rb") as file:
@@ -224,7 +228,11 @@ def send_log(bot,update):
 
 @elegible_user
 def send_ground(bot, update):
-    image_name="groung.png"
+
+    logger.info("ground command called")
+
+    image_name="ground.png"
+    print("ground")
 
 
 
