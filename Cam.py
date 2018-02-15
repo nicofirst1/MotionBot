@@ -37,12 +37,12 @@ class Cam_class:
             return False
         # try to save the image
         ret = cv2.imwrite(image_name, img)
+        if ret:
+            self.telegram_handler.send_image(image_name,"Camshot")
+        else:
+            self.telegram_handler.send_message("There has been an error while writing the image to file")
 
-        # if the image was not saved return false
-        if not ret: return False
 
-        # print("Image taken")
-        return True
 
     def capture_video(self, video_name, seconds):
         # set camera resolution, fps and codec
@@ -65,6 +65,8 @@ class Cam_class:
         for elem in to_write:
             out.write(elem)
         out.release()
+
+        self.telegram_handler.send_video(video_name,str(seconds)+" seconds record")
 
 
 class Cam_shotter(Thread):
@@ -566,6 +568,7 @@ class Telegram_handler(Thread):
         logger.info("Telegram handler started")
 
     def get_ids(self, fallback_id):
+        """Get all the ids from the file"""
         # get ids form file
         if "ids" in os.listdir("."):
             with open("ids", "r+") as file:
@@ -582,6 +585,7 @@ class Telegram_handler(Thread):
             return [fallback_id]
 
     def send_image(self, img, msg=""):
+        """Send an image to the ids """
 
         image_name = "image_to_send.png"
 
@@ -620,3 +624,15 @@ class Telegram_handler(Thread):
 
         os.remove(video_name)
         logger.info("Video sent")
+
+    def send_file(self,file_name,msg=""):
+
+        if (file_name in os.listdir(".")):
+            with open(file_name, "rb") as file:
+                for id in self.ids:
+                    if msg: self.bot.sendDocument(id, file,caption=msg)
+                    else:  self.bot.sendDocument(id, file)
+
+        else:
+            self.send_message("No log file detected!")
+
