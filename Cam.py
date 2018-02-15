@@ -344,7 +344,8 @@ class Cam_movement(Thread):
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
         print(str(gray.shape))
-        self.send_image(gray, msg)
+        print(str(self.ground_frame.shape))
+        self.send_image(self.ground_frame, msg)
         self.resetting_ground = False
 
     def loop_difference(self, initial_score, initial_frame, seconds):
