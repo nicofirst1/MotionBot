@@ -503,7 +503,7 @@ class Cam_movement(Thread):
 
         print(str(faces) + " frames with faces detected")
 
-        return zip(colored_frames,crop_frames)
+        return colored_frames
 
 
 
