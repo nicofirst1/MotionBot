@@ -8,6 +8,7 @@ from datetime import datetime
 import logging
 
 from utils import profiler
+
 logger = logging.getLogger('motionlog')
 
 
@@ -78,13 +79,12 @@ class Cam_shotter(Thread):
         self.capture_bool = False
         self.capture_queue = []
         self.lock = threading.Lock()
-        self.camera_connected=False
+        self.camera_connected = False
 
         logger.debug("Cam_shotter started")
 
     def run(self):
         """Main thread loop"""
-
 
         while True:
 
@@ -169,7 +169,7 @@ class Cam_movement(Thread):
         self.diff_threshold = 0
         self.image_name = "different.png"
         self.min_area = 3000
-        self.ground_frame=0
+        self.ground_frame = 0
 
         self.queue = []
         self.queue_len = 20
@@ -187,29 +187,27 @@ class Cam_movement(Thread):
         self.faces_video_flag = True
         self.face_photo_flag = True
         self.motion_flag = True
-        self.debug_flag=False
+        self.debug_flag = False
 
-        self.resetting_ground=False
-
+        self.resetting_ground = False
 
         logger.debug("Cam_movement started")
 
     def run(self):
 
-        #wait for cam shotter to start
+        # wait for cam shotter to start
         while not self.shotter.camera_connected:
             sleep(0.5)
 
-        #wait for the frame queue to be full
-        initial_frame=self.frame[-1]
-        while isinstance(initial_frame,int):
-            initial_frame=self.frame[-1]
+        # wait for the frame queue to be full
+        initial_frame = self.frame[-1]
+        while isinstance(initial_frame, int):
+            initial_frame = self.frame[-1]
 
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        self.ground_frame=gray
-        self.send_image(gray,"Ground image")
-
+        self.ground_frame = gray
+        self.send_image(gray, "Ground image")
 
         while True:
             self.detect_motion_video()
@@ -267,12 +265,12 @@ class Cam_movement(Thread):
 
     def detect_motion_video(self):
 
-        #whait for resetting to be over
+        # whait for resetting to be over
         while self.resetting_ground:
             continue
 
         # get initial frame and and frame after delay seconds
-        #initial_frame = self.frame[-1]
+        # initial_frame = self.frame[-1]
         sleep(self.delay)
         end_frame = self.frame[-1]
 
@@ -294,20 +292,20 @@ class Cam_movement(Thread):
             if self.faces_video_flag:
                 self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
-            #start saving the frames
+            # start saving the frames
             self.shotter.capture(True)
 
             # self.send_image(initial_frame,"initial frame")
             # self.send_image(end_frame,"end frame")
 
             # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame,self.max_seconds_retries)
+            self.loop_difference(score, self.ground_frame, self.max_seconds_retries)
 
-            #save the taken frames
+            # save the taken frames
             to_write = self.shotter.capture(False)
 
             for elem in to_write:
-                self.are_different(self.ground_frame,elem,True)
+                self.are_different(self.ground_frame, elem, True)
 
             if self.faces_video_flag or self.face_photo_flag:
                 to_write, cropped_frames = self.face_on_video(to_write)
@@ -344,35 +342,34 @@ class Cam_movement(Thread):
 
         self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
 
-
     def reset_ground(self):
         """function to reset the ground truth image"""
-        self.resetting_ground=True
+        self.resetting_ground = True
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
         self.send_image(gray, "New ground image")
-        self.resetting_ground=False
+        self.resetting_ground = False
 
     def loop_difference(self, initial_score, initial_frame, seconds):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
         start = datetime.now()
         end = datetime.now()
-        score=initial_score
+        score = initial_score
         print("Start of difference loop")
         while (score and not self.resetting_ground):
 
-            #take another fram
+            # take another fram
             prov = self.frame[-1]
 
-            #check if images are different
+            # check if images are different
             score = self.are_different(initial_frame, prov)
 
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
-                self.check_bk_changes(prov,3)
+                self.check_bk_changes(prov, 3)
                 break
 
             # update current time in while loop
@@ -397,10 +394,10 @@ class Cam_movement(Thread):
             else:
                 return False
 
-    def check_bk_changes(self, initial_frame,seconds):
+    def check_bk_changes(self, initial_frame, seconds):
         start = datetime.now()
         end = datetime.now()
-        score=1
+        score = 1
         while (score):
 
             # take another fram
@@ -420,37 +417,36 @@ class Cam_movement(Thread):
 
         return False
 
-
     def are_different(self, grd_truth, img2, contour=False):
-        #print("Calculation image difference")
+        # print("Calculation image difference")
 
         # blur and convert to grayscale
-        #frame = imutils.resize(img2, width=500)
+        # frame = imutils.resize(img2, width=500)
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-        #print(gray.shape, grd_truth.shape)
+        # print(gray.shape, grd_truth.shape)
 
         # compute the absolute difference between the current frame and
         # first frame
         frameDelta = cv2.absdiff(grd_truth, gray)
         thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
 
-        #self.send_image(frameDelta,"frameDelta")
+        # self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
         thresh = cv2.dilate(thresh_original, None, iterations=6)
-        (_, cnts, _)= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
-        found_area=False
+        found_area = False
         for c in cnts:
             # if the contour is too small, ignore it
             if cv2.contourArea(c) < self.min_area:
                 continue
 
             elif contour:
-                found_area=True
+                found_area = True
                 # compute the bounding box for the contour, draw it on the frame,
                 # and update the text
                 (x, y, w, h) = cv2.boundingRect(c)
@@ -460,10 +456,7 @@ class Cam_movement(Thread):
                     self.send_image(frameDelta)
                     self.send_image(thresh_original, "Threshold Original")
                     self.send_image(thresh, "Threshold Dilated")
-                    self.send_image(img2,"AREA: "+str(cv2.contourArea(c)))
-
-
-
+                    self.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
 
         return found_area
 
