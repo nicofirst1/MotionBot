@@ -431,7 +431,7 @@ class Cam_movement(Thread):
         try:
             frameDelta = cv2.absdiff(grd_truth, gray)
         except cv2.error as e:
-            error_log="Cv Error: "+str(e)+"\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape)
+            error_log="Cv Error: "+str(e)+"\ngrd_thruth : "+str(grd_truth.shape)+", gray : "+str(gray.shape)+"\n"
             logger.error(error_log)
             print(error_log)
             return True

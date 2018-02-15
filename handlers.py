@@ -220,3 +220,20 @@ def send_log(bot,update):
 
     else:
         update.message.reply_text("No log file detected!")
+
+
+@elegible_user
+def send_ground(bot, update):
+    image_name="groung.png"
+
+
+
+    ret = cv2.imwrite(image_name, cam.motion.ground_frame)
+    if not ret:
+        bot.sendMessage(update.message.from_user.id, "There has been an error while writing the image")
+        return
+
+    with open(image_name, "rb") as file:
+        bot.sendPhoto(update.message.from_user.id, file, caption="Current BackGround image")
+
+    os.remove(image_name)

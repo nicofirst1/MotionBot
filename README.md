@@ -70,6 +70,7 @@ If you want to run it even when you close the ssh connection use
 - [X] Send caption with image
 - [X] Command to reset ground image
 - [X] Reset ground image -> stops motion tasks
+- [X] Add command to send background image
 
 
 ### Movement detection
@@ -153,6 +154,18 @@ Using the *haarcascades/haarcascade_frontalface_alt.xml* with *CascadeClassifier
 
 ### Solution 
 Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the issue
+
+### Issue 
+Found error while performing the abs difference *frameDelta = cv2.absdiff(grd_truth, gray)*. In cam_movement class
+> OpenCV Error: Sizes of input arguments do not match (The operation is neither 'array op array' (where arrays have the same size and the same number of channels), nor 'array op scalar', nor 'scalar op array') in arithm_op, file /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp, line 639
+Cv Error: /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp:639: error: (-209) The operation is neither 'array op array' (where arrays have the same size and the same number of channels), nor 'array op scalar', nor 'scalar op array' in function arithm_op
+
+* It seems to be correlated to the number of channels of the images passed.
+* When the error occurres the images shapes are (480, 640, 3), the number 3 should not be there since the image is being converted to gray scale with
+> gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+### Tried Fixes
+* Sorround difference with try catch
 
 
 # Infos
