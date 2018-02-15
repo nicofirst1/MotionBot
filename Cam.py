@@ -259,7 +259,9 @@ class Cam_movement(Thread):
             if self.face_photo_flag:
                 #take the face and send it
                 with Pool() as pool:
-                    to_write, face=pool.map(self.face_on_video, (to_write,))
+                    result= pool.map(self.face_on_video, (to_write,))
+                    to_write, faces=zip(*result)
+                    face=self.denoise_img(faces)
                 if face:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
@@ -495,14 +497,12 @@ class Cam_movement(Thread):
             # append colored frames
             colored_frames.append(frame)
 
-        if len(crop_frames)>0:
-            face=self.denoise_img(crop_frames)
-        else:
-            face=False
-
         print(str(faces) + " frames with faces detected")
 
-        return colored_frames, face
+        return zip(colored_frames,crop_frames)
+
+
+
 
     # =========================TELEGRAM BOT=======================================
 
