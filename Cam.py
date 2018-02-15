@@ -187,7 +187,7 @@ class Cam_movement(Thread):
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
         self.video_flag = True
-        self.face_photo_flag = False
+        self.face_photo_flag = True
         self.motion_flag = True
         self.debug_flag = False
 
@@ -257,9 +257,9 @@ class Cam_movement(Thread):
 
             #if the user wants the video of the movement
             if self.face_photo_flag:
-                #take the
+                #take the face and send it
                 with Pool() as pool:
-                    to_write, face=pool.map(self.face_on_video, to_write)
+                    to_write, face=pool.map(self.face_on_video, (to_write,))
                 if face:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
@@ -513,9 +513,9 @@ class Cam_movement(Thread):
             to_send += "Score is " + str(score) + "\n"
 
         if self.video_flag and not self.face_photo_flag:
-            to_send += "<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
+            to_send += "<b>Video</b> is <b>ON</b>...it may take a minute or two"
         elif self.face_photo_flag and self.video_flag:
-            to_send += "Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
+            to_send += "Both <b>Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
 
         self.telegram_handler.send_message(to_send, parse_mode="HTML")
 
