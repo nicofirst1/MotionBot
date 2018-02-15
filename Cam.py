@@ -261,7 +261,7 @@ class Cam_movement(Thread):
                 #take the face and send it
                 to_write, face=self.face_on_video(to_write)
 
-                if face:
+                if len(face)>0:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
                     self.telegram_handler.send_message("Face not found")
@@ -461,8 +461,8 @@ class Cam_movement(Thread):
 
             # if there is a face
             if len(face) > 0:
-                # get the corners of the faces
                 faces += 1
+                # get the corners of the faces
                 for (x, y, w, h) in face:
                     # draw a rectangle around the corners
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -478,7 +478,7 @@ class Cam_movement(Thread):
 
             face=self.denoise_img(crop_frames)
 
-        else: face=False
+        else: face=()
 
         print(str(faces) + " frames with faces detected")
 
