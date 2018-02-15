@@ -1,4 +1,5 @@
 import threading
+from multiprocessing import Pool as pool
 from threading import Thread
 
 import os
@@ -185,7 +186,7 @@ class Cam_movement(Thread):
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
-        self.faces_video_flag = True
+        self.video_flag = True
         self.face_photo_flag = False
         self.motion_flag = True
         self.debug_flag = False
@@ -231,13 +232,12 @@ class Cam_movement(Thread):
             self.motion_notifier(score)
 
             # do not capture video nor photo, just notification
-            if not self.faces_video_flag and not self.face_photo_flag:
+            if not self.video_flag:
                 sleep(3)
                 return
 
             # create the file
-            if self.faces_video_flag:
-                self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+            self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
             # start saving the frames
             self.shotter.capture(True)
@@ -251,22 +251,21 @@ class Cam_movement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
+            #write the movement on the video
             for elem in to_write:
                 self.are_different(self.ground_frame, elem, True)
 
-            if self.faces_video_flag or self.face_photo_flag:
-                to_write, cropped_frames = self.face_on_video(to_write)
-
-                # if the face video is avaiable
-                if len(cropped_frames) > 0 and self.face_photo_flag:
-                    # write it, release the stream
-                    denoised = self.denoise_img(cropped_frames)
-                    self.telegram_handler.send_image(denoised, "Frames : " + str(len(cropped_frames)))
-                elif len(cropped_frames) == 0:
-                    self.telegram_handler.send_message("No faces found")
-
+            #if the user wants the video of the movement
+            if self.face_photo_flag:
+                #take the
+                to_write, face=pool.map(self.face_on_video, to_write)
+                if face:
+                    self.telegram_handler.send_image(face,"Face found")
+                else:
+                    self.telegram_handler.send_message("Face not found")
+           
             # send the original video too
-            if self.faces_video_flag and not self.resetting_ground:
+            if  not self.resetting_ground:
                 for elem in to_write:
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                                 (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
@@ -436,7 +435,7 @@ class Cam_movement(Thread):
 
         return ()
 
-    def face_on_video(self, frames):
+    def face_on_video_old(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
         colored_frames = []
@@ -468,6 +467,42 @@ class Cam_movement(Thread):
 
         return colored_frames, crop_frames
 
+    def face_on_video(self, frames):
+        """This funcion add a rectangle on recognized faces"""
+
+        colored_frames = []
+        crop_frames = []
+        faces = 0
+
+        # for every frame in the video
+        for frame in frames:
+
+            # detect if there is a face
+            face = self.detect_face(frame)
+
+            # if there is a face
+            if len(face) > 0:
+                # get the corners of the faces
+                faces += 1
+                for (x, y, w, h) in face:
+                    # draw a rectangle around the corners
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                    # if user want the face video too crop the image where face is detected
+                    crop_frames.append(frame[y:y + h, x:x + w])
+
+
+            # append colored frames
+            colored_frames.append(frame)
+
+        if len(crop_frames)>0:
+            face=self.denoise_img(crop_frames)
+        else:
+            face=False
+
+        print(str(faces) + " frames with faces detected")
+
+        return colored_frames, face
+
     # =========================TELEGRAM BOT=======================================
 
     def motion_notifier(self, score, degub=False):
@@ -476,9 +511,9 @@ class Cam_movement(Thread):
         if degub:
             to_send += "Score is " + str(score) + "\n"
 
-        if self.faces_video_flag and not self.face_photo_flag:
+        if self.video_flag and not self.face_photo_flag:
             to_send += "<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
-        elif self.face_photo_flag and self.faces_video_flag:
+        elif self.face_photo_flag and self.video_flag:
             to_send += "Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
 
         self.telegram_handler.send_message(to_send, parse_mode="HTML")

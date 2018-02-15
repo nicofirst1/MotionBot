@@ -29,7 +29,7 @@ FLAG_KEYBOARD = InlineKeyboardMarkup([
 FLAG_SEND = """
 Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 -- <b>Motion Detection</b> : If set to <i>ON</i> the bot will notify, both with a message and with a video, you when a movement has been detected
----- <b>Face Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
+---- <b>Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
 ---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 -- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 To set a flag just click on the corrispondent button.
@@ -64,7 +64,7 @@ def complete_flags():
 
     # get falg values
     motion_detection = cam.motion.motion_flag
-    face_v = cam.motion.faces_video_flag
+    face_v = cam.motion.video_flag
     face_p = cam.motion.face_photo_flag
     debug = cam.motion.debug_flag
 
@@ -76,7 +76,7 @@ def complete_flags():
     else:
         complete_falg_str += " ❌"
 
-    complete_falg_str += "\n-- <b>Face Video</b>"
+    complete_falg_str += "\n-- <b>Video</b>"
 
     if face_v:
         complete_falg_str += " ✅"
@@ -114,7 +114,7 @@ def flag_setting_callback(bot, update):
             cam.motion.face_photo_flag = False
             cam.motion.faces_video_flag = False
     elif param == "face_video":
-        cam.motion.faces_video_flag = not cam.motion.faces_video_flag
+        cam.motion.video_flag = not cam.motion.video_flag
     elif param == "face_photo":
         cam.motion.face_photo_flag = not cam.motion.face_photo_flag
 

@@ -18,12 +18,20 @@ To start the bot simply use
 If you want to run it even when you close the ssh connection use
 `nohup python main.py &`
 
+
+
 ## Avaiable telgram commands
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
 * /photo - get a snapshot from the camera and send it trhought telegram 
 * /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
 * /flags - you can dis/enable the notification from the movement detection 
 
+## Flags
+There are currently 4 flags which you can set inside the bot. 
+* **Motion Detection** : this flag allow you to be notified when a movement is detected. When enabled you can access the following flags:
+  * **Video** : When a movement is detected a video from the camera will be sent as a gif file
+  * **Face Photo** : When a movement is detected, the bot will look for faces in the video above and send a face photo (if found)
+* **Debug** : When enable you will recieve debug image, like the absDifference, thresholding an so on. Note that this slows down the program a lot
 
 
 
@@ -92,6 +100,7 @@ If you want to run it even when you close the ssh connection use
 - [X] Denoise photo
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
+- [ ] Fix are_different loop
 - [ ] save countour list
 - [ ] Fix date display
 - [ ] Reset ground image programmaticly
