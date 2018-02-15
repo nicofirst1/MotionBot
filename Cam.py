@@ -171,21 +171,17 @@ class Cam_movement(Thread):
         self.min_area = 3000
         self.ground_frame = 0
 
-        self.queue = []
-        self.queue_len = 20
-
         self.face_cascade = cv2.CascadeClassifier(
             '/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt_tree.xml')
         self.max_seconds_retries = 10
 
         self.video_name = "detect_motion_video.mp4"
-
         self.resolution = (640, 480)  # width,height
         self.fps = 30
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
         self.faces_video_flag = True
-        self.face_photo_flag = True
+        self.face_photo_flag = False
         self.motion_flag = True
         self.debug_flag = False
 
@@ -347,6 +343,7 @@ class Cam_movement(Thread):
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
+        print(str(gray.shape))
         self.send_image(gray, msg)
         self.resetting_ground = False
 
@@ -376,22 +373,6 @@ class Cam_movement(Thread):
 
         print("End of difference loop")
 
-    def are_different_old(self, img1, img2, custom_score=0):
-
-        if isinstance(img1, int) or isinstance(img2, int): return False
-        similarity = self.get_similarity(img1, img2)
-        if not custom_score:
-            if similarity < self.diff_threshold:
-                return similarity
-
-            else:
-                return False
-        else:
-            if similarity < custom_score:
-                return similarity
-
-            else:
-                return False
 
     def check_bk_changes(self, initial_frame, seconds):
         start = datetime.now()
