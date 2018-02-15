@@ -449,7 +449,7 @@ class Cam_movement(Thread):
 
         return ()
 
-    def face_on_video(self, frames):
+    def face_on_video_old(self, frames):
 
 
         new_frames=[]
@@ -495,7 +495,7 @@ class Cam_movement(Thread):
         return rectangular,face
 
 
-    def face_on_video_old(self, frames):
+    def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
         print("Face on video")
