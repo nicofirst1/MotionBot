@@ -242,6 +242,7 @@ def send_ground(bot, update):
         return
 
     with open(image_name, "rb") as file:
+        print("opened file")
         bot.sendPhoto(update.message.from_user.id, file, caption="Current background image")
 
     os.remove(image_name)
