@@ -348,7 +348,7 @@ class Cam_movement(Thread):
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
-        self.send_image(gray, "New ground image")
+        self.send_image(gray, "Back ground changed! New background")
         self.resetting_ground = False
 
     def loop_difference(self, initial_score, initial_frame, seconds):
@@ -428,7 +428,12 @@ class Cam_movement(Thread):
 
         # compute the absolute difference between the current frame and
         # first frame
-        frameDelta = cv2.absdiff(grd_truth, gray)
+        try:
+            frameDelta = cv2.absdiff(grd_truth, gray)
+        except cv2.error:
+            logger.error("Different image size!\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape) )
+            return False
+
         thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
 
         # self.send_image(frameDelta,"frameDelta")
