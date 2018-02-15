@@ -97,6 +97,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Denoise photo
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
+- [ ] Add profile face detector
 - [ ] Fix are_different loop
 - [ ] Fix date display
 - [ ] Reset ground image programmaticly
@@ -115,8 +116,8 @@ There are currently 4 flags which you can set inside the bot.
 
 # Issues
 
-## Telegram gif not showing up on mobile
-### Issue
+## Issue
+Telegram gif not showing up on mobile
 Using 
 > codec= cv2.VideoWriter_fourcc(*'MP4V')
 out = cv2.VideoWriter(video_name, codec, fps,(640,480))
@@ -141,8 +142,8 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 * Changing codec to _cv2.VideoWriter_fourcc(*'avc1')_ and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
 * Final solution: Removed the codec calss and used **0x00000021** instead (with **.mp4** extension), found (here)[https://devtalk.nvidia.com/default/topic/1029451/-python-what-is-the-four-characters-fourcc-code-for-mp4-encoding-on-tx2/]
 
-## Video difference is laggy 
-### Issue
+## Issue
+Video difference is laggy 
 The video difference is send when a difference in frame is detected, this detection is time costly thus writing a frame to the video object too slowly.
 This brings to a laggy gif file.
 GRAY SCALING takes 0.01 seconds
@@ -156,13 +157,13 @@ PSNR takes 0.04 seconds for every image
 ### Solution
 * Taking the frames in the Cam_shotter class resolved the issue
 
-### Issue 
+## Issue 
 If you are having an error like:
 > VIDEOIO ERROR: V4L: index 0 is not correct!
 
 Change the **cam_idx** in Cam_shotter to the correct one for your raspberry pi
 
-### Warning
+## Warning
 
 Encountered when the cam_movement class first start to compute difference between images
 >python3.5/site-packages/skimage/measure/simple_metrics.py:142: RuntimeWarning: divide by zero encountered in double_scalars
@@ -170,13 +171,13 @@ Encountered when the cam_movement class first start to compute difference betwee
 
 When the cam_shotter class compl
 
-### Issue
+## Issue
 Using the *haarcascades/haarcascade_frontalface_alt.xml* with *CascadeClassifier* yelds a great number of false-positive
 
 ### Solution 
 Changing to *haarcascades/haarcascade_frontalface_alt_tree.xml* resolved the issue
 
-### Issue 
+## Issue 
 Found error while performing the abs difference *frameDelta = cv2.absdiff(grd_truth, gray)*. In cam_movement class
 > OpenCV Error: Sizes of input arguments do not match (The operation is neither 'array op array' (where arrays have the same size and the same number of channels), nor 'array op scalar', nor 'scalar op array') in arithm_op, file /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp, line 639
 Cv Error: /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp:639: error: (-209) The operation is neither 'array op array' (where arrays have the same size and the same number of channels), nor 'array op scalar', nor 'scalar op array' in function arithm_op
@@ -188,7 +189,10 @@ Cv Error: /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp
 ### Tried Fixes
 * Sorround difference with try catch
 
-### Issue
+### Solution
+* Forgot to call  cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY) XD
+
+## Issue
 If you recieve the following message when starting the program with `python main.py`:
 >libv4l2: error setting pixformat: Device or resource busy
 VIDEOIO ERROR: libv4l unable to ioctl S_FMT

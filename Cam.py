@@ -267,7 +267,7 @@ class Cam_movement(Thread):
                     self.telegram_handler.send_message("Face not found")
 
             # send the original video too
-            if  not self.resetting_ground:
+            if not self.resetting_ground:
                 for elem in to_write:
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                                 (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
@@ -322,6 +322,7 @@ class Cam_movement(Thread):
         #setting initial frame
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
         while score:
 
             # take another frame
@@ -446,6 +447,8 @@ class Cam_movement(Thread):
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
+        print("Face on video")
+
         colored_frames = []
         crop_frames = []
         faces = 0
@@ -472,7 +475,9 @@ class Cam_movement(Thread):
             colored_frames.append(frame)
 
         if len(crop_frames)>0:
+
             face=self.denoise_img(crop_frames)
+
         else: face=False
 
         print(str(faces) + " frames with faces detected")
