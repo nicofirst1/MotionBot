@@ -515,12 +515,14 @@ class Cam_movement(Thread):
                 faces += 1
                 # get the corners of the faces
                 for (x, y, w, h) in face:
-                    # draw a rectangle around the corners
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
                     # if user want the face video too crop the image where face is detected
                     if self.face_photo_flag:
                         crop_frames.append(frame[y:y + h, x:x + w])
+
+                    # draw a rectangle around the corners
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
 
             # append colored frames
             colored_frames.append(frame)
