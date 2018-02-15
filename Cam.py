@@ -431,7 +431,9 @@ class Cam_movement(Thread):
         try:
             frameDelta = cv2.absdiff(grd_truth, gray)
         except cv2.error:
-            logger.error("Different image size!\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape) )
+            error_log="Different image size!\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape)
+            logger.error(error_log)
+            print(error_log)
             return False
 
         thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
