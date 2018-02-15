@@ -358,7 +358,7 @@ class Cam_movement(Thread):
         end = datetime.now()
         score = initial_score
         print("Start of difference loop")
-        while (score and not self.resetting_ground):
+        while score and not self.resetting_ground:
 
             # take another fram
             prov = self.frame[-1]
@@ -398,7 +398,7 @@ class Cam_movement(Thread):
         start = datetime.now()
         end = datetime.now()
         score = 1
-        while (score):
+        while score:
 
             # take another fram
             prov = self.frame[-1]
@@ -430,11 +430,11 @@ class Cam_movement(Thread):
         # first frame
         try:
             frameDelta = cv2.absdiff(grd_truth, gray)
-        except cv2.error:
-            error_log="Different image size!\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape)
+        except cv2.error as e:
+            error_log="Cv Error: "+str(e)+"\ngrd_thruth : "+str(grd_truth.shape)+", img2 : "+str(img2.shape)
             logger.error(error_log)
             print(error_log)
-            return False
+            return True
 
         thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
 
