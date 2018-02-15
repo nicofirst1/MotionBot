@@ -434,7 +434,7 @@ class Cam_movement(Thread):
         # self.send_image(frameDelta,"frameDelta")
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
-        thresh = cv2.dilate(thresh_original, None, iterations=6)
+        thresh = cv2.dilate(thresh_original, None, iterations=5)
         (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # loop over the contours
@@ -457,7 +457,7 @@ class Cam_movement(Thread):
                     self.send_image(thresh_original, "Threshold Original")
                     self.send_image(thresh, "Threshold Dilated")
                     self.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
-        print(found_area)
+        #print(found_area)
 
         return found_area
 
