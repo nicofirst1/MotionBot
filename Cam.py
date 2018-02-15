@@ -408,7 +408,7 @@ class Cam_movement(Thread):
         print("denoising")
 
         if len(image_list) == 1:
-            denoised = cv2.fastNlMeansDenoisingColored(image_list[1], None, 10, 10, 7, 21)
+            denoised = cv2.fastNlMeansDenoisingColored(image_list[0], None, 10, 10, 7, 21)
 
         else:
 
