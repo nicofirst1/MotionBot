@@ -1,3 +1,4 @@
+import copy
 import threading
 from multiprocessing import Pool
 from threading import Thread
@@ -262,6 +263,7 @@ class Cam_movement(Thread):
                     result= pool.map(self.face_on_video, (to_write,))
                     to_write, faces=zip(*result)
                     face=self.denoise_img(faces)
+
                 if face:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
@@ -476,12 +478,14 @@ class Cam_movement(Thread):
         colored_frames = []
         crop_frames = []
         faces = 0
+        face_detector=copy.copy(self.face_cascade)
 
         # for every frame in the video
         for frame in frames:
 
             # detect if there is a face
-            face = self.detect_face(frame)
+            img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            face = face_detector.detectMultiScale(img)
 
             # if there is a face
             if len(face) > 0:
