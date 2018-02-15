@@ -1,5 +1,5 @@
 import threading
-from multiprocessing import Pool as pool
+from multiprocessing import Pool
 from threading import Thread
 
 import os
@@ -258,12 +258,13 @@ class Cam_movement(Thread):
             #if the user wants the video of the movement
             if self.face_photo_flag:
                 #take the
-                to_write, face=pool.map(self.face_on_video, to_write)
+                with Pool() as pool:
+                    to_write, face=pool.map(self.face_on_video, to_write)
                 if face:
                     self.telegram_handler.send_image(face,"Face found")
                 else:
                     self.telegram_handler.send_message("Face not found")
-           
+
             # send the original video too
             if  not self.resetting_ground:
                 for elem in to_write:
