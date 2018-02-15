@@ -18,10 +18,13 @@ class Cam_class:
         self.MAX_RETRIES = 4
         self.frames = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+        self.telegram_handler = Telegram_handler(bot)
+        self.telegram_handler.start()
+
         self.shotter = Cam_shotter(self.frames)
         self.shotter.start()
 
-        self.motion = Cam_movement(self.shotter, bot)
+        self.motion = Cam_movement(self.shotter, self.telegram_handler)
         self.motion.start()
         logger.debug("Cam_class started")
 
@@ -156,13 +159,13 @@ class Cam_shotter(Thread):
 class Cam_movement(Thread):
     """Class to detect movement from camera frames"""
 
-    def __init__(self, shotter, bot):
+    def __init__(self, shotter, telegram):
         # init the thread
         Thread.__init__(self)
 
         self.shotter = shotter
         self.frame = shotter.queue
-        self.bot = bot
+        self.telegram_handler = telegram
         self.send_id = 24978334
 
         self.delay = 0.1
@@ -200,12 +203,303 @@ class Cam_movement(Thread):
         while isinstance(initial_frame, int):
             initial_frame = self.frame[-1]
 
-        #get the background image and save it
+        # get the background image and save it
         self.reset_ground("Background image")
-
 
         while True:
             self.detect_motion_video()
+
+    def detect_motion_video(self):
+
+        # whait for resetting to be over
+        while self.resetting_ground:
+            continue
+
+        # get end frame after delay seconds
+        sleep(self.delay)
+        end_frame = self.frame[-1]
+
+        # calculate diversity
+        score = self.are_different(self.ground_frame, end_frame)
+        # if the notification is enable and there is a difference between the two frames
+        if self.motion_flag and score and not self.resetting_ground:
+
+            logger.info("Movement detected")
+            # send message
+            self.motion_notifier(score)
+
+            # do not capture video nor photo, just notification
+            if not self.faces_video_flag and not self.face_photo_flag:
+                sleep(3)
+                return
+
+            # create the file
+            if self.faces_video_flag:
+                self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+
+            # start saving the frames
+            self.shotter.capture(True)
+
+            # self.send_image(initial_frame,"initial frame")
+            # self.send_image(end_frame,"end frame")
+
+            # while the current frame and the initial one are different (aka some movement detected)
+            self.loop_difference(score, self.ground_frame, self.max_seconds_retries)
+
+            # save the taken frames
+            to_write = self.shotter.capture(False)
+
+            for elem in to_write:
+                self.are_different(self.ground_frame, elem, True)
+
+            if self.faces_video_flag or self.face_photo_flag:
+                to_write, cropped_frames = self.face_on_video(to_write)
+
+                # if the face video is avaiable
+                if len(cropped_frames) > 0 and self.face_photo_flag:
+                    # write it, release the stream
+                    denoised = self.denoise_img(cropped_frames)
+                    self.telegram_handler.send_image(denoised, "Frames : " + str(len(cropped_frames)))
+                elif len(cropped_frames) == 0:
+                    self.telegram_handler.send_message("No faces found")
+
+            # send the original video too
+            if self.faces_video_flag and not self.resetting_ground:
+                for elem in to_write:
+                    cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                    self.out.write(elem)
+                self.out.release()
+                self.telegram_handler.send_video(self.video_name)
+
+            sleep(3)
+
+    def reset_ground(self, msg):
+        """function to reset the ground truth image"""
+        self.resetting_ground = True
+        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        self.ground_frame = gray
+        print(str(gray.shape))
+        print(str(self.ground_frame.shape))
+        self.telegram_handler.send_image(self.ground_frame, msg)
+        self.resetting_ground = False
+
+    def loop_difference(self, initial_score, initial_frame, seconds):
+        """Loop until the current frame is the same as the ground image or time is exceeded"""
+
+        start = datetime.now()
+        end = datetime.now()
+        score = initial_score
+        print("Start of difference loop")
+        while score and not self.resetting_ground:
+
+            # take another fram
+            prov = self.frame[-1]
+
+            # check if images are different
+            score = self.are_different(initial_frame, prov)
+
+            # if time is exceeded exit while
+            if (end - start).seconds > seconds:
+                print("max seconds exceeded...checking for background changes")
+                self.check_bk_changes(prov, 3)
+                break
+
+            # update current time in while loop
+            end = datetime.now()
+
+        print("End of difference loop")
+
+    def check_bk_changes(self, initial_frame, seconds):
+        start = datetime.now()
+        end = datetime.now()
+        score = 1
+        while score:
+
+            # take another fram
+            prov = self.frame[-1]
+
+            # check if images are different
+            score = self.are_different(initial_frame, prov)
+
+            # if time is exceeded exit while
+            if (end - start).seconds > seconds:
+                print("max seconds exceeded")
+                self.reset_ground("Back ground changed! New background")
+                return True
+
+            # update current time in while loop
+            end = datetime.now()
+
+        return False
+
+    def are_different(self, grd_truth, img2, write_contour=False):
+        # print("Calculation image difference")
+
+        # blur and convert to grayscale
+        gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        # print(gray.shape, grd_truth.shape)
+
+        # compute the absolute difference between the current frame and
+        # first frame
+        try:
+            frameDelta = cv2.absdiff(grd_truth, gray)
+        except cv2.error as e:
+            error_log = "Cv Error: " + str(e) + "\ngrd_thruth : " + str(grd_truth.shape) + ", gray : " + str(
+                gray.shape) + "\n"
+            logger.error(error_log)
+            print(error_log)
+            return True
+
+        thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
+
+        # self.send_image(frameDelta,"frameDelta")
+        # dilate the thresholded image to fill in holes, then find contours
+        # on thresholded image
+        thresh = cv2.dilate(thresh_original, None, iterations=5)
+        (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # loop over the contours
+        found_area = False
+        # print(len(cnts))
+        for c in cnts:
+            # if the contour is too small, ignore it
+            # print("Area : "+str(cv2.contourArea(c)))
+            if cv2.contourArea(c) < self.min_area:
+                continue
+
+            else:
+                found_area = True
+                # compute the bounding box for the contour, draw it on the frame,
+                # and update the text
+                if write_contour:
+                    (x, y, w, h) = cv2.boundingRect(c)
+                    cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+                    if self.debug_flag:
+                        self.telegram_handler.send_image(frameDelta)
+                        self.telegram_handler.send_image(thresh_original, "Threshold Original")
+                        self.telegram_handler.send_image(thresh, "Threshold Dilated")
+                        self.telegram_handler.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
+            # print(found_area)
+
+        return found_area
+
+    # =========================FACE DETECION=======================================
+
+    def denoise_img(self, image_list):
+
+        print("denoising")
+
+        if len(image_list) == 1:
+            denoised = cv2.fastNlMeansDenoisingColored(image_list[1], None, 10, 10, 7, 21)
+
+        else:
+
+            # make the list odd
+            if (len(image_list)) % 2 == 0: image_list.pop()
+
+            middle = int(float(len(image_list)) / 2 - 0.5)
+
+            # getting smallest images size
+            width = 99999
+            heigth = 99999
+
+            for img in image_list:
+                size = tuple(img.shape[1::-1])
+                if size[0] < width: width = size[0]
+                if size[1] < heigth: heigth = size[1]
+
+            # resizing all images to the smallest one
+            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
+
+            imgToDenoiseIndex = middle
+            temporalWindowSize = len(image_list)
+            hColor = 3
+            # print(temporalWindowSize, imgToDenoiseIndex)
+
+            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
+                                                            hColor=hColor)
+        print("denosed")
+
+        return denoised
+
+    def detect_face(self, img):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(img)
+        if len(faces) > 0:
+            # print("face detcted!")
+            return faces
+
+        return ()
+
+    def face_on_video(self, frames):
+        """This funcion add a rectangle on recognized faces"""
+
+        colored_frames = []
+        crop_frames = []
+        faces = 0
+
+        # for every frame in the video
+        for frame in frames:
+
+            # detect if there is a face
+            face = self.detect_face(frame)
+
+            # if there is a face
+            if len(face) > 0:
+                # get the corners of the faces
+                faces += 1
+                for (x, y, w, h) in face:
+                    # draw a rectangle around the corners
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+                    # if user want the face video too crop the image where face is detected
+                    if self.face_photo_flag:
+                        crop_frames.append(frame[y:y + h, x:x + w])
+
+            # append colored frames
+            colored_frames.append(frame)
+
+        print(str(faces) + " frames with faces detected")
+
+        return colored_frames, crop_frames
+
+    # =========================TELEGRAM BOT=======================================
+
+    def motion_notifier(self, score, degub=False):
+        """Function to notify user dor a detected movement"""
+        to_send = "Movement detected!\n"
+        if degub:
+            to_send += "Score is " + str(score) + "\n"
+
+        if self.faces_video_flag and not self.face_photo_flag:
+            to_send += "<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
+        elif self.face_photo_flag and self.faces_video_flag:
+            to_send += "Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
+
+        self.telegram_handler.send_message(to_send, parse_mode="HTML")
+
+    # =========================DEPRECATED=======================================
+
+    def get_similarity(self, img1, img2):
+        # start = datetime.now()
+        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        img1 = cv2.equalizeHist(img1)
+        img2 = cv2.equalizeHist(img2)
+        # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
+        start = datetime.now()
+        (score, diff) = compare_ssim(img1, img2, full=True, gaussian_weights=True)
+        # score = compare_psnr(img1, img2)
+        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
+
+        print(score)
+
+        return score
 
     def detect_motion_photo(self):
         initial_frame = self.frame[-1]
@@ -258,314 +552,71 @@ class Cam_movement(Thread):
                 self.send_image(end_frame, "Face not detected")
             sleep(3)
 
-    def detect_motion_video(self):
 
-        # whait for resetting to be over
-        while self.resetting_ground:
-            continue
+class Telegram_handler(Thread):
+    """Class to handle image/message/cideo sending throught telegram bot"""
 
-        # get initial frame and and frame after delay seconds
-        # initial_frame = self.frame[-1]
-        sleep(self.delay)
-        end_frame = self.frame[-1]
+    def __init__(self, bot):
+        # init the thread
+        Thread.__init__(self)
 
-        # calculate diversity
-        score = self.are_different(self.ground_frame, end_frame)
-        # if the notification is enable and there is a difference between the two frames
-        if self.motion_flag and score and not self.resetting_ground:
+        self.bot = bot
+        self.ids = self.get_ids(24978334)
 
-            logger.info("Movement detected")
-            # send message
-            self.motion_notifier(score)
+        logger.info("Telegram handler started")
 
-            # do not capture video nor photo, just notification
-            if not self.faces_video_flag and not self.face_photo_flag:
-                sleep(3)
-                return
+    def get_ids(self, fallback_id):
+        # get ids form file
+        if "ids" in os.listdir("."):
+            with open("ids", "r+") as file:
+                lines = file.readlines()
 
-            # create the file
-            if self.faces_video_flag:
-                self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+            # every line has the id as the first element of a split(,)
+            ids = []
+            for id in ids:
+                ids.append(int(id.split(",")[0]))
+            return ids
 
-            # start saving the frames
-            self.shotter.capture(True)
-
-            # self.send_image(initial_frame,"initial frame")
-            # self.send_image(end_frame,"end frame")
-
-            # while the current frame and the initial one are different (aka some movement detected)
-            self.loop_difference(score, self.ground_frame, self.max_seconds_retries)
-
-            # save the taken frames
-            to_write = self.shotter.capture(False)
-
-            for elem in to_write:
-                self.are_different(self.ground_frame, elem, True)
-
-            if self.faces_video_flag or self.face_photo_flag:
-                to_write, cropped_frames = self.face_on_video(to_write)
-
-                # if the face video is avaiable
-                if len(cropped_frames) > 0 and self.face_photo_flag:
-                    # write it, release the stream
-                    denoised = self.denoise_img(cropped_frames)
-                    self.send_image(denoised, "Frames : " + str(len(cropped_frames)))
-                elif len(cropped_frames) == 0:
-                    self.bot.sendMessage(self.send_id, "No faces found")
-
-            # send the original video too
-            if self.faces_video_flag and not self.resetting_ground:
-                for elem in to_write:
-                    cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-                    self.out.write(elem)
-                self.out.release()
-                self.send_video(self.video_name)
-
-            sleep(3)
-
-    def motion_notifier(self, score, degub=False):
-        """Function to notify user dor a detected movement"""
-        to_send = "Movement detected!\n"
-        if degub:
-            to_send += "Score is " + str(score) + "\n"
-
-        if self.faces_video_flag and not self.face_photo_flag:
-            to_send += "<b>Face Video</b> is <b>ON</b>...it may take a minute or two"
-        elif self.face_photo_flag and self.faces_video_flag:
-            to_send += "Both <b>Face Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
-
-        self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
-
-    def reset_ground(self,msg):
-        """function to reset the ground truth image"""
-        self.resetting_ground = True
-        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        self.ground_frame = gray
-        print(str(gray.shape))
-        print(str(self.ground_frame.shape))
-        self.send_image(self.ground_frame, msg)
-        self.resetting_ground = False
-
-    def loop_difference(self, initial_score, initial_frame, seconds):
-        """Loop until the current frame is the same as the ground image or time is exceeded"""
-
-        start = datetime.now()
-        end = datetime.now()
-        score = initial_score
-        print("Start of difference loop")
-        while score and not self.resetting_ground:
-
-            # take another fram
-            prov = self.frame[-1]
-
-            # check if images are different
-            score = self.are_different(initial_frame, prov)
-
-            # if time is exceeded exit while
-            if (end - start).seconds > seconds:
-                print("max seconds exceeded...checking for background changes")
-                self.check_bk_changes(prov, 3)
-                break
-
-            # update current time in while loop
-            end = datetime.now()
-
-        print("End of difference loop")
-
-
-    def check_bk_changes(self, initial_frame, seconds):
-        start = datetime.now()
-        end = datetime.now()
-        score = 1
-        while score:
-
-            # take another fram
-            prov = self.frame[-1]
-
-            # check if images are different
-            score = self.are_different(initial_frame, prov)
-
-            # if time is exceeded exit while
-            if (end - start).seconds > seconds:
-                print("max seconds exceeded")
-                self.reset_ground("Back ground changed! New background")
-                return True
-
-            # update current time in while loop
-            end = datetime.now()
-
-        return False
-
-    def are_different(self, grd_truth, img2, write_contour=False):
-        #print("Calculation image difference")
-
-        # blur and convert to grayscale
-        gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
-        # print(gray.shape, grd_truth.shape)
-
-        # compute the absolute difference between the current frame and
-        # first frame
-        try:
-            frameDelta = cv2.absdiff(grd_truth, gray)
-        except cv2.error as e:
-            error_log="Cv Error: "+str(e)+"\ngrd_thruth : "+str(grd_truth.shape)+", gray : "+str(gray.shape)+"\n"
-            logger.error(error_log)
-            print(error_log)
-            return True
-
-        thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
-
-        # self.send_image(frameDelta,"frameDelta")
-        # dilate the thresholded image to fill in holes, then find contours
-        # on thresholded image
-        thresh = cv2.dilate(thresh_original, None, iterations=5)
-        (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        # loop over the contours
-        found_area = False
-        #print(len(cnts))
-        for c in cnts:
-            # if the contour is too small, ignore it
-            #print("Area : "+str(cv2.contourArea(c)))
-            if cv2.contourArea(c) < self.min_area:
-                continue
-
-            else:
-                found_area = True
-                # compute the bounding box for the contour, draw it on the frame,
-                # and update the text
-                if write_contour:
-                    (x, y, w, h) = cv2.boundingRect(c)
-                    cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-                    if self.debug_flag:
-                        self.send_image(frameDelta)
-                        self.send_image(thresh_original, "Threshold Original")
-                        self.send_image(thresh, "Threshold Dilated")
-                        self.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
-            #print(found_area)
-
-        return found_area
-
-    def denoise_img(self, image_list):
-
-        print("denoising")
-
-        if len(image_list) == 1:
-            denoised = cv2.fastNlMeansDenoisingColored(image_list[1], None, 10, 10, 7, 21)
 
         else:
-
-            # make the list odd
-            if (len(image_list)) % 2 == 0: image_list.pop()
-
-            middle = int(float(len(image_list)) / 2 - 0.5)
-
-            # getting smallest images size
-            width = 99999
-            heigth = 99999
-
-            for img in image_list:
-                size = tuple(img.shape[1::-1])
-                if size[0] < width: width = size[0]
-                if size[1] < heigth: heigth = size[1]
-
-            # resizing all images to the smallest one
-            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
-
-            imgToDenoiseIndex = middle
-            temporalWindowSize = len(image_list)
-            hColor = 3
-            # print(temporalWindowSize, imgToDenoiseIndex)
-
-            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor)
-        print("denosed")
-
-        return denoised
-
-    def get_similarity(self, img1, img2):
-        # start = datetime.now()
-        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        img1 = cv2.equalizeHist(img1)
-        img2 = cv2.equalizeHist(img2)
-        # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        start = datetime.now()
-        (score, diff) = compare_ssim(img1, img2, full=True, gaussian_weights=True)
-        # score = compare_psnr(img1, img2)
-        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
-
-        print(score)
-
-        return score
+            return [fallback_id]
 
     def send_image(self, img, msg=""):
 
-        ret = cv2.imwrite(self.image_name, img)
+        image_name = "image_to_send.png"
+
+        ret = cv2.imwrite(image_name, img)
+
         if not ret:
-            self.bot.sendMessage(self.send_id, "There has been an error while writing the image")
+            self.send_message("There has been an error while writing the image")
             return
 
-        with open(self.image_name, "rb") as file:
-            if msg:
-                self.bot.sendPhoto(self.send_id, file, caption=msg)
-            else:
-                self.bot.sendPhoto(self.send_id, file)
+        else:
+            with open(image_name, "rb") as file:
+                for id in self.ids:
+                    if msg:
+                        self.bot.sendPhoto(id, file, caption=msg)
+                    else:
+                        self.bot.sendPhoto(id, file)
 
-        os.remove(self.image_name)
+        os.remove(image_name)
+        logger.info("Image sent")
+
+    def send_message(self, msg, parse_mode=""):
+
+        for id in self.ids:
+            self.bot.sendMessage(id, msg, parse_mode=parse_mode)
 
     def send_video(self, video_name, msg=""):
 
-        try:
-            with open(video_name, "rb") as file:
-                if msg: self.bot.sendMessage(self.send_id, msg)
-                self.bot.sendVideo(self.send_id, file)
-            os.remove(video_name)
-        except FileNotFoundError:
-            self.bot.sendMessage(self.send_id, "There was an error uploading the file")
+        if not video_name in os.listdir("."):
+            self.send_message("The video could not be found ")
+            return
 
-    def detect_face(self, img):
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(img)
-        if len(faces) > 0:
-            # print("face detcted!")
-            return faces
+        with open(video_name, "rb") as file:
+            for id in self.ids:
+                if msg: self.bot.sendVideo(id, file, caption=msg)
+                else:self.bot.sendVideo(id, file)
 
-        return ()
-
-    def face_on_video(self, frames):
-        """This funcion add a rectangle on recognized faces"""
-
-        colored_frames = []
-        crop_frames = []
-        faces = 0
-
-        # for every frame in the video
-        for frame in frames:
-
-            # detect if there is a face
-            face = self.detect_face(frame)
-
-            # if there is a face
-            if len(face) > 0:
-                # get the corners of the faces
-                faces += 1
-                for (x, y, w, h) in face:
-                    # draw a rectangle around the corners
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
-
-                    # if user want the face video too crop the image where face is detected
-                    if self.face_photo_flag:
-                        crop_frames.append(frame[y:y + h, x:x + w])
-
-            # append colored frames
-            colored_frames.append(frame)
-
-        print(str(faces) + " frames with faces detected")
-
-        return colored_frames, crop_frames
+        os.remove(video_name)
+        logger.info("Video sent")
