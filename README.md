@@ -7,6 +7,8 @@ This repo is currently working with **raspberry pi 3 model B** with **Python 3.5
 To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
+* Install [face_recognition](https://github.com/ageitgey/face_recognition) with `pip3 install face_recognition`
+
 
 ## Physical Setup
 For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro-Helicopter-Airplane-Controls/dp/B00JJZXRR0)
@@ -47,7 +49,9 @@ There are currently 4 flags which you can set inside the bot.
 
 
 # USEFUL LINKS
+
 ## Opencv 
+
 ### API
 * https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html
 * https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_video_display/py_video_display.html#display-video
@@ -64,6 +68,8 @@ There are currently 4 flags which you can set inside the bot.
 ## With telegram
 * https://github.com/meinside/telegram-bot-opencv
 
+### Servo
+* https://learn.adafruit.com/adafruits-raspberry-pi-lesson-8-using-a-servo-motor/software
 
 # TODO
 
@@ -108,6 +114,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Denoise photo
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
+- [ ] Remove rectangles from face recognition
 - [ ] Add profile face detector
 - [ ] Fix are_different loop
 - [ ] Fix date display

@@ -2,7 +2,7 @@ import copy
 import threading
 from multiprocessing import Pool
 from threading import Thread
-
+import face_recognition
 import os
 import cv2
 from time import sleep
@@ -184,7 +184,7 @@ class Cam_movement(Thread):
 
         self.profile_face_cascade = cv2.CascadeClassifier(
             '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/ lbpcascade_profileface.xml')
-        
+
         self.max_seconds_retries = 10
 
         self.video_name = "detect_motion_video.mp4"
@@ -450,6 +450,47 @@ class Cam_movement(Thread):
         return ()
 
     def face_on_video(self, frames):
+
+
+        new_frames=[]
+        faces=[]
+        frame_count =0
+
+
+        for frame in frames:
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            frame = frame[:, :, ::-1]
+            frame_count += 1
+            new_frames.append(frame)
+
+        # Every 128 frames (the default batch size), batch process the list of frames to find faces
+            batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
+
+            # Now let's list all the faces we found in all 128 frames
+            for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
+                number_of_faces_in_frame = len(face_locations)
+
+                print("Found {} face(s)".format(number_of_faces_in_frame))
+
+                for face_location in face_locations:
+                    # Print the location of each face in this frame
+                    x, y, w, h = face_location
+
+                    #get the face cropped image
+                    if self.face_photo_flag:
+                        faces.append(frame[y:y + h, x:x + w])
+
+                    #draw a rectangle around the face
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+        if len(faces)>0:
+            face=self.denoise_img(faces)
+        else: face=[]
+
+        return new_frames,face
+
+
+    def face_on_video_old(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
         print("Face on video")
