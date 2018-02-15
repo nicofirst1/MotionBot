@@ -56,11 +56,11 @@ If you want to run it even when you close the ssh connection use
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
-- [ ] Fix while score, exit when no difference are detected anymore
+- [X] Fix while score, exit when no difference are detected anymore
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
 - [ ] create profiling function
-- [ ] implement a logger
+- [X] implement a logger
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile

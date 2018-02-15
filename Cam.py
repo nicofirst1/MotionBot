@@ -306,6 +306,9 @@ class Cam_movement(Thread):
             #save the taken frames
             to_write = self.shotter.capture(False)
 
+            for elem in to_write:
+                self.are_different(self.ground_frame,elem,True)
+
             if self.faces_video_flag or self.face_photo_flag:
                 to_write, cropped_frames = self.face_on_video(to_write)
 
@@ -418,7 +421,7 @@ class Cam_movement(Thread):
         return False
 
 
-    def are_different(self, grd_truth, img2):
+    def are_different(self, grd_truth, img2, contour=False):
         #print("Calculation image difference")
 
         # blur and convert to grayscale
@@ -443,11 +446,10 @@ class Cam_movement(Thread):
         found_area=False
         for c in cnts:
             # if the contour is too small, ignore it
-            #print("AREA : " + str(cv2.contourArea(c)))
             if cv2.contourArea(c) < self.min_area:
                 continue
 
-            else:
+            elif contour:
                 found_area=True
                 # compute the bounding box for the contour, draw it on the frame,
                 # and update the text
