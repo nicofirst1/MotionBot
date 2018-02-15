@@ -204,10 +204,9 @@ class Cam_movement(Thread):
         while isinstance(initial_frame, int):
             initial_frame = self.frame[-1]
 
-        gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        self.ground_frame = gray
-        self.send_image(gray, "Ground image")
+        #get the background image and save it
+        self.reset_ground("Background image")
+
 
         while True:
             self.detect_motion_video()
@@ -342,13 +341,13 @@ class Cam_movement(Thread):
 
         self.bot.sendMessage(self.send_id, to_send, parse_mode="HTML")
 
-    def reset_ground(self):
+    def reset_ground(self,msg):
         """function to reset the ground truth image"""
         self.resetting_ground = True
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
-        self.send_image(gray, "Back ground changed! New background")
+        self.send_image(gray, msg)
         self.resetting_ground = False
 
     def loop_difference(self, initial_score, initial_frame, seconds):
@@ -409,7 +408,7 @@ class Cam_movement(Thread):
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded")
-                self.reset_ground()
+                self.reset_ground("Back ground changed! New background")
                 return True
 
             # update current time in while loop

@@ -72,6 +72,10 @@ If you want to run it even when you close the ssh connection use
 - [X] Reset ground image -> stops motion tasks
 - [X] Add command to send background image
 
+### Camera movement
+- [ ] Use step motor with GPIO to move the camera
+- [ ] Take a video while the camera performs a 180* rotation
+- [ ] Integrate movement with background reset
 
 ### Movement detection
 - [X] Nofity when movement is detected 
@@ -161,7 +165,7 @@ Found error while performing the abs difference *frameDelta = cv2.absdiff(grd_tr
 Cv Error: /home/pi/InstallationPackages/opencv-3.1.0/modules/core/src/arithm.cpp:639: error: (-209) The operation is neither 'array op array' (where arrays have the same size and the same number of channels), nor 'array op scalar', nor 'scalar op array' in function arithm_op
 
 * It seems to be correlated to the number of channels of the images passed.
-* When the error occurres the images shapes are (480, 640, 3), the number 3 should not be there since the image is being converted to gray scale with
+* When the error occurres the grd_thruth  shape is (480, 640, 3) while the gray is (480,640), the number 3 should not be there since the image is being converted to gray scale with
 > gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
 ### Tried Fixes
