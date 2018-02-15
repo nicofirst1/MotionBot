@@ -475,17 +475,22 @@ class Cam_movement(Thread):
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
+
+        print("1")
         colored_frames = []
         crop_frames = []
         faces = 0
         face_detector=copy.copy(self.face_cascade)
+        print("2")
 
         # for every frame in the video
         for frame in frames:
+            print("3")
 
             # detect if there is a face
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             face = face_detector.detectMultiScale(img)
+            print("4")
 
             # if there is a face
             if len(face) > 0:
@@ -496,10 +501,11 @@ class Cam_movement(Thread):
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                     # if user want the face video too crop the image where face is detected
                     crop_frames.append(frame[y:y + h, x:x + w])
-
+            print("5")
 
             # append colored frames
             colored_frames.append(frame)
+        print("6")
 
         print(str(faces) + " frames with faces detected")
 
