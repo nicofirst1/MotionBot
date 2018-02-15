@@ -260,7 +260,7 @@ class Cam_movement(Thread):
             if self.face_photo_flag:
                 #take the face and send it
                 with Pool() as pool:
-                    result= pool.map(self.face_on_video, (to_write,))
+                    result= pool.map(face_on_video, (to_write,))
                     to_write, faces=zip(*result)
                     face=self.denoise_img(faces)
 
@@ -472,45 +472,6 @@ class Cam_movement(Thread):
 
         return colored_frames, crop_frames
 
-    def face_on_video(self, frames):
-        """This funcion add a rectangle on recognized faces"""
-
-
-        print("1")
-        colored_frames = []
-        crop_frames = []
-        faces = 0
-        face_detector=copy.copy(self.face_cascade)
-        print("2")
-
-        # for every frame in the video
-        for frame in frames:
-            print("3")
-
-            # detect if there is a face
-            img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            face = face_detector.detectMultiScale(img)
-            print("4")
-
-            # if there is a face
-            if len(face) > 0:
-                # get the corners of the faces
-                faces += 1
-                for (x, y, w, h) in face:
-                    # draw a rectangle around the corners
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    # if user want the face video too crop the image where face is detected
-                    crop_frames.append(frame[y:y + h, x:x + w])
-            print("5")
-
-            # append colored frames
-            colored_frames.append(frame)
-        print("6")
-
-        print(str(faces) + " frames with faces detected")
-
-        return colored_frames
-
 
 
 
@@ -597,6 +558,47 @@ class Cam_movement(Thread):
             if not foud_face:
                 self.send_image(end_frame, "Face not detected")
             sleep(3)
+
+
+def face_on_video( frames):
+    """This funcion add a rectangle on recognized faces"""
+
+
+    print("1")
+    colored_frames = []
+    crop_frames = []
+    faces = 0
+    face_detector=cv2.CascadeClassifier(
+        '/home/pi/InstallationPackages/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt_tree.xml')
+    print("2")
+
+    # for every frame in the video
+    for frame in frames:
+        print("3")
+
+        # detect if there is a face
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        face = face_detector.detectMultiScale(img)
+        print("4")
+
+        # if there is a face
+        if len(face) > 0:
+            # get the corners of the faces
+            faces += 1
+            for (x, y, w, h) in face:
+                # draw a rectangle around the corners
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                # if user want the face video too crop the image where face is detected
+                crop_frames.append(frame[y:y + h, x:x + w])
+        print("5")
+
+        # append colored frames
+        colored_frames.append(frame)
+    print("6")
+
+    print(str(faces) + " frames with faces detected")
+
+    return colored_frames
 
 
 class Telegram_handler(Thread):
