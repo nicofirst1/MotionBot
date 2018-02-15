@@ -439,6 +439,7 @@ class Cam_movement(Thread):
 
         # loop over the contours
         found_area = False
+        print(len(cnts))
         for c in cnts:
             # if the contour is too small, ignore it
             print("Area : "+str(cv2.contourArea(c)))
