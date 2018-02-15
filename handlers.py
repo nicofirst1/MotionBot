@@ -214,7 +214,7 @@ def stop_execution(bot, update):
 def send_log(bot,update):
     """Telegram command to send the logger file"""
 
-    if("logger.log" in os.listdir(".")):
+    if("motion.log" in os.listdir(".")):
         with open("motion.log","rb") as file:
             bot.sendDocument(update.message.chat_id, file)
 

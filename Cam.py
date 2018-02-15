@@ -26,7 +26,7 @@ class Cam_class:
 
     def capture_image(self, image_name):
         # print("taking image")
-        img = self.frames[-1]
+        img = self.frames[-2]
 
         if isinstance(img, int):
             print("empty queue")
@@ -426,7 +426,7 @@ class Cam_movement(Thread):
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-        print(gray.shape, grd_truth.shape)
+        #print(gray.shape, grd_truth.shape)
 
         # compute the absolute difference between the current frame and
         # first frame
