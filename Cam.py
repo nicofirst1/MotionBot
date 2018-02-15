@@ -456,6 +456,7 @@ class Cam_movement(Thread):
                     self.send_image(thresh_original, "Threshold Original")
                     self.send_image(thresh, "Threshold Dilated")
                     self.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
+        print(found_area)
 
         return found_area
 
