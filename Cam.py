@@ -441,6 +441,7 @@ class Cam_movement(Thread):
         found_area = False
         for c in cnts:
             # if the contour is too small, ignore it
+            print("Area : "+str(cv2.contourArea(c)))
             if cv2.contourArea(c) < self.min_area:
                 continue
 
