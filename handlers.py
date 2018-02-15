@@ -155,21 +155,22 @@ def annulla(bot, update):
 @elegible_user
 def get_camshot(bot, update):
     """Telegram command to get a camshot from the camera"""
-
-    logger.info("/Photo command called")
-
     image = "image.png"
-    cam.capture_image(image)
+    ret = cam.capture_image(image)
+    logger.info("Taking a camshot")
 
-
+    if ret:
+        with open(image, "rb") as file:
+            bot.sendPhoto(update.message.from_user.id, file)
+        os.remove(image)
+    else:
+        update.message.reply_text("There has been an error...please retry in a few seconds")
 
 
 @elegible_user
 def stream(bot, update, args):
     """Telegram command to take a video from the camera"""
     print("Video")
-    logger.info("/Video command called")
-
     max_seconds = 20
     if not args:
         SECONDS = 5
@@ -193,6 +194,13 @@ def stream(bot, update, args):
 
     cam.capture_video(video_name, SECONDS)
 
+    logger.info("Sending a "+str(SECONDS)+" seconds video")
+    print("Capture complete")
+
+    with open(video_name, "rb") as file:
+        bot.sendVideo(update.message.from_user.id, file)
+    os.remove(video_name)
+
 
 @elegible_user
 def stop_execution(bot, update):
@@ -206,18 +214,26 @@ def stop_execution(bot, update):
 def send_log(bot,update):
     """Telegram command to send the logger file"""
 
-    cam.telegram_handler.send_file("motion.log","logs")
+    if("motion.log" in os.listdir(".")):
+        with open("motion.log","rb") as file:
+            bot.sendDocument(update.message.chat_id, file)
 
+    else:
+        update.message.reply_text("No log file detected!")
 
 
 @elegible_user
 def send_ground(bot, update):
     image_name="groung.png"
 
+
+
     ret = cv2.imwrite(image_name, cam.motion.ground_frame)
     if not ret:
-        cam.telegram_handler.send_message( "There has been an error while writing the image")
+        bot.sendMessage(update.message.from_user.id, "There has been an error while writing the image")
         return
 
-    cam.telegram_handler.send_image(image_name,"Current BackGround image")
+    with open(image_name, "rb") as file:
+        bot.sendPhoto(update.message.from_user.id, file, caption="Current background image")
 
+    os.remove(image_name)
