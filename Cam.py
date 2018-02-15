@@ -418,10 +418,9 @@ class Cam_movement(Thread):
         return False
 
     def are_different(self, grd_truth, img2, contour=False):
-        # print("Calculation image difference")
+        print("Calculation image difference")
 
         # blur and convert to grayscale
-        # frame = imutils.resize(img2, width=500)
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
