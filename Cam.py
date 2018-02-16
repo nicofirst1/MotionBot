@@ -492,20 +492,28 @@ class Cam_movement(Thread):
         area1=sum(cv2.contourArea(c) for c in cnts1)
         area2=sum(cv2.contourArea(c) for c in cnts2)
 
+        print(area1,area2)
+
         #the left/right is given by the position of the averaged center of each area
         # if center1>center2 the object is moving right to left (so left)
         #get the centers of each area on the x axis
         centers1=[]
         centers2=[]
         for c in cnts1:
-            centers1=[(x + (x+w))/2  for (x,y,w,h)  in cv2.boundingRect(c)]
+            centers1.append(cv2.boundingRect(c))
+
+        centers1=[(x + (x+w))/2  for (x,y,w,h)  in centers1]
 
         for c in cnts2:
-            centers2 =[(x + (x+w))/2  for (x,y,w,h)  in cv2.boundingRect(c)]
+            centers2.append(cv2.boundingRect(c))
+
+        centers2 =[(x + (x+w))/2  for (x,y,w,h)  in centers2]
 
         #avarage the center
         centers1=sum(centers1)/len(centers1)
         centers2=sum(centers2)/len(centers2)
+
+        print(centers1,centers2)
 
         return (area1>area2,centers1>centers2)
 
