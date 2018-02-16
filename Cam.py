@@ -451,7 +451,7 @@ class Cam_movement(Thread):
         print("Done")
 
     # =========================FACE DETECION=======================================
-    @profile
+    @time_profiler()
     def denoise_img(self, image_list):
 
         print("denoising")
