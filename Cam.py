@@ -341,13 +341,13 @@ class Cam_movement(Thread):
 
         return any(cv2.contourArea(elem) < self.min_area for elem in cnts)
 
-
     def compute_img_difference(self,grd_truth, img2):
         # print("Calculation image difference")
 
         # blur and convert to grayscale
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        #gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        gray = cv2.blur(gray, (21, 21), 0)
 
         # print(gray.shape, grd_truth.shape)
 
@@ -377,6 +377,7 @@ class Cam_movement(Thread):
             self.telegram_handler.send_image(img2)
 
         return cnts
+
     # =========================UTILS=======================================
     @time_profiler()
     def draw_on_frames(self, frames,areas=True, date=True):
