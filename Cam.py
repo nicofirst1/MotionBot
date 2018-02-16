@@ -693,6 +693,7 @@ class Telegram_handler(Thread):
     def get_ids(self, fallback_id):
         """Get all the ids from the file"""
         # get ids form file
+        print("getting ids from file")
         ids_path = "Resources/ids"
 
         if "ids" in os.listdir("Resources/"):

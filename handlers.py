@@ -53,7 +53,8 @@ def reset_ground(bot,update):
     """Telegram command to reset the ground truth image (the background)"""
     update.message.reply_text("Resetting ground image")
 
-    cam.motion.reset_ground()
+    user_id=update.message.from_user.id
+    cam.motion.reset_ground("Reset ground asked from "+str(user_id))
     update.message.reply_text("Ground image has been reset")
 
 
