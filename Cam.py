@@ -451,7 +451,7 @@ class Cam_movement(Thread):
         print("Done")
 
     # =========================FACE DETECION=======================================
-
+    @profile
     def denoise_img(self, image_list):
 
         print("denoising")
@@ -505,7 +505,6 @@ class Cam_movement(Thread):
 
         return ()
 
-    @profile
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
