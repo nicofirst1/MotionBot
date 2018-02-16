@@ -434,7 +434,7 @@ class Cam_movement(Thread):
                 # write the movement direction
                 if not idx%2:prov_cnts=cnts
                 elif len(prov_cnts)>0 and len(cnts)>0:
-                    movement=self.movement_direction(prov_cnts,cnts)
+                    movement,center_points=self.movement_direction(prov_cnts,cnts)
                     to_write=""
                     if movement[0]:
                         to_write+="Incoming - "
@@ -448,11 +448,14 @@ class Cam_movement(Thread):
                     else:
                         to_write += "Right"
 
-                    #print(movement)
-                    # write time
+
+                    cv2.circle(frame, center_points[0], 1, (0, 0, 0), 1)
+                    cv2.circle(frame, center_points[1], 1, (0, 0, 0), 1)
 
                 cv2.putText(frame, to_write,
                             (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255), 1)
+
+
 
                 idx+=1
 
@@ -501,23 +504,34 @@ class Cam_movement(Thread):
         #get the centers of each area on the x axis
         centers1=[]
         centers2=[]
+
+        center_point1=0
+        center_point2=0
+
         for c in cnts1:
             centers1.append(cv2.boundingRect(c))
 
+        center_point1=[((x + (x+w))/2,(y + (y+h))/2)  for (x,y,w,h)  in centers1]
         centers1=[(x + (x+w))/2  for (x,y,w,h)  in centers1]
 
         for c in cnts2:
             centers2.append(cv2.boundingRect(c))
 
+
+        center_point2=[((x + (x+w))/2,(y + (y+h))/2)  for (x,y,w,h)  in centers2]
         centers2 =[(x + (x+w))/2  for (x,y,w,h)  in centers2]
 
         #avarage the center
         centers1=sum(centers1)/len(centers1)
         centers2=sum(centers2)/len(centers2)
 
+        # avarage the center
+        center_point1 = (sum(elem[0] for elem in center_point1) / len(center_point1),sum(elem[1] for elem in center_point1) / len(center_point1))
+        center_point2 = (sum(elem[0] for elem in center_point2) / len(center_point2),sum(elem[1] for elem in center_point2) / len(center_point2))
+
         #print(centers1,centers2)
 
-        return (area1<area2,centers1>centers2)
+        return (area1<area2,centers1>centers2),(center_point1,center_point2)
 
     # =========================FACE DETECION=======================================
     def denoise_img(self, image_list):
