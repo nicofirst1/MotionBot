@@ -374,7 +374,7 @@ class Cam_movement(Thread):
         return cnts
     # =========================UTILS=======================================
 
-    @time_profiler()
+    @profile()
     def draw_on_frames(self, frames,areas=True, date=True):
         """Function to draw squares on objects"""
 
