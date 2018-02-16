@@ -212,6 +212,9 @@ def delete_log(bot, update):
     else:
         update.message.reply_text("No log file detected!")
 
+    with open("Resources/motion.log","w+") as file:
+        file.write(" ")
+
 @elegible_user
 def send_ground(bot, update):
     logger.info("ground command called")

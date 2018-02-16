@@ -93,7 +93,7 @@ There are currently 4 flags which you can set inside the bot.
 - [ ] Stop/start cam_motion class by flag value
 - [X] reorganize prints
 - [X] implement a logger
-- [ ] Add error hangling at the origin to not stop the class
+- [ ] Add error handling at the origin to not stop the class
 
 
 ## Telegram
