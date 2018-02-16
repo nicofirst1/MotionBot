@@ -1,6 +1,5 @@
 # coding=utf-8
 from datetime import datetime
-from guppy import hpy
 from functools import wraps
 import cProfile, pstats, io
 MAX_RETRIES = 8
