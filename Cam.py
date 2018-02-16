@@ -260,9 +260,9 @@ class Cam_movement(Thread):
                 face = self.face_from_video(to_write)
 
                 if len(face)==0:
-                    self.telegram_handler.send_message("Face not found")
+                    self.telegram_handler.send_message(msg="Face not found")
                 else:
-                    self.telegram_handler.send_image(face, "Face found")
+                    self.telegram_handler.send_image(face, msg="Face found")
 
 
             # send the original video too
@@ -378,8 +378,8 @@ class Cam_movement(Thread):
 
         if self.debug_flag:
             self.telegram_handler.send_image(frameDelta)
-            self.telegram_handler.send_image(thresh_original, "Threshold Original")
-            self.telegram_handler.send_image(thresh, "Threshold Dilated")
+            self.telegram_handler.send_image(thresh_original, msg="Threshold Original")
+            self.telegram_handler.send_image(thresh, msg="Threshold Dilated")
             self.telegram_handler.send_image(img2)
 
         return cnts
@@ -491,7 +491,7 @@ class Cam_movement(Thread):
         #gray = cv2.GaussianBlur(gray, (21, 21), 0)
         gray = cv2.blur(gray, self.blur, 0)
         self.ground_frame = gray
-        self.telegram_handler.send_image(self.ground_frame, msg)
+        self.telegram_handler.send_image(self.ground_frame, msg=msg)
         self.resetting_ground = False
         print("Done")
 
@@ -686,7 +686,7 @@ class Cam_movement(Thread):
                 # check for the presence of a face in the frame
                 if self.detect_face(prov):
                     # if face is detected send photo and exit while
-                    self.send_image(prov, "Face detected!")
+                    self.send_image(prov, msg="Face detected!")
                     found_face = True
                     break
 
@@ -702,7 +702,7 @@ class Cam_movement(Thread):
                 end = datetime.datetime.now()
 
             if not foud_face:
-                self.send_image(end_frame, "Face not detected")
+                self.send_image(end_frame, msg="Face not detected")
             sleep(3)
 
 
