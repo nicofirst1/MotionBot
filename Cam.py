@@ -186,7 +186,6 @@ class Cam_movement(Thread):
         self.video_name = "detect_motion_video.mp4"
         self.resolution = (640, 480)  # width,height
         self.fps = 30
-        self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
         self.video_flag = True
         self.face_photo_flag = False
@@ -240,8 +239,6 @@ class Cam_movement(Thread):
                 sleep(3)
                 return
 
-            # create the file
-            self.out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
             # start saving the frames
             self.shotter.capture(True)
@@ -404,6 +401,9 @@ class Cam_movement(Thread):
         movement_color=(0,255,0) #green
         line_tickness=2
 
+        # create the file
+        out= cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
+
         #If areas has no elements return
         if len(self.areas)==0: return
 
@@ -432,9 +432,9 @@ class Cam_movement(Thread):
                             (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
 
             #write frames on file
-            self.out.write(frame)
+            out.write(frame)
             # free file
-            self.out.release()
+            out.release()
 
         #empty areas
         del self.areas[:]
