@@ -2,7 +2,6 @@ import copy
 import threading
 from multiprocessing import Pool
 from threading import Thread
-import face_recognition
 import os
 import cv2
 from time import sleep
@@ -257,20 +256,21 @@ class Cam_movement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
+            # if the user wants the video of the movement
+            if self.face_photo_flag:
+                # take the face and send it
+                to_write, face = self.face_on_video(to_write)
+
+                if len(face) > 0:
+                    self.telegram_handler.send_image(face, "Face found")
+                else:
+                    self.telegram_handler.send_message("Face not found")
+
             #write the movement on the video
             for elem in to_write:
                 self.are_different(self.ground_frame, elem, True)
 
-            #if the user wants the video of the movement
-            if self.face_photo_flag:
-                #take the face and send it
-                to_write, face=self.face_on_video(to_write)
-
-                if len(face)>0:
-                    self.telegram_handler.send_image(face,"Face found")
-                else:
-                    self.telegram_handler.send_message("Face not found")
-
+        
             # send the original video too
             if not self.resetting_ground:
                 for elem in to_write:
