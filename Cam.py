@@ -327,7 +327,7 @@ class Cam_movement(Thread):
             # update current time in while loop
             end = datetime.now()
 
-        if not retry: self.loop_difference(1, initial_frame, 1.5, True)
+        if retry: self.loop_difference(1, initial_frame, 1.5, True)
 
         print("End of difference loop")
 
@@ -425,6 +425,7 @@ class Cam_movement(Thread):
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                             (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
 
+
             #write frames on file
             out.write(frame)
 
@@ -511,7 +512,6 @@ class Cam_movement(Thread):
         faces = 0
 
         # for every frame in the video
-        idx=0
         for frame in frames:
 
             # detect if there is a face
@@ -528,7 +528,6 @@ class Cam_movement(Thread):
                         crop_frames.append(frame[y:y + h, x:x + w])
 
 
-            idx+=1
 
 
 
