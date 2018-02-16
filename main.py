@@ -7,7 +7,7 @@ from handlers import start, annulla, get_camshot, stream, disp, updater, \
 #Implementing logger
 
 logger = logging.getLogger('motionlog')
-hdlr = logging.FileHandler('motion.log')
+hdlr = logging.FileHandler('Resources/motion.log')
 formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)

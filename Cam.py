@@ -278,12 +278,14 @@ class Cam_movement(Thread):
 
     def reset_ground(self, msg):
         """function to reset the ground truth image"""
+        print("Reset ground image ...")
         self.resetting_ground = True
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
         self.ground_frame = gray
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
+        print("Done")
 
     def loop_difference(self, initial_score, initial_frame, seconds):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
