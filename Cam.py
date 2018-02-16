@@ -198,6 +198,8 @@ class Cam_movement(Thread):
 
         self.resetting_ground = False
 
+        self.areas=[]
+
         logger.debug("Cam_movement started")
 
     def run(self):
@@ -267,20 +269,13 @@ class Cam_movement(Thread):
                     self.telegram_handler.send_message("Face not found")
 
             #write the movement on the video
-            for elem in to_write:
-                self.are_different(self.ground_frame, elem, True)
+           # for elem in to_write:
+            #    self.are_different(self.ground_frame, elem, True)
 
 
             # send the original video too
             if not self.resetting_ground:
-                for elem in to_write:
-                    #add black rectangle at the bottom
-                    cv2.rectangle(elem,(0,elem.shape[0]),( elem.shape[1], elem.shape[0]-30),(0,0,0),-1)
-                    #write time
-                    cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
-                    self.out.write(elem)
-                self.out.release()
+                self.denoise_img(to_write)
                 self.telegram_handler.send_video(self.video_name)
 
             sleep(3)
@@ -350,6 +345,50 @@ class Cam_movement(Thread):
 
         return False
 
+    def draw_on_frames(self, frames,areas=True,faces=True, date=True):
+        """Function to draw squares on objects"""
+
+        face_color=(0,0,255) #red
+        movement_color=(0,255,0) #green
+        line_tickness=2
+
+        #If areas has no elements return
+        if len(self.areas)==0: return
+
+        for frame in frames:
+
+            for elem in self.areas:
+
+                # draw faces
+                if faces:
+                    if elem[1] == "faces":
+                        for (x, y, w, h) in elem[0]:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+
+                # draw movement
+                if areas:
+                    if elem[1] == "movement":
+                        for (x, y, w, h) in elem[0]:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), movement_color, line_tickness)
+
+            #add a date to the frame
+            if date:
+                # add black rectangle at the bottom
+                cv2.rectangle(frame, (0, elem.shape[0]), (elem.shape[1], elem.shape[0] - 30), (0, 0, 0), -1)
+                # write time
+                cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                            (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
+
+            #write frames on file
+            self.out.write(frame)
+            # free file
+            self.out.release()
+
+        #empty areas
+        del self.areas[:]
+
+
+
     def are_different(self, grd_truth, img2, write_contour=False):
         # print("Calculation image difference")
 
@@ -381,6 +420,10 @@ class Cam_movement(Thread):
         # loop over the contours
         found_area = False
         # print(len(cnts))
+
+
+
+        #draw contours
         for c in cnts:
             # if the contour is too small, ignore it
             # print("Area : "+str(cv2.contourArea(c)))
@@ -393,7 +436,8 @@ class Cam_movement(Thread):
                 # and update the text
                 if write_contour:
                     (x, y, w, h) = cv2.boundingRect(c)
-                    cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    self.areas.append((cv2.boundingRect(c),"movement"))
+                    #cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                     if self.debug_flag:
                         self.telegram_handler.send_image(frameDelta)
@@ -451,6 +495,7 @@ class Cam_movement(Thread):
         faces = self.frontal_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)
         if len(faces) > 0:
             # print("face detcted!")
+            self.areas.append((faces,"faces"))
             return faces
         else:
             faces=self.profile_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)
@@ -530,7 +575,7 @@ class Cam_movement(Thread):
                         crop_frames.append(frame[y:y + h, x:x + w])
 
                     # draw a rectangle around the corners
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                    #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
 
             # append colored frames
