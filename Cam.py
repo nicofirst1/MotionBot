@@ -452,7 +452,7 @@ class Cam_movement(Thread):
                     # write time
 
                 cv2.putText(frame, to_write,
-                            (frame.shape[1] - 140, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255), 1)
+                            (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255), 1)
 
                 idx+=1
 
@@ -461,7 +461,7 @@ class Cam_movement(Thread):
 
                 # write time
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                            (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 0, 255), 2)
+                            (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 2)
 
 
             #write frames on file
