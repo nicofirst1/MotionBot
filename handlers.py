@@ -3,7 +3,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 import logging
 
-import os,sys
+import os, sys
 
 from Cam import Cam_class
 from utils import add_id, elegible_user, read_token_psw
@@ -37,69 +37,11 @@ Note that <b>Face Photo</b> depends on  <b>Face Video</b> which depends on <b>Mo
 Current value are the following :"""
 
 
-@elegible_user
-def flag_setting_main(bot, update):
-    """Telegram command to set the flags for the motion detection"""
-    global FLAG_KEYBOARD
-
-    # print("Flag Main")
-
-    to_send = complete_flags()
-    update.message.reply_text(to_send, reply_markup=FLAG_KEYBOARD, parse_mode="HTML")
-
-
-@elegible_user
-def reset_ground(bot,update):
-    """Telegram command to reset the ground truth image (the background)"""
-    update.message.reply_text("Resetting ground image")
-
-    user_id=update.message.from_user.id
-    cam.motion.reset_ground("Reset ground asked from "+str(user_id))
-    update.message.reply_text("Ground image has been reset")
-
-
-def complete_flags():
-    """Function to return the changed flag text"""
-    global FLAG_SEND
-
-    complete_falg_str = FLAG_SEND
-
-    # get falg values
-    motion_detection = cam.motion.motion_flag
-    face_v = cam.motion.video_flag
-    face_p = cam.motion.face_photo_flag
-    debug = cam.motion.debug_flag
-
-    complete_falg_str += "\n-- <b>Motion Detection</b>"
-
-    # complete message
-    if motion_detection:
-        complete_falg_str += " ✅"
-    else:
-        complete_falg_str += " ❌"
-
-    complete_falg_str += "\n-- <b>Video</b>"
-
-    if face_v:
-        complete_falg_str += " ✅"
-    else:
-        complete_falg_str += " ❌"
-
-    complete_falg_str += "\n-- <b>Face Photo</b>"
-
-    if face_p:
-        complete_falg_str += " ✅"
-    else:
-        complete_falg_str += " ❌"
-
-    complete_falg_str += "\n-- <b>Debug</b>"
-
-    if debug:
-        complete_falg_str += " ✅"
-    else:
-        complete_falg_str += " ❌"
-
-    return complete_falg_str
+# ===============Callback, Conversation===================
+def annulla(bot, update):
+    """Fallback function for the conversation handler"""
+    update.message.reply_text("Error")
+    return ConversationHandler.END
 
 
 def flag_setting_callback(bot, update):
@@ -148,10 +90,38 @@ def start(bot, update):
     return 1
 
 
-def annulla(bot, update):
-    """Fallback function for the conversation handler"""
-    update.message.reply_text("Error")
-    return ConversationHandler.END
+def get_psw(bot, update):
+    user_psw = update.message.text
+
+    if not user_psw == psw:
+        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
+        add_id(update.message.from_user.id, 0)
+    else:
+        update.message.reply_text("Correct password!")
+        add_id(update.message.from_user.id, 1)
+
+
+# ===============Commands===================
+
+@elegible_user
+def flag_setting_main(bot, update):
+    """Telegram command to set the flags for the motion detection"""
+    global FLAG_KEYBOARD
+
+    # print("Flag Main")
+
+    to_send = complete_flags()
+    update.message.reply_text(to_send, reply_markup=FLAG_KEYBOARD, parse_mode="HTML")
+
+
+@elegible_user
+def reset_ground(bot, update):
+    """Telegram command to reset the ground truth image (the background)"""
+    update.message.reply_text("Resetting ground image")
+
+    user_id = update.message.from_user.id
+    cam.motion.reset_ground("Reset ground asked from " + str(user_id))
+    update.message.reply_text("Ground image has been reset")
 
 
 @elegible_user
@@ -198,7 +168,7 @@ def stream(bot, update, args):
 
     cam.capture_video(video_name, SECONDS)
 
-    logger.info("Sending a "+str(SECONDS)+" seconds video")
+    logger.info("Sending a " + str(SECONDS) + " seconds video")
     print("Capture complete")
 
     with open(video_name, "rb") as file:
@@ -215,13 +185,14 @@ def stop_execution(bot, update):
     cam.telegram_handler.send_message("Stopping surveillance")
     sys.exit(0)
 
+
 @elegible_user
-def send_log(bot,update):
+def send_log(bot, update):
     """Telegram command to send the logger file"""
     logger.info("log command called")
 
-    if("motion.log" in os.listdir("Resources/")):
-        with open("Resources/motion.log","rb") as file:
+    if ("motion.log" in os.listdir("Resources/")):
+        with open("Resources/motion.log", "rb") as file:
             bot.sendDocument(update.message.chat_id, file)
 
     else:
@@ -230,13 +201,10 @@ def send_log(bot,update):
 
 @elegible_user
 def send_ground(bot, update):
-
     logger.info("ground command called")
 
-    image_name="ground.png"
+    image_name = "ground.png"
     print("ground")
-
-
 
     ret = cv2.imwrite(image_name, cam.motion.ground_frame)
     if not ret:
@@ -250,13 +218,48 @@ def send_ground(bot, update):
     os.remove(image_name)
 
 
-def get_psw(bot, update):
-    user_psw = update.message.text
+# ===============Utils===================
 
-    if not user_psw == psw:
-        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
-        add_id(update.message.from_user.id, 0)
+
+def complete_flags():
+    """Function to return the changed flag text"""
+    global FLAG_SEND
+
+    complete_falg_str = FLAG_SEND
+
+    # get falg values
+    motion_detection = cam.motion.motion_flag
+    face_v = cam.motion.video_flag
+    face_p = cam.motion.face_photo_flag
+    debug = cam.motion.debug_flag
+
+    complete_falg_str += "\n-- <b>Motion Detection</b>"
+
+    # complete message
+    if motion_detection:
+        complete_falg_str += " ✅"
     else:
-        update.message.reply_text("Correct password!")
-        add_id(update.message.from_user.id, 1)
+        complete_falg_str += " ❌"
 
+    complete_falg_str += "\n-- <b>Video</b>"
+
+    if face_v:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+    complete_falg_str += "\n-- <b>Face Photo</b>"
+
+    if face_p:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+    complete_falg_str += "\n-- <b>Debug</b>"
+
+    if debug:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+    return complete_falg_str
