@@ -2,10 +2,9 @@ from telegram.ext import (
     ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
 import logging
 from handlers import start, annulla, get_camshot, stream, disp, updater, \
-    flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground
+    flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw
 
 #Implementing logger
-from utils import get_psw
 
 logger = logging.getLogger('motionlog')
 hdlr = logging.FileHandler('motion.log')
