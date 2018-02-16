@@ -238,6 +238,15 @@ VIDEOIO ERROR: libv4l unable to ioctl VIDIOCSPICT
 
 Use `killall pyhton` (This will stop every pyhton process currently running)
 
+## Issue
+Telegram command to get the ground image of the Cam_movement calss seems to stop while writing the image to file. It may be
+connected with the continuous use of the ground_image inside the movement class.
+
+### Tried Fixes
+
+* Implement a get method
+* Return a copy of the object
+
 # Infos
 
 ## Image difference
