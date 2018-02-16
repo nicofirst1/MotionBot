@@ -115,8 +115,8 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Denoise photo
 - [X] Wait after cam is opened
 - [X] Add date time to difference video
-- [ ] Remove rectangles from face recognition
-- [ ] Add profile face detector
+- [X] Remove rectangles from face recognition
+- [X] Add profile face detector
 - [ ] Fix are_different loop
 - [ ] Fix date display
 - [ ] Reset ground image programmaticly

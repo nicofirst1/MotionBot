@@ -270,12 +270,12 @@ class Cam_movement(Thread):
             for elem in to_write:
                 self.are_different(self.ground_frame, elem, True)
 
-        
+
             # send the original video too
             if not self.resetting_ground:
                 for elem in to_write:
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
                     self.out.write(elem)
                 self.out.release()
                 self.telegram_handler.send_video(self.video_name)
@@ -290,6 +290,7 @@ class Cam_movement(Thread):
         self.ground_frame = gray
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
+
 
     def loop_difference(self, initial_score, initial_frame, seconds):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
@@ -322,13 +323,13 @@ class Cam_movement(Thread):
         start = datetime.now()
         end = datetime.now()
         #setting initial variables
-        score = 1
+        score = 0
 
         #setting initial frame
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-        while score:
+        while not score:
 
             # take another frame
             prov = self.frame[-1]
@@ -441,11 +442,17 @@ class Cam_movement(Thread):
         return denoised
 
     def detect_face(self, img):
+
+        scale_factor=1.4
+        min_neight=3
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = self.frontal_face_cascade.detectMultiScale(img,scaleFactor=1.4,minNeighbors=3)
+        faces = self.frontal_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)
         if len(faces) > 0:
             # print("face detcted!")
             return faces
+        else:
+            faces=self.profile_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)
+            if len(faces)> 0: return faces
 
         return ()
 

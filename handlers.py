@@ -51,6 +51,7 @@ def flag_setting_main(bot, update):
 @elegible_user
 def reset_ground(bot,update):
     """Telegram command to reset the ground truth image (the background)"""
+    update.message.reply_text("Resetting ground image")
 
     cam.motion.reset_ground()
     update.message.reply_text("Ground image has been reset")
