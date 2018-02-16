@@ -131,7 +131,7 @@ There are currently 4 flags which you can set inside the bot.
 - [ ] Fix date display
 - [X] Reset ground image programmaticly
 - [ ] Find a confidence method for faces in video 
-- [X] detect movement direction (right,left) (position of areas)
+- [X] detect movement direction (right,left) (position of areas) 
 - [X] detect movement direction (incoming, outcoming) (sum of areas)
 - [ ] Classify person
 
