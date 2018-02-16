@@ -324,10 +324,12 @@ class Cam_movement(Thread):
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
                 if not retry: self.check_bk_changes(prov, 3)
-                break
+                print("End of difference loop")
+                return
 
             # update current time in while loop
             end = datetime.datetime.now()
+            sleep(0.05)
 
         if not retry:
             sleep(1)
