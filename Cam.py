@@ -274,7 +274,7 @@ class Cam_movement(Thread):
             # send the original video too
             if not self.resetting_ground:
                 for elem in to_write:
-                    cv2.rectangle(elem,(elem.shape[0],0),(elem.shape[0]-10, elem.shape[1]),(0,0,0),-1)
+                    cv2.rectangle(elem,(elem.shape[1],0),(elem.shape[1]-10, elem.shape[0]),(0,0,0),-1)
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                                 (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
                     self.out.write(elem)
