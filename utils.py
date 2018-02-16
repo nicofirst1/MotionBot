@@ -121,7 +121,11 @@ def time_profiler():
             sortby = 'cumulative'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
+            print("\n\n=====================TIMER PROFILER START========================\n")
+            print("\n"+str(function)+  "\n")
             print(s.getvalue())
+            print("\n=====================TIMER PROFILER END========================\n\n")
+
 
         return wrapper
     return real_decorator

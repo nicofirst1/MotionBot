@@ -377,7 +377,7 @@ class Cam_movement(Thread):
 
         return cnts
     # =========================UTILS=======================================
-
+    @time_profiler()
     def draw_on_frames(self, frames,areas=True, date=True):
         """Function to draw squares on objects"""
 
@@ -450,7 +450,6 @@ class Cam_movement(Thread):
         print("Done")
 
     # =========================FACE DETECION=======================================
-    @time_profiler()
     def denoise_img(self, image_list):
 
         print("denoising")
@@ -508,7 +507,7 @@ class Cam_movement(Thread):
     def face_from_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
-        print("Face on video")
+        print("Starting face detector...")
 
         crop_frames = []
         faces = 0
@@ -540,6 +539,8 @@ class Cam_movement(Thread):
         else: face=()
 
         print(str(faces) + " frames with faces detected")
+        print("... face detector end")
+
 
         return face
 
