@@ -469,8 +469,6 @@ class Cam_movement(Thread):
         # free file
         out.release()
 
-        #empty areas
-        del self.areas[:]
 
     def reset_ground(self, msg):
         """function to reset the ground truth image"""
