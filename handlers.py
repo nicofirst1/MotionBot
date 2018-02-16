@@ -223,6 +223,7 @@ def send_ground(bot, update):
     print("Sending ground...")
 
     ret = cv2.imwrite(image_name, cam.motion.ground_frame)
+    print(ret)
     if not ret:
         bot.sendMessage(update.message.from_user.id, "There has been an error while writing the image")
         return
