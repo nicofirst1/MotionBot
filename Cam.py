@@ -262,13 +262,9 @@ class Cam_movement(Thread):
                 else:
                     self.telegram_handler.send_image(face, "Face found")
 
-            #write the movement on the video
-           # for elem in to_write:
-            #    self.are_different(self.ground_frame, elem, True)
-
+     
             # send the original video too
             if not self.resetting_ground:
-                #self.denoise_img(to_write)
                 self.draw_on_frames(to_write)
                 self.telegram_handler.send_video(self.video_name)
 
@@ -563,21 +559,6 @@ class Cam_movement(Thread):
 
     # =========================DEPRECATED=======================================
 
-    def get_similarity(self, img1, img2):
-        # start = datetime.now()
-        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        img1 = cv2.equalizeHist(img1)
-        img2 = cv2.equalizeHist(img2)
-        # print("Convert to gray : " + str((datetime.now() - start).microseconds) + " microseconds")
-        start = datetime.now()
-        (score, diff) = compare_ssim(img1, img2, full=True, gaussian_weights=True)
-        # score = compare_psnr(img1, img2)
-        print("COMPAIRISON TIME : " + str((datetime.now() - start).microseconds) + " microseconds")
-
-        print(score)
-
-        return score
 
     def detect_motion_photo(self):
         initial_frame = self.frame[-1]
@@ -630,50 +611,6 @@ class Cam_movement(Thread):
                 self.send_image(end_frame, "Face not detected")
             sleep(3)
 
-    def face_on_video_prov(self, frames):
-
-
-        new_frames=[]
-        rectangular=[]
-        faces=[]
-        frame_count =0
-
-
-        for frame in frames:
-            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-            frame = frame[:, :, ::-1]
-            frame_count += 1
-            new_frames.append(frame)
-
-    # Every 128 frames (the default batch size), batch process the list of frames to find faces
-        batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
-        if len(new_frames) == 128:
-            # Now let's list all the faces we found in all 128 frames
-            for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
-                number_of_faces_in_frame = len(face_locations)
-
-                print("Found {} face(s)".format(number_of_faces_in_frame))
-
-                for face_location in face_locations:
-                    # Print the location of each face in this frame
-                    x, y, w, h = face_location
-
-                    #get the face cropped image
-                    if self.face_photo_flag:
-                        faces.append(frame[y:y + h, x:x + w])
-
-                    #draw a rectangle around the face
-                    frame= cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    rectangular.append(frame)
-
-            new_frames=[]
-
-
-        if len(faces)>0:
-            face=self.denoise_img(faces)
-        else: face=[]
-
-        return rectangular,face
 
 
 class Telegram_handler(Thread):
