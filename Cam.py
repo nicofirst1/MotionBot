@@ -321,7 +321,7 @@ class Cam_movement(Thread):
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
-                if retry: self.loop_difference(1,initial_frame,1.5,True)
+                if not retry: self.loop_difference(1,initial_frame,1.5,True)
                 else: self.check_bk_changes(prov, 3)
                 break
 
