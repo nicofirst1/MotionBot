@@ -215,7 +215,6 @@ class Cam_movement(Thread):
         while True:
             self.detect_motion_video()
 
-    @profile
     def detect_motion_video(self):
 
         # whait for resetting to be over
@@ -305,6 +304,9 @@ class Cam_movement(Thread):
 
         return False
 
+
+
+    @profile
     def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
