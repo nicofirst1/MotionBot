@@ -7,6 +7,8 @@ import cv2
 from time import sleep
 import datetime
 import logging
+
+import gc
 from memory_profiler import profile
 
 from utils import time_profiler
@@ -333,10 +335,13 @@ class Cam_movement(Thread):
             # update current time in while loop
             end = datetime.datetime.now()
             sleep(0.05)
+            gc.collect()
 
+        #it may be that there is no apparent motion
         if not retry:
-            sleep(1)
-            self.loop_difference(1, initial_frame, 1.5, True)
+            #wait a little and retry
+            sleep(0.5)
+            self.loop_difference(1, initial_frame, 1, True)
 
         print("End of difference loop")
 
