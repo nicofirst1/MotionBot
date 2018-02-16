@@ -308,7 +308,7 @@ class Cam_movement(Thread):
 
 
 
-    @time_profiler
+    @time_profiler()
     def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
