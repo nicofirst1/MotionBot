@@ -215,7 +215,6 @@ class Cam_movement(Thread):
         while True:
             self.detect_motion_video()
 
-    @profiler()
     def detect_motion_video(self):
 
         # whait for resetting to be over
@@ -336,6 +335,7 @@ class Cam_movement(Thread):
 
         print("End of difference loop")
 
+    @profiler()
     def are_different(self, grd_truth, img2, write_contour=False):
         # print("Calculation image difference")
 
