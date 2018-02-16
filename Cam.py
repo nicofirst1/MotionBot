@@ -450,7 +450,7 @@ class Cam_movement(Thread):
                     print(movement)
                     # write time
                     cv2.putText(frame, to_write,
-                                ( frame.shape[0] - 10,10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 1)
+                                (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 1)
 
                 idx+=1
 
