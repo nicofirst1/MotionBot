@@ -34,14 +34,18 @@ def add_id(user_id,enabled):
 
 
 def write_ids(ids):
+    ids_path="Resources/ids"
 
-    with open("ids","w+") as file:
+    with open(ids_path,"w+") as file:
         for elem in ids:
             file.write(str(elem[0])+","+str(elem[1]))
 
 
 def read_ids():
-    with open("ids", "r+") as file:
+    ids_path="Resources/ids"
+
+
+    with open(ids_path, "r+") as file:
         ids = file.readlines()
 
     ids=[(elem.split(",")[0],elem.split(",")[1].strip("\n")) for elem in ids]
@@ -87,7 +91,7 @@ def elegible_user(func):
 
 def read_token_psw():
     """Function to read token and password from file"""
-    file_name="token_psw.txt"
+    file_name="Resources/token_psw.txt"
 
     #read file
     with open(file_name, "rb") as file:
@@ -115,14 +119,3 @@ def profiler(func):
         micro=(end-start).microseconds
 
         print("{:,}".format(micro)+" miscroseconds")
-
-def get_psw(bot, update):
-    user_psw = update.message.text
-
-    if not user_psw == psw:
-        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
-        add_id(update.message.from_user.id, 0)
-    else:
-        update.message.reply_text("Correct password!")
-        add_id(update.message.from_user.id, 1)
-

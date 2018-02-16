@@ -247,3 +247,15 @@ def send_ground(bot, update):
         bot.sendPhoto(update.message.from_user.id, file, caption="Current background image")
 
     os.remove(image_name)
+
+
+def get_psw(bot, update):
+    user_psw = update.message.text
+
+    if not user_psw == psw:
+        update.message.reply_text("Incorrect password...you can not accesst this bot functionalities anymore :(")
+        add_id(update.message.from_user.id, 0)
+    else:
+        update.message.reply_text("Correct password!")
+        add_id(update.message.from_user.id, 1)
+

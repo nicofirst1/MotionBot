@@ -274,6 +274,7 @@ class Cam_movement(Thread):
             # send the original video too
             if not self.resetting_ground:
                 for elem in to_write:
+                    cv2.rectangle(elem,10,elem.shape[0] - 10,(0,0,0))
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                                 (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
                     self.out.write(elem)
@@ -290,7 +291,6 @@ class Cam_movement(Thread):
         self.ground_frame = gray
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
-
 
     def loop_difference(self, initial_score, initial_frame, seconds):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
@@ -648,8 +648,10 @@ class Telegram_handler(Thread):
     def get_ids(self, fallback_id):
         """Get all the ids from the file"""
         # get ids form file
-        if "ids" in os.listdir("."):
-            with open("ids", "r+") as file:
+        ids_path = "Resources/ids"
+
+        if "ids" in os.listdir("Resources/"):
+            with open(ids_path, "r+") as file:
                 lines = file.readlines()
 
             # every line has the id as the first element of a split(,)

@@ -9,6 +9,6 @@ if [ $# -eq 0 ]
 fi
 
 
-git add commitAndPush.sh handlers.py main.py README.md ids utils.py Cam.py
+git add commitAndPush.sh handlers.py main.py README.md utils.py Cam.py
 git commit -m "$comment";
 git push origin master

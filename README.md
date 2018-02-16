@@ -60,16 +60,20 @@ There are currently 4 flags which you can set inside the bot.
 ### CAPTURE VIDEO
 * http://answers.opencv.org/question/128081/python-frame-grabbing-from-ip-camera-and-process-in-a-different-thread/
 
-### Image similarity comparison
-* https://ece.uwaterloo.ca/~z70wang/publications/ssim.pdf
 
 ### Motion detection
 * https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 
+### Face recognition
+* https://github.com/informramiz/opencv-face-recognition-python
+
+## Image similarity comparison
+* https://ece.uwaterloo.ca/~z70wang/publications/ssim.pdf
+
 ## With telegram
 * https://github.com/meinside/telegram-bot-opencv
 
-### Servo
+## Servo
 * https://learn.adafruit.com/adafruits-raspberry-pi-lesson-8-using-a-servo-motor/software
 
 # TODO
