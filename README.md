@@ -105,8 +105,8 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Command to reset ground image
 - [X] Reset ground image -> stops motion tasks
 - [X] Add command to send background image
-- [ ] Fix send background command
-- [ ] Fix reset background command
+- [X] Fix send background command
+- [X] Fix reset background command
 
 ### Camera movement
 - [ ] Use step motor with GPIO to move the camera
@@ -248,6 +248,9 @@ It is connected only to the cv.imwrite() function
 
 * Implement a get method
 * Return a copy of the object
+
+### Solution
+* Send image throught cam_movement class
 
 # Infos
 
