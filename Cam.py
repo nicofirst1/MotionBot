@@ -257,7 +257,7 @@ class Cam_movement(Thread):
                 # take the face and send it
                 face = self.face_from_video(to_write)
 
-                if not face:
+                if len(face)==0:
                     self.telegram_handler.send_message("Face not found")
                 else:
                     self.telegram_handler.send_image(face, "Face found")
