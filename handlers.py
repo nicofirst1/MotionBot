@@ -219,23 +219,10 @@ def delete_log(bot, update):
 def send_ground(bot, update):
     logger.info("ground command called")
 
-    image_name = "ground.png"
     print("Sending ground...")
 
-    ground=cam.motion.ground_frame
-    print("s")
+    cam.motion.send_ground(update.message.from_user.id,"Current background image")
 
-    ret = cv2.imwrite(image_name, ground)
-    print(ret)
-    if not ret:
-        bot.sendMessage(update.message.from_user.id, "There has been an error while writing the image")
-        return
-
-    with open(image_name, "rb") as file:
-        print("opened file")
-        bot.sendPhoto(update.message.from_user.id, file, caption="Current background image")
-
-    os.remove(image_name)
     print("...Done")
 
 

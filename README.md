@@ -149,6 +149,7 @@ There are currently 4 flags which you can set inside the bot.
 
 # Updates
 
+* Add possibility to send infos to specific id in telegram class
 
 # Issues
 
@@ -241,6 +242,7 @@ Use `killall pyhton` (This will stop every pyhton process currently running)
 ## Issue
 Telegram command to get the ground image of the Cam_movement calss seems to stop while writing the image to file. It may be
 connected with the continuous use of the ground_image inside the movement class.
+It is connected only to the cv.imwrite() function
 
 ### Tried Fixes
 

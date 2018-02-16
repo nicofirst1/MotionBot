@@ -648,6 +648,9 @@ class Cam_movement(Thread):
 
         self.telegram_handler.send_message(to_send, parse_mode="HTML")
 
+    def send_ground(self, specific_id, msg):
+        self.telegram_handler.send_image(self.ground_frame,specific_id=specific_id, msg=msg)
+
     # =========================DEPRECATED=======================================
 
 
@@ -736,7 +739,7 @@ class Telegram_handler(Thread):
         else:
             return [fallback_id]
 
-    def send_image(self, img, msg=""):
+    def send_image(self, img, specific_id=0, msg=""):
         """Send an image to the ids """
 
         image_name = "image_to_send.png"
@@ -744,49 +747,69 @@ class Telegram_handler(Thread):
         ret = cv2.imwrite(image_name, img)
 
         if not ret:
-            self.send_message("There has been an error while writing the image")
+            self.send_message("There has been an error while writing the image",specific_id=specific_id)
             return
 
         else:
             with open(image_name, "rb") as file:
-                for id in self.ids:
+                if not specific_id:
+                    for id in self.ids:
+                        if msg:
+                            self.bot.sendPhoto(id, file, caption=msg)
+                        else:
+                            self.bot.sendPhoto(id, file)
+                else:
                     if msg:
-                        self.bot.sendPhoto(id, file, caption=msg)
+                        self.bot.sendPhoto(specific_id, file, caption=msg)
                     else:
-                        self.bot.sendPhoto(id, file)
+                        self.bot.sendPhoto(specific_id, file)
 
         os.remove(image_name)
         logger.info("Image sent")
 
-    def send_message(self, msg, parse_mode=""):
+    def send_message(self, msg,specific_id=0, parse_mode=""):
 
-        for id in self.ids:
-            self.bot.sendMessage(id, msg, parse_mode=parse_mode)
+        if not specific_id:
+            for id in self.ids:
+                self.bot.sendMessage(id, msg, parse_mode=parse_mode)
+        else:
+            self.bot.sendMessage(specific_id, msg, parse_mode=parse_mode)
 
-    def send_video(self, video_name, msg=""):
+    def send_video(self, video_name, specific_id=0, msg=""):
 
 
         try:
             with open(video_name, "rb") as file:
-                for id in self.ids:
-                    if msg: self.bot.sendVideo(id, file, caption=msg)
-                    else:self.bot.sendVideo(id, file)
+                if not specific_id:
+                    for id in self.ids:
+                        if msg: self.bot.sendVideo(id, file, caption=msg)
+                        else:self.bot.sendVideo(id, file)
+                else:
+                    if msg:
+                        self.bot.sendVideo(specific_id, file, caption=msg)
+                    else:
+                        self.bot.sendVideo(specific_id, file)
 
             os.remove(video_name)
 
         except FileNotFoundError:
-            self.send_message("The video could not be found ")
+            self.send_message("The video could not be found ",specific_id=specific_id)
 
         logger.info("Video sent")
 
-    def send_file(self,file_name,msg=""):
+    def send_file(self,file_name,specific_id=0, msg=""):
 
         if (file_name in os.listdir(".")):
             with open(file_name, "rb") as file:
-                for id in self.ids:
-                    if msg: self.bot.sendDocument(id, file,caption=msg)
-                    else:  self.bot.sendDocument(id, file)
-
+                if not specific_id:
+                    for id in self.ids:
+                        if msg: self.bot.sendDocument(id, file,caption=msg)
+                        else:  self.bot.sendDocument(id, file)
+                else:
+                    if msg:
+                        self.bot.sendDocument(specific_id, file, caption=msg)
+                    else:
+                        self.bot.sendDocument(specific_id, file)
         else:
-            self.send_message("No log file detected!")
+            self.send_message("No log file detected!",specific_id=specific_id)
 
