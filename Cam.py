@@ -269,10 +269,10 @@ class Cam_movement(Thread):
            # for elem in to_write:
             #    self.are_different(self.ground_frame, elem, True)
 
-
+                self.draw_on_frames(to_write)
             # send the original video too
             if not self.resetting_ground:
-                self.denoise_img(to_write)
+                #self.denoise_img(to_write)
                 self.telegram_handler.send_video(self.video_name)
 
             sleep(3)
