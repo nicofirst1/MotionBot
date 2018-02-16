@@ -101,6 +101,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Reset ground image -> stops motion tasks
 - [X] Add command to send background image
 - [ ] Fix send background command
+- [ ] Fix reset background command
 
 ### Camera movement
 - [ ] Use step motor with GPIO to move the camera
