@@ -134,6 +134,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] New thread class for image/video/message sending
 - [X] Fix while score, exit when no difference are detected anymore
 - [ ] Save countour list
+- [ ] Save area list
 - [ ] Implement profiling function
 
 - [ ] ~~New thread function to get face in video~~
