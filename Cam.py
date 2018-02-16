@@ -258,7 +258,7 @@ class Cam_movement(Thread):
             # if the user wants the video of the movement
             if self.face_photo_flag:
                 # take the face and send it
-                to_write, face = self.face_on_video(to_write)
+                face = self.face_on_video(to_write)
 
                 if not face:
                     self.telegram_handler.send_message("Face not found")
@@ -269,10 +269,10 @@ class Cam_movement(Thread):
            # for elem in to_write:
             #    self.are_different(self.ground_frame, elem, True)
 
-                self.draw_on_frames(to_write)
             # send the original video too
             if not self.resetting_ground:
                 #self.denoise_img(to_write)
+                self.draw_on_frames(to_write)
                 self.telegram_handler.send_video(self.video_name)
 
             sleep(3)
@@ -511,7 +511,6 @@ class Cam_movement(Thread):
 
         print("Face on video")
 
-        colored_frames = []
         crop_frames = []
         faces = 0
 
@@ -535,8 +534,6 @@ class Cam_movement(Thread):
                     #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
 
-            # append colored frames
-            colored_frames.append(frame)
 
         if len(crop_frames)>0:
 
@@ -546,7 +543,7 @@ class Cam_movement(Thread):
 
         print(str(faces) + " frames with faces detected")
 
-        return colored_frames, face
+        return face
 
 
     # =========================TELEGRAM BOT=======================================
