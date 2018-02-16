@@ -5,7 +5,7 @@ from threading import Thread
 import os
 import cv2
 from time import sleep
-from datetime import datetime
+import datetime
 import logging
 from memory_profiler import profile
 
@@ -275,8 +275,8 @@ class Cam_movement(Thread):
 
     def check_bk_changes(self, initial_frame, seconds):
         #taking time
-        start = datetime.now()
-        end = datetime.now()
+        start = datetime.datetime.now()
+        end = datetime.datetime.now()
         #setting initial variables
         score = 0
 
@@ -300,7 +300,7 @@ class Cam_movement(Thread):
                 return True
 
             # update current time in while loop
-            end = datetime.now()
+            end = datetime.datetime.now()
 
         return False
 
@@ -308,8 +308,8 @@ class Cam_movement(Thread):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
         if retry:print("retriyng")
-        start = datetime.now()
-        end = datetime.now()
+        start = datetime.datetime.now()
+        end = datetime.datetime.now()
         score = initial_score
         print("Start of difference loop")
         while score and not self.resetting_ground:
@@ -327,7 +327,7 @@ class Cam_movement(Thread):
                 break
 
             # update current time in while loop
-            end = datetime.now()
+            end = datetime.datetime.now()
 
         if not retry:
             sleep(1)
@@ -434,7 +434,7 @@ class Cam_movement(Thread):
                 # write the movement direction
                 if not idx%2:prov_cnts=cnts
                 elif len(prov_cnts)>0 and len(cnts)>0:
-                    movement,center_points=self.movement_direction(prov_cnts,cnts)
+                    movement,_=self.movement_direction(prov_cnts,cnts)
                     to_write=""
                     if movement[0]:
                         to_write+="Incoming - "
@@ -449,8 +449,8 @@ class Cam_movement(Thread):
                         to_write += "Right"
 
 
-                    cv2.circle(frame, center_points[0], 1, (255, 255, 0), 10,2)
-                    cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
+                    #cv2.circle(frame, center_points[0], 1, (255, 255, 0), 10,2)
+                    #cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
 
                 cv2.putText(frame, to_write,
                             (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255), 1)
@@ -463,7 +463,9 @@ class Cam_movement(Thread):
             if date:
 
                 # write time
-                cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                correct_date= datetime.datetime.now() + datetime.timedelta(hours=1)
+
+                cv2.putText(frame, correct_date.strftime("%A %d %B %Y %H:%M:%S"),
                             (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 1)
 
 
@@ -660,8 +662,8 @@ class Cam_movement(Thread):
             prov = self.frame[-1]
 
             # take the time
-            start = datetime.now()
-            end = datetime.now()
+            start = datetime.datetime.now()
+            end = datetime.datetime.now()
 
             foud_face = False
             self.shotter.capture(True)
@@ -688,7 +690,7 @@ class Cam_movement(Thread):
                     break
 
                 # update current time in while loop
-                end = datetime.now()
+                end = datetime.datetime.now()
 
             if not foud_face:
                 self.send_image(end_frame, "Face not detected")
