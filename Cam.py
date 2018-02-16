@@ -266,7 +266,7 @@ class Cam_movement(Thread):
             # send the original video too
             if not self.resetting_ground:
                 self.draw_on_frames(to_write)
-                self.telegram_handler.send_message("Error while writing the file")
+                self.telegram_handler.send_video(self.video_name)
 
             sleep(3)
 
