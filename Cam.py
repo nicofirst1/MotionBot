@@ -303,7 +303,7 @@ class Cam_movement(Thread):
 
         return False
 
-    def loop_difference(self, initial_score, initial_frame, seconds):
+    def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
         start = datetime.now()
@@ -321,7 +321,8 @@ class Cam_movement(Thread):
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
-                self.check_bk_changes(prov, 3)
+                if retry: self.loop_difference(1,initial_frame,1.5,True)
+                else: self.check_bk_changes(prov, 3)
                 break
 
             # update current time in while loop
@@ -333,7 +334,6 @@ class Cam_movement(Thread):
 
         cnts=self.compute_img_difference(grd_truth,img2)
 
-        print(any(cv2.contourArea(elem) < self.min_area for elem in cnts))
         return any(cv2.contourArea(elem) < self.min_area for elem in cnts)
 
 
