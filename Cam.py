@@ -392,6 +392,7 @@ class Cam_movement(Thread):
 
         prov_cnts=0
         idx=0
+        to_write = "Unkown - Unkown"
         for frame in frames:
 
 
@@ -449,13 +450,14 @@ class Cam_movement(Thread):
 
                     print(movement)
                     # write time
-                    cv2.putText(frame, to_write,
-                                (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 1)
+
+                cv2.putText(frame, to_write,
+                            (frame.shape[1] - 80, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 1)
 
                 idx+=1
 
             #add a date to the frame
-            if False:
+            if date:
 
                 # write time
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
