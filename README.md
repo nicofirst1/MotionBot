@@ -139,7 +139,8 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Fix while score, exit when no difference are detected anymore
 - [X] Save countour list
 - [X] Save area list
-- [ ] Implement profiling function
+- [X] Implement profiling function
+- [X] Optimize are different (replace for with any)
 
 - [ ] ~~New thread function to get face in video~~
 

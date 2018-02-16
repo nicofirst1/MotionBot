@@ -374,7 +374,8 @@ class Cam_movement(Thread):
         return cnts
     # =========================UTILS=======================================
 
-    def draw_on_frames(self, frames,areas=True,faces=True, date=True):
+    @time_profiler()
+    def draw_on_frames(self, frames,areas=True, date=True):
         """Function to draw squares on objects"""
 
         face_color=(0,0,255) #red
@@ -387,7 +388,7 @@ class Cam_movement(Thread):
 
         for frame in frames:
 
-            if faces:
+            if self.face_photo_flag:
 
                 # detect if there is a face
                 face = self.detect_face(frame)
