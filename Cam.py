@@ -308,7 +308,7 @@ class Cam_movement(Thread):
 
 
 
-    @profile
+    @time_profiler
     def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
@@ -335,7 +335,6 @@ class Cam_movement(Thread):
             # update current time in while loop
             end = datetime.datetime.now()
             sleep(0.05)
-            gc.collect()
 
         #it may be that there is no apparent motion
         if not retry:
