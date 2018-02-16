@@ -746,9 +746,13 @@ class Telegram_handler(Thread):
 
         ret = cv2.imwrite(image_name, img)
 
-        if not ret:
+        if not ret and specific_id:
             self.send_message("There has been an error while writing the image",specific_id=specific_id)
             return
+        elif not ret:
+            if not ret and specific_id:
+                self.send_message("There has been an error while writing the image")
+                return
 
         else:
             with open(image_name, "rb") as file:
