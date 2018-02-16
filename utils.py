@@ -1,5 +1,6 @@
 # coding=utf-8
 from datetime import datetime
+from guppy import hpy
 from functools import wraps
 import cProfile, pstats, io
 MAX_RETRIES = 8
@@ -107,7 +108,28 @@ def read_token_psw():
 
 
 
-def profiler():
+def time_profiler():
+
+    def real_decorator(function):
+        def wrapper(*args, **kwargs):
+            pr = cProfile.Profile()
+            pr.enable()
+
+            function(*args, **kwargs)
+
+            pr.disable()
+            s = io.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+            print(s.getvalue())
+
+        return wrapper
+    return real_decorator
+
+
+
+def memory_profiler():
 
     def real_decorator(function):
         def wrapper(*args, **kwargs):

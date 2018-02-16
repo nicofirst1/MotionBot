@@ -8,7 +8,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 * Install [face_recognition](https://github.com/ageitgey/face_recognition) with `pip3 install face_recognition`
-
+* Install profiler fuction `pip install -U memory_profiler`
 
 ## Physical Setup
 For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro-Helicopter-Airplane-Controls/dp/B00JJZXRR0)

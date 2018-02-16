@@ -7,8 +7,9 @@ import cv2
 from time import sleep
 from datetime import datetime
 import logging
+from memory_profiler import profile
 
-from utils import profiler
+from utils import time_profiler
 
 logger = logging.getLogger('motionlog')
 
@@ -335,7 +336,6 @@ class Cam_movement(Thread):
 
         print("End of difference loop")
 
-    @profiler()
     def are_different(self, grd_truth, img2, write_contour=False):
         # print("Calculation image difference")
 
@@ -505,6 +505,7 @@ class Cam_movement(Thread):
 
         return ()
 
+    @profile
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
