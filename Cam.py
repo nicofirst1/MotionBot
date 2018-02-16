@@ -526,8 +526,8 @@ class Cam_movement(Thread):
         centers2=sum(centers2)/len(centers2)
 
         # avarage the center
-        center_point1 = (sum(elem[0] for elem in center_point1) / len(center_point1),sum(elem[1] for elem in center_point1) / len(center_point1))
-        center_point2 = (sum(elem[0] for elem in center_point2) / len(center_point2),sum(elem[1] for elem in center_point2) / len(center_point2))
+        center_point1 = (int(sum(elem[0] for elem in center_point1) / len(center_point1)),int(sum(elem[1] for elem in center_point1) / len(center_point1)))
+        center_point2 = (int(sum(elem[0] for elem in center_point2) / len(center_point2)),int(sum(elem[1] for elem in center_point2) / len(center_point2)))
 
         #print(centers1,centers2)
 
