@@ -37,11 +37,7 @@ class Cam_class:
             print("empty queue")
             return False
         # try to save the image
-        ret = cv2.imwrite(image_name, img)
-        if ret:
-            self.telegram_handler.send_image(image_name,"Camshot")
-        else:
-            self.telegram_handler.send_message("There has been an error while writing the image to file")
+        return cv2.imwrite(image_name, img)
 
 
 

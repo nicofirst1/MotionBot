@@ -112,7 +112,7 @@ def flag_setting_callback(bot, update):
     if param == "motion":
         cam.motion.motion_flag = not cam.motion.motion_flag
         if not cam.motion.motion_flag:
-            cam.motion.face_photo_flag = False
+            cam.motion.video_flag = False
             cam.motion.faces_video_flag = False
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
@@ -219,8 +219,8 @@ def send_log(bot,update):
     """Telegram command to send the logger file"""
     logger.info("log command called")
 
-    if("motion.log" in os.listdir(".")):
-        with open("motion.log","rb") as file:
+    if("motion.log" in os.listdir("Resources/")):
+        with open("Resources/motion.log","rb") as file:
             bot.sendDocument(update.message.chat_id, file)
 
     else:
