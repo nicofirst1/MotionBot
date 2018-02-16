@@ -489,7 +489,7 @@ class Cam_movement(Thread):
         @:return: tuple where the first elem is the outgoing/incoming 0/1, the second is right/left 0/1"""
 
         #the incoming outgoing movement is estimated throught the sum of the areas
-        # if sum(areas1)>sum(areas2) the object is outgoing
+        # if sum(areas1)<sum(areas2) the object is outgoing
 
         area1=sum(cv2.contourArea(c) for c in cnts1)
         area2=sum(cv2.contourArea(c) for c in cnts2)
@@ -517,7 +517,7 @@ class Cam_movement(Thread):
 
         print(centers1,centers2)
 
-        return (area1>area2,centers1>centers2)
+        return (area1<area2,centers1>centers2)
 
     # =========================FACE DETECION=======================================
     def denoise_img(self, image_list):
