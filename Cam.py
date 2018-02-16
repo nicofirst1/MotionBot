@@ -252,7 +252,7 @@ class Cam_movement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
-            # if the user wants the face in the video
+            # if the user wants the video of the movement
             if self.face_photo_flag:
                 # take the face and send it
                 face = self.face_on_video(to_write)
@@ -399,6 +399,7 @@ class Cam_movement(Thread):
 
         # create the file
         out= cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
+        out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
         #If areas has no elements return
         if len(self.areas)==0: return
