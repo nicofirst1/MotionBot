@@ -341,7 +341,7 @@ class Cam_movement(Thread):
 
         cnts=self.compute_img_difference(grd_truth,img2)
 
-        return any(cv2.contourArea(elem) < self.min_area for elem in cnts)
+        return any(cv2.contourArea(elem) > self.min_area for elem in cnts)
 
     def compute_img_difference(self,grd_truth, img2):
         # print("Calculation image difference")
