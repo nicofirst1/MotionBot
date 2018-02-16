@@ -260,10 +260,10 @@ class Cam_movement(Thread):
                 # take the face and send it
                 to_write, face = self.face_on_video(to_write)
 
-                if len(face) > 0:
-                    self.telegram_handler.send_image(face, "Face found")
-                else:
+                if not face:
                     self.telegram_handler.send_message("Face not found")
+                else:
+                    self.telegram_handler.send_image(face, "Face found")
 
             #write the movement on the video
            # for elem in to_write:
@@ -486,6 +486,7 @@ class Cam_movement(Thread):
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
                                                             hColor=hColor)
         print("denosed")
+
 
         return denoised
 
@@ -739,16 +740,18 @@ class Telegram_handler(Thread):
 
     def send_video(self, video_name, msg=""):
 
-        if not video_name in os.listdir("."):
+
+        try:
+            with open(video_name, "rb") as file:
+                for id in self.ids:
+                    if msg: self.bot.sendVideo(id, file, caption=msg)
+                    else:self.bot.sendVideo(id, file)
+
+            os.remove(video_name)
+
+        except FileNotFoundError:
             self.send_message("The video could not be found ")
-            return
 
-        with open(video_name, "rb") as file:
-            for id in self.ids:
-                if msg: self.bot.sendVideo(id, file, caption=msg)
-                else:self.bot.sendVideo(id, file)
-
-        os.remove(video_name)
         logger.info("Video sent")
 
     def send_file(self,file_name,msg=""):
