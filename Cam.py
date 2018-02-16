@@ -306,6 +306,7 @@ class Cam_movement(Thread):
     def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
+        if retry:print("retriyng")
         start = datetime.now()
         end = datetime.now()
         score = initial_score
@@ -327,7 +328,9 @@ class Cam_movement(Thread):
             # update current time in while loop
             end = datetime.now()
 
-        if not retry: self.loop_difference(1, initial_frame, 1.5, True)
+        if not retry:
+            sleep(0.5)
+            self.loop_difference(1, initial_frame, 1.5, True)
 
         print("End of difference loop")
 
