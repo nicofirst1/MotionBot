@@ -428,8 +428,8 @@ class Cam_movement(Thread):
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                             (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
 
-        #write frames on file
-        out.write(frame)
+            #write frames on file
+            out.write(frame)
         # free file
         out.release()
 
