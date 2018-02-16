@@ -449,8 +449,8 @@ class Cam_movement(Thread):
                         to_write += "Right"
 
 
-                    cv2.circle(frame, center_points[0], 1, (0, 0, 0), 1)
-                    cv2.circle(frame, center_points[1], 1, (0, 0, 0), 1)
+                    cv2.circle(frame, center_points[0], 1, (0, 0, 0), 10,2)
+                    cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
 
                 cv2.putText(frame, to_write,
                             (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255), 1)
@@ -505,9 +505,6 @@ class Cam_movement(Thread):
         centers1=[]
         centers2=[]
 
-        center_point1=0
-        center_point2=0
-
         for c in cnts1:
             centers1.append(cv2.boundingRect(c))
 
@@ -529,7 +526,7 @@ class Cam_movement(Thread):
         center_point1 = (int(sum(elem[0] for elem in center_point1) / len(center_point1)),int(sum(elem[1] for elem in center_point1) / len(center_point1)))
         center_point2 = (int(sum(elem[0] for elem in center_point2) / len(center_point2)),int(sum(elem[1] for elem in center_point2) / len(center_point2)))
 
-        #print(centers1,centers2)
+        print(center_point1,center_point2)
 
         return (area1<area2,centers1>centers2),(center_point1,center_point2)
 
