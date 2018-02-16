@@ -390,7 +390,10 @@ class Cam_movement(Thread):
         out= cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
         out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
+        prov_cnts=0
+        idx=0
         for frame in frames:
+
 
             if self.face_photo_flag:
 
@@ -407,6 +410,9 @@ class Cam_movement(Thread):
             # draw movement
             if areas:
                 cnts = self.compute_img_difference(self.ground_frame, frame)
+
+
+
                 # draw contours
                 for c in cnts:
                     # if the contour is too small, ignore it
@@ -420,10 +426,37 @@ class Cam_movement(Thread):
                         (x, y, w, h) = cv2.boundingRect(c)
                         cv2.rectangle(frame, (x, y), (x + w, y + h), motion_color, line_tickness)
 
-            #add a date to the frame
-            if date:
+
                 # add black rectangle at the bottom
                 cv2.rectangle(frame, (0, frame.shape[0]), (frame.shape[1], frame.shape[0] - 30), (0, 0, 0), -1)
+
+                # write the movement direction
+                if not idx%2:prov_cnts=cnts
+                elif len(prov_cnts)>0 and len(cnts)>0:
+                    movement=self.movement_direction(prov_cnts,cnts)
+                    to_write=""
+                    if movement[0]:
+                        to_write+="Incoming - "
+
+                    else:
+                        to_write+="Outgoing - "
+
+                    if movement[1]:
+                        to_write += "Left"
+
+                    else:
+                        to_write += "Right"
+
+                    print(movement)
+                    # write time
+                    cv2.putText(frame, to_write,
+                                ( frame.shape[0] - 10,10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 1)
+
+                idx+=1
+
+            #add a date to the frame
+            if date:
+
                 # write time
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                             (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
@@ -450,6 +483,33 @@ class Cam_movement(Thread):
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
         print("Done")
+
+    def movement_direction(self, cnts1, cnts2):
+        """Function to get the movement direction from two frames
+        @:return: tuple where the first elem is the outgoing/incoming 0/1, the second is right/left 0/1"""
+
+        #the incoming outgoing movement is estimated throught the sum of the areas
+        # if sum(areas1)>sum(areas2) the object is outgoing
+
+        area1=sum(cv2.contourArea(c) for c in cnts1)
+        area2=sum(cv2.contourArea(c) for c in cnts2)
+
+        #the left/right is given by the position of the averaged center of each area
+        # if center1>center2 the object is moving right to left (so left)
+        #get the centers of each area on the x axis
+        centers1=[]
+        centers2=[]
+        for c in cnts1:
+            centers1=[(x + (x+w))/2  for (x,y,w,h)  in cv2.boundingRect(c)]
+
+        for c in cnts2:
+            centers2 =[(x + (x+w))/2  for (x,y,w,h)  in cv2.boundingRect(c)]
+
+        #avarage the center
+        centers1=sum(centers1)/len(centers1)
+        centers2=sum(centers2)/len(centers2)
+
+        return (area1>area2,centers1>centers2)
 
     # =========================FACE DETECION=======================================
     def denoise_img(self, image_list):

@@ -126,10 +126,10 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Add date time to difference video
 - [X] Remove rectangles from face recognition
 - [X] Add profile face detector
-- [ ] Fix are_different loop
+- [X] Fix are_different loop
 - [ ] Fix date display
-- [ ] Reset ground image programmaticly
-- [ ] find a confidence method for faces in video 
+- [X] Reset ground image programmaticly
+- [ ] Find a confidence method for faces in video 
 - [ ] detect movement direction (right,left) (position of areas)
 - [ ] detect movement direction (incoming, outcoming) (sum of areas)
 - [ ] Classify person
