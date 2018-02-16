@@ -268,7 +268,7 @@ class Cam_movement(Thread):
                 self.draw_on_frames(to_write)
                 self.telegram_handler.send_video(self.video_name)
 
-            sleep(3)
+            #sleep(3)
 
 
     # =========================Movement=======================================
@@ -321,12 +321,13 @@ class Cam_movement(Thread):
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
-                if not retry: self.loop_difference(1,initial_frame,1.5,True)
-                else: self.check_bk_changes(prov, 3)
+                self.check_bk_changes(prov, 3)
                 break
 
             # update current time in while loop
             end = datetime.now()
+
+        if not retry: self.loop_difference(1, initial_frame, 1.5, True)
 
         print("End of difference loop")
 
@@ -526,8 +527,7 @@ class Cam_movement(Thread):
                     if self.face_photo_flag:
                         crop_frames.append(frame[y:y + h, x:x + w])
 
-                    # draw a rectangle around the corners
-                    #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
             idx+=1
 
 
