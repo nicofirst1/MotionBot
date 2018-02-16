@@ -306,8 +306,6 @@ class Cam_movement(Thread):
 
         return False
 
-
-
     def loop_difference(self, initial_score, initial_frame, seconds,retry=False):
         """Loop until the current frame is the same as the ground image or time is exceeded"""
 
@@ -484,6 +482,8 @@ class Cam_movement(Thread):
         # free file
         out.release()
 
+    def get_ground(self):
+        return copy.copy(self.ground_frame)
 
     def reset_ground(self, msg):
         """function to reset the ground truth image"""
