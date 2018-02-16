@@ -19,7 +19,7 @@ For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro
 
 Where the input pin is the GPIO0
 
-![connection](https://cdn.instructables.com/F7X/KHKG/IZT6TIS5/F7XKHKGIZT6TIS5.LARGE.jpg)
+![connection](https://cdn.instructables.com/F7X/KHKG/IZT6TIS5/F7XKHKGIZT6TIS5.LARGE.jpg) 
 
 ## Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=*
@@ -133,6 +133,7 @@ There are currently 4 flags which you can set inside the bot.
 - [ ] Find a confidence method for faces in video 
 - [X] detect movement direction (right,left) (position of areas) 
 - [X] detect movement direction (incoming, outcoming) (sum of areas)
+- [ ] detect multiple faces
 - [ ] Classify person
 
 ### Optimization
@@ -145,6 +146,9 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Moved from gaussianBlur to blur (x4 times faster)
 
 - [ ] ~~New thread function to get face in video~~
+
+# Updates
+
 
 # Issues
 

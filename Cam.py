@@ -215,6 +215,7 @@ class Cam_movement(Thread):
         while True:
             self.detect_motion_video()
 
+    @profile
     def detect_motion_video(self):
 
         # whait for resetting to be over
