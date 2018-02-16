@@ -455,7 +455,7 @@ class Cam_movement(Thread):
                 idx+=1
 
             #add a date to the frame
-            if date:
+            if False:
 
                 # write time
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
