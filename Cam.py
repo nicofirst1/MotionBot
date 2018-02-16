@@ -330,7 +330,7 @@ class Cam_movement(Thread):
 
         print("End of difference loop")
 
-    def are_different(self, grd_truth, img2, write_contour=False):
+    def are_different(self, grd_truth, img2):
         # print("Calculation image difference")
 
         # blur and convert to grayscale
@@ -375,17 +375,10 @@ class Cam_movement(Thread):
                 found_area = True
                 # compute the bounding box for the contour, draw it on the frame,
                 # and update the text
-                if write_contour:
-                    (x, y, w, h) = cv2.boundingRect(c)
-                    self.areas.append((cv2.boundingRect(c),"movement"))
-                    #cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                self.areas.append((cv2.boundingRect(c),"movement"))
+                #cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-                    if self.debug_flag:
-                        self.telegram_handler.send_image(frameDelta)
-                        self.telegram_handler.send_image(thresh_original, "Threshold Original")
-                        self.telegram_handler.send_image(thresh, "Threshold Dilated")
-                        self.telegram_handler.send_image(img2, "AREA: " + str(cv2.contourArea(c)))
-            # print(found_area)
+             
 
         return found_area
 
