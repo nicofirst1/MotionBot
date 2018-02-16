@@ -330,7 +330,7 @@ class Cam_movement(Thread):
             end = datetime.now()
 
         if not retry:
-            sleep(0.5)
+            sleep(1)
             self.loop_difference(1, initial_frame, 1.5, True)
 
         print("End of difference loop")
