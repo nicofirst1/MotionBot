@@ -192,7 +192,7 @@ class Cam_movement(Thread):
         self.out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
 
         self.video_flag = True
-        self.face_photo_flag = True
+        self.face_photo_flag = False
         self.motion_flag = True
         self.debug_flag = False
 
@@ -274,7 +274,7 @@ class Cam_movement(Thread):
             # send the original video too
             if not self.resetting_ground:
                 for elem in to_write:
-                    cv2.rectangle(elem,(elem.shape[1],0),(elem.shape[1]-10, elem.shape[0]),(0,0,0),-1)
+                    cv2.rectangle(elem,(0,elem.shape[1]),( elem.shape[0], elem.shape[1]-10),(0,0,0),-1)
                     cv2.putText(elem, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                                 (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
                     self.out.write(elem)
