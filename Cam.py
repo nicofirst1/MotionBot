@@ -327,7 +327,7 @@ class Cam_movement(Thread):
             # update current time in while loop
             end = datetime.now()
 
-        if retry: self.loop_difference(1, initial_frame, 1.5, True)
+        if not retry: self.loop_difference(1, initial_frame, 1.5, True)
 
         print("End of difference loop")
 
@@ -375,7 +375,6 @@ class Cam_movement(Thread):
         return cnts
     # =========================UTILS=======================================
 
-    @profile()
     def draw_on_frames(self, frames,areas=True, date=True):
         """Function to draw squares on objects"""
 
