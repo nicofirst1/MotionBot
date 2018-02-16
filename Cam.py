@@ -276,42 +276,8 @@ class Cam_movement(Thread):
 
             sleep(3)
 
-    def reset_ground(self, msg):
-        """function to reset the ground truth image"""
-        print("Reset ground image ...")
-        self.resetting_ground = True
-        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        self.ground_frame = gray
-        self.telegram_handler.send_image(self.ground_frame, msg)
-        self.resetting_ground = False
-        print("Done")
 
-    def loop_difference(self, initial_score, initial_frame, seconds):
-        """Loop until the current frame is the same as the ground image or time is exceeded"""
-
-        start = datetime.now()
-        end = datetime.now()
-        score = initial_score
-        print("Start of difference loop")
-        while score and not self.resetting_ground:
-
-            # take another fram
-            prov = self.frame[-1]
-
-            # check if images are different
-            score = self.are_different(initial_frame, prov)
-
-            # if time is exceeded exit while
-            if (end - start).seconds > seconds:
-                print("max seconds exceeded...checking for background changes")
-                self.check_bk_changes(prov, 3)
-                break
-
-            # update current time in while loop
-            end = datetime.now()
-
-        print("End of difference loop")
+    # =========================Movement=======================================
 
     def check_bk_changes(self, initial_frame, seconds):
         #taking time
@@ -343,49 +309,31 @@ class Cam_movement(Thread):
 
         return False
 
-    def draw_on_frames(self, frames,areas=True,faces=True, date=True):
-        """Function to draw squares on objects"""
+    def loop_difference(self, initial_score, initial_frame, seconds):
+        """Loop until the current frame is the same as the ground image or time is exceeded"""
 
-        face_color=(0,0,255) #red
-        movement_color=(0,255,0) #green
-        line_tickness=2
+        start = datetime.now()
+        end = datetime.now()
+        score = initial_score
+        print("Start of difference loop")
+        while score and not self.resetting_ground:
 
-        #If areas has no elements return
-        if len(self.areas)==0: return
+            # take another fram
+            prov = self.frame[-1]
 
-        for frame in frames:
+            # check if images are different
+            score = self.are_different(initial_frame, prov)
 
-            for elem in self.areas:
+            # if time is exceeded exit while
+            if (end - start).seconds > seconds:
+                print("max seconds exceeded...checking for background changes")
+                self.check_bk_changes(prov, 3)
+                break
 
-                # draw faces
-                if faces:
-                    if elem[1] == "faces":
-                        for (x, y, w, h) in elem[0]:
-                            cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+            # update current time in while loop
+            end = datetime.now()
 
-                # draw movement
-                if areas:
-                    if elem[1] == "movement":
-                        for (x, y, w, h) in elem[0]:
-                            cv2.rectangle(frame, (x, y), (x + w, y + h), movement_color, line_tickness)
-
-            #add a date to the frame
-            if date:
-                # add black rectangle at the bottom
-                cv2.rectangle(frame, (0, elem.shape[0]), (elem.shape[1], elem.shape[0] - 30), (0, 0, 0), -1)
-                # write time
-                cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                            (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
-
-            #write frames on file
-            self.out.write(frame)
-            # free file
-            self.out.release()
-
-        #empty areas
-        del self.areas[:]
-
-
+        print("End of difference loop")
 
     def are_different(self, grd_truth, img2, write_contour=False):
         # print("Calculation image difference")
@@ -446,6 +394,61 @@ class Cam_movement(Thread):
 
         return found_area
 
+    # =========================UTILS=======================================
+
+    def draw_on_frames(self, frames,areas=True,faces=True, date=True):
+        """Function to draw squares on objects"""
+
+        face_color=(0,0,255) #red
+        movement_color=(0,255,0) #green
+        line_tickness=2
+
+        #If areas has no elements return
+        if len(self.areas)==0: return
+
+        for frame in frames:
+
+            for elem in self.areas:
+
+                # draw faces
+                if faces:
+                    if elem[1] == "faces":
+                        for (x, y, w, h) in elem[0]:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+
+                # draw movement
+                if areas:
+                    if elem[1] == "movement":
+                        for (x, y, w, h) in elem[0]:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), movement_color, line_tickness)
+
+            #add a date to the frame
+            if date:
+                # add black rectangle at the bottom
+                cv2.rectangle(frame, (0, elem.shape[0]), (elem.shape[1], elem.shape[0] - 30), (0, 0, 0), -1)
+                # write time
+                cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                            (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
+
+            #write frames on file
+            self.out.write(frame)
+            # free file
+            self.out.release()
+
+        #empty areas
+        del self.areas[:]
+
+    def reset_ground(self, msg):
+        """function to reset the ground truth image"""
+        print("Reset ground image ...")
+        self.resetting_ground = True
+        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+        self.ground_frame = gray
+        self.telegram_handler.send_image(self.ground_frame, msg)
+        self.resetting_ground = False
+        print("Done")
+
     # =========================FACE DETECION=======================================
 
     def denoise_img(self, image_list):
@@ -501,52 +504,6 @@ class Cam_movement(Thread):
 
         return ()
 
-    def face_on_video_old(self, frames):
-
-
-        new_frames=[]
-        rectangular=[]
-        faces=[]
-        frame_count =0
-
-
-        for frame in frames:
-            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-            frame = frame[:, :, ::-1]
-            frame_count += 1
-            new_frames.append(frame)
-
-    # Every 128 frames (the default batch size), batch process the list of frames to find faces
-        batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
-        if len(new_frames) == 128:
-            # Now let's list all the faces we found in all 128 frames
-            for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
-                number_of_faces_in_frame = len(face_locations)
-
-                print("Found {} face(s)".format(number_of_faces_in_frame))
-
-                for face_location in face_locations:
-                    # Print the location of each face in this frame
-                    x, y, w, h = face_location
-
-                    #get the face cropped image
-                    if self.face_photo_flag:
-                        faces.append(frame[y:y + h, x:x + w])
-
-                    #draw a rectangle around the face
-                    frame= cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    rectangular.append(frame)
-
-            new_frames=[]
-
-
-        if len(faces)>0:
-            face=self.denoise_img(faces)
-        else: face=[]
-
-        return rectangular,face
-
-
     def face_on_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
@@ -588,8 +545,6 @@ class Cam_movement(Thread):
         print(str(faces) + " frames with faces detected")
 
         return colored_frames, face
-
-
 
 
     # =========================TELEGRAM BOT=======================================
@@ -676,6 +631,50 @@ class Cam_movement(Thread):
                 self.send_image(end_frame, "Face not detected")
             sleep(3)
 
+    def face_on_video_prov(self, frames):
+
+
+        new_frames=[]
+        rectangular=[]
+        faces=[]
+        frame_count =0
+
+
+        for frame in frames:
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            frame = frame[:, :, ::-1]
+            frame_count += 1
+            new_frames.append(frame)
+
+    # Every 128 frames (the default batch size), batch process the list of frames to find faces
+        batch_of_face_locations = face_recognition.batch_face_locations(new_frames, number_of_times_to_upsample=0)
+        if len(new_frames) == 128:
+            # Now let's list all the faces we found in all 128 frames
+            for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
+                number_of_faces_in_frame = len(face_locations)
+
+                print("Found {} face(s)".format(number_of_faces_in_frame))
+
+                for face_location in face_locations:
+                    # Print the location of each face in this frame
+                    x, y, w, h = face_location
+
+                    #get the face cropped image
+                    if self.face_photo_flag:
+                        faces.append(frame[y:y + h, x:x + w])
+
+                    #draw a rectangle around the face
+                    frame= cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                    rectangular.append(frame)
+
+            new_frames=[]
+
+
+        if len(faces)>0:
+            face=self.denoise_img(faces)
+        else: face=[]
+
+        return rectangular,face
 
 
 class Telegram_handler(Thread):

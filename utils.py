@@ -11,7 +11,8 @@ video - send video
 flags - set flags
 resetg - reset the groung image
 stop - stop surveillance execution
-log - send the logger file
+logsend - send the logger file
+logdel - delete the log file
 bkground - send the background image
 """
 

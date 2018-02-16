@@ -39,6 +39,10 @@ If you want to run it even when you close the ssh connection use
 * /photo - get a snapshot from the camera and send it trhought telegram 
 * /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
 * /flags - you can dis/enable the notification from the movement detection 
+* /resetg - reset the ground image in *cam_movement*
+* /bkground - send the current background image
+* /logsend - send the log file
+* /logdel - delete the log file
 
 ## Flags
 There are currently 4 flags which you can set inside the bot. 
@@ -133,8 +137,8 @@ There are currently 4 flags which you can set inside the bot.
 ### Optimization
 - [X] New thread class for image/video/message sending
 - [X] Fix while score, exit when no difference are detected anymore
-- [ ] Save countour list
-- [ ] Save area list
+- [X] Save countour list
+- [X] Save area list
 - [ ] Implement profiling function
 
 - [ ] ~~New thread function to get face in video~~

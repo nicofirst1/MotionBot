@@ -189,7 +189,7 @@ def stop_execution(bot, update):
 @elegible_user
 def send_log(bot, update):
     """Telegram command to send the logger file"""
-    logger.info("log command called")
+    logger.info("send log command called")
 
     if ("motion.log" in os.listdir("Resources/")):
         with open("Resources/motion.log", "rb") as file:
@@ -200,11 +200,24 @@ def send_log(bot, update):
 
 
 @elegible_user
+def delete_log(bot, update):
+    """Telegram command to send the logger file"""
+    logger.info("delete log command called")
+
+    if ("motion.log" in os.listdir("Resources/")):
+        os.remove("Resources/motion.log")
+        update.message.reply_text("Log deleted")
+
+
+    else:
+        update.message.reply_text("No log file detected!")
+
+@elegible_user
 def send_ground(bot, update):
     logger.info("ground command called")
 
     image_name = "ground.png"
-    print("ground")
+    print("Sending ground...")
 
     ret = cv2.imwrite(image_name, cam.motion.ground_frame)
     if not ret:
@@ -216,6 +229,7 @@ def send_ground(bot, update):
         bot.sendPhoto(update.message.from_user.id, file, caption="Current background image")
 
     os.remove(image_name)
+    print("...Done")
 
 
 # ===============Utils===================
