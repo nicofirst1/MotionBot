@@ -449,7 +449,7 @@ class Cam_movement(Thread):
                         to_write += "Right"
 
 
-                    cv2.circle(frame, center_points[0], 1, (0, 0, 0), 10,2)
+                    cv2.circle(frame, center_points[0], 1, (255, 255, 0), 10,2)
                     cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
 
                 cv2.putText(frame, to_write,
