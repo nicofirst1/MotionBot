@@ -194,7 +194,7 @@ class Cam_movement(Thread):
 
         self.resetting_ground = False
 
-        self.areas=[]
+        self.blur=(10,10)
 
         logger.debug("Cam_movement started")
 
@@ -283,7 +283,7 @@ class Cam_movement(Thread):
         #setting initial frame
         gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         #gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        gray = cv2.blur(gray, (21, 21), 0)
+        gray = cv2.blur(gray, self.blur, 0)
 
         while not score:
 
@@ -347,7 +347,7 @@ class Cam_movement(Thread):
         # blur and convert to grayscale
         gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         #gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        gray = cv2.blur(gray, (21, 21), 0)
+        gray = cv2.blur(gray, self.blur, 0)
 
         # print(gray.shape, grd_truth.shape)
 
@@ -379,7 +379,6 @@ class Cam_movement(Thread):
         return cnts
 
     # =========================UTILS=======================================
-    @time_profiler()
     def draw_on_frames(self, frames,areas=True, date=True):
         """Function to draw squares on objects"""
 
@@ -446,7 +445,7 @@ class Cam_movement(Thread):
         self.resetting_ground = True
         gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
         #gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        gray = cv2.blur(gray, (21, 21), 0)
+        gray = cv2.blur(gray, self.blur, 0)
         self.ground_frame = gray
         self.telegram_handler.send_image(self.ground_frame, msg)
         self.resetting_ground = False
@@ -499,7 +498,6 @@ class Cam_movement(Thread):
         faces = self.frontal_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)
         if len(faces) > 0:
             # print("face detcted!")
-            self.areas.append((faces,"faces"))
             return faces
         else:
             faces=self.profile_face_cascade.detectMultiScale(img,scaleFactor=scale_factor,minNeighbors=min_neight)

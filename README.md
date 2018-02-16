@@ -141,6 +141,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Save area list
 - [X] Implement profiling function
 - [X] Optimize are different (replace for with any)
+- [X] Moved from gaussianBlur to blur (x4 times faster)
 
 - [ ] ~~New thread function to get face in video~~
 
