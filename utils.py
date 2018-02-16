@@ -118,7 +118,7 @@ def time_profiler():
 
             pr.disable()
             s = io.StringIO()
-            sortby = 'cumulative'
+            sortby = 'tottime'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
             print("\n\n=====================TIMER PROFILER START========================\n")

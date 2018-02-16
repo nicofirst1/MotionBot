@@ -322,7 +322,7 @@ class Cam_movement(Thread):
             # if time is exceeded exit while
             if (end - start).seconds > seconds:
                 print("max seconds exceeded...checking for background changes")
-                self.check_bk_changes(prov, 3)
+                if not retry: self.check_bk_changes(prov, 3)
                 break
 
             # update current time in while loop
@@ -411,7 +411,7 @@ class Cam_movement(Thread):
                     # if the contour is too small, ignore it
                     # print("Area : "+str(cv2.contourArea(c)))
                     if cv2.contourArea(c) < self.min_area:
-                        continue
+                        pass
 
                     else:
                         # compute the bounding box for the contour, draw it on the frame,
