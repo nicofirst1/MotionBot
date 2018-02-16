@@ -255,7 +255,7 @@ class Cam_movement(Thread):
             # if the user wants the video of the movement
             if self.face_photo_flag:
                 # take the face and send it
-                face = self.face_on_video(to_write)
+                face = self.face_from_video(to_write)
 
                 if not face:
                     self.telegram_handler.send_message("Face not found")
@@ -331,6 +331,12 @@ class Cam_movement(Thread):
         print("End of difference loop")
 
     def are_different(self, grd_truth, img2):
+
+        cnts=self.compute_img_difference(grd_truth,img2)
+        return any(cv2.contourArea(elem) < self.min_area for elem in cnts)
+
+
+    def compute_img_difference(self,grd_truth, img2):
         # print("Calculation image difference")
 
         # blur and convert to grayscale
@@ -358,37 +364,20 @@ class Cam_movement(Thread):
         thresh = cv2.dilate(thresh_original, None, iterations=5)
         (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # loop over the contours
-        found_area = False
-        # print(len(cnts))
+        if self.debug_flag:
+            self.telegram_handler.send_image(frameDelta)
+            self.telegram_handler.send_image(thresh_original, "Threshold Original")
+            self.telegram_handler.send_image(thresh, "Threshold Dilated")
+            self.telegram_handler.send_image(img2)
 
-
-
-        #draw contours
-        for c in cnts:
-            # if the contour is too small, ignore it
-            # print("Area : "+str(cv2.contourArea(c)))
-            if cv2.contourArea(c) < self.min_area:
-                continue
-
-            else:
-                found_area = True
-                # compute the bounding box for the contour, draw it on the frame,
-                # and update the text
-                self.areas.append((cv2.boundingRect(c),"movement"))
-                #cv2.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-             
-
-        return found_area
-
+        return cnts
     # =========================UTILS=======================================
 
     def draw_on_frames(self, frames,areas=True,faces=True, date=True):
         """Function to draw squares on objects"""
 
         face_color=(0,0,255) #red
-        movement_color=(0,255,0) #green
+        motion_color=(0,255,0) #green
         line_tickness=2
 
         # create the file
@@ -398,32 +387,48 @@ class Cam_movement(Thread):
         #If areas has no elements return
         if len(self.areas)==0: return False
 
+
         for frame in frames:
 
-            for elem in self.areas:
+            if faces:
 
-                # draw faces
-                if faces:
-                    if elem[1] == "faces":
-                        for (x, y, w, h) in elem[0]:
-                            cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+                # detect if there is a face
+                face = self.detect_face(frame)
 
-                # draw movement
-                if areas:
-                    if elem[1] == "movement":
-                        for (x, y, w, h) in elem[0]:
-                            cv2.rectangle(frame, (x, y), (x + w, y + h), movement_color, line_tickness)
+                # if there is a face
+                if len(face) > 0:
+                    # get the corners of the faces
+                    for (x, y, w, h) in face:
+                        # draw a rectangle around the corners
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+
+            # draw movement
+            if areas:
+                cnts = self.compute_img_difference(self.ground_frame, frame)
+                # draw contours
+                for c in cnts:
+                    # if the contour is too small, ignore it
+                    # print("Area : "+str(cv2.contourArea(c)))
+                    if cv2.contourArea(c) < self.min_area:
+                        continue
+
+                    else:
+                        # compute the bounding box for the contour, draw it on the frame,
+                        # and update the text
+                        (x, y, w, h) = cv2.boundingRect(c)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), motion_color, line_tickness)
 
             #add a date to the frame
             if date:
                 # add black rectangle at the bottom
-                cv2.rectangle(frame, (0, elem.shape[0]), (elem.shape[1], elem.shape[0] - 30), (0, 0, 0), -1)
+                cv2.rectangle(frame, (0, frame.shape[0]), (frame.shape[1], frame.shape[0] - 30), (0, 0, 0), -1)
                 # write time
                 cv2.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-                            (10, elem.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
+                            (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
 
             #write frames on file
             out.write(frame)
+
 
         # free file
         out.release()
@@ -499,7 +504,7 @@ class Cam_movement(Thread):
 
         return ()
 
-    def face_on_video(self, frames):
+    def face_from_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
         print("Face on video")
@@ -508,6 +513,7 @@ class Cam_movement(Thread):
         faces = 0
 
         # for every frame in the video
+        idx=0
         for frame in frames:
 
             # detect if there is a face
@@ -525,6 +531,7 @@ class Cam_movement(Thread):
 
                     # draw a rectangle around the corners
                     #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            idx+=1
 
 
 
