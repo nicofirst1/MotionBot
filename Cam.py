@@ -171,7 +171,7 @@ class Cam_movement(Thread):
         self.delay = 0.1
         self.diff_threshold = 0
         self.image_name = "different.png"
-        self.min_area = 2000
+        self.min_area = 1000
         self.ground_frame = 0
 
         self.frontal_face_cascade = cv2.CascadeClassifier(
