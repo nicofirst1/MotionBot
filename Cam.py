@@ -528,7 +528,7 @@ class Cam_movement(Thread):
         center_point1 = (int(sum(elem[0] for elem in center_point1) / len(center_point1)),int(sum(elem[1] for elem in center_point1) / len(center_point1)))
         center_point2 = (int(sum(elem[0] for elem in center_point2) / len(center_point2)),int(sum(elem[1] for elem in center_point2) / len(center_point2)))
 
-        print(center_point1,center_point2)
+        #print(center_point1,center_point2)
 
         return (area1<area2,centers1>centers2),(center_point1,center_point2)
 
