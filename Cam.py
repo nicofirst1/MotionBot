@@ -448,7 +448,7 @@ class Cam_movement(Thread):
                     else:
                         to_write += "Right"
 
-                    print(movement)
+                    #print(movement)
                     # write time
 
                 cv2.putText(frame, to_write,
@@ -494,7 +494,7 @@ class Cam_movement(Thread):
         area1=sum(cv2.contourArea(c) for c in cnts1)
         area2=sum(cv2.contourArea(c) for c in cnts2)
 
-        print(area1,area2)
+        #print(area1,area2)
 
         #the left/right is given by the position of the averaged center of each area
         # if center1>center2 the object is moving right to left (so left)
@@ -515,7 +515,7 @@ class Cam_movement(Thread):
         centers1=sum(centers1)/len(centers1)
         centers2=sum(centers2)/len(centers2)
 
-        print(centers1,centers2)
+        #print(centers1,centers2)
 
         return (area1<area2,centers1>centers2)
 
