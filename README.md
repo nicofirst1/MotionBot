@@ -32,6 +32,27 @@ To start the bot simply use
 If you want to run it even when you close the ssh connection use
 `nohup python main.py &`
 
+## Parameter Tuning
+ You may want to tune some parameters depending on your enviroment (light, distance...). Here you will find a complete list of
+ the parameter i suggest you to change based on your needs.
+
+### Cam_movement
+
+You can find the following parameter in the __init__ function
+
+* **send_id** : your telegram id
+* **min_area** : the minimum area for the movement detection. If the current frame has a difference with the ground image
+and the area of this difference is grater than the **min_area** parameter, the movement is detected
+* **frontal_face_cascade/profile_face_cascade** : they must be set to the cascades in the *opencv/data* direcotry you downloaded
+* **max_seconds_retries** (optional) : The movement will be detected for a maximum of **max_seconds_retries** second then, the 
+ program will look for background changes
+* **resolution** : the resolution you want to use for your camera (Note that if you change this parameter telegram will read the video files
+ as Document rather than Gif)
+* **fps** : the frame per second for your cam
+* **face_photo/motion/debug/video flags** : You can directly run the bot with the default falgs value by setting these parameters (see the flag section below)
+* **blur** : the mean by which you want to blur the frames before detecting any movement (use the command /bkground to check the blur ratio)
+
+
 
 
 ## Avaiable telgram commands
@@ -150,6 +171,7 @@ There are currently 4 flags which you can set inside the bot.
 # Updates
 
 * Add possibility to send infos to specific id in telegram class
+* Updated README
 
 # Issues
 

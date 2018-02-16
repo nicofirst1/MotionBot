@@ -1,5 +1,6 @@
 import copy
 import threading
+import traceback
 from multiprocessing import Pool
 from threading import Thread
 import os
@@ -9,6 +10,8 @@ import datetime
 import logging
 
 import gc
+
+import sys
 from memory_profiler import profile
 
 from utils import time_profiler
@@ -171,7 +174,6 @@ class Cam_movement(Thread):
         self.send_id = 24978334
 
         self.delay = 0.1
-        self.diff_threshold = 0
         self.image_name = "different.png"
         self.min_area = 2500
         self.ground_frame = 0
@@ -215,7 +217,12 @@ class Cam_movement(Thread):
         self.reset_ground("Background image")
 
         while True:
-            self.detect_motion_video()
+            try:
+                self.detect_motion_video()
+            except :
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                logger.error(''.join('!! ' + line for line in lines))  # Log it or whatever here
 
     def detect_motion_video(self):
 
@@ -706,7 +713,6 @@ class Cam_movement(Thread):
             sleep(3)
 
 
-
 class Telegram_handler(Thread):
     """Class to handle image/message/cideo sending throught telegram bot"""
 
@@ -817,3 +823,62 @@ class Telegram_handler(Thread):
         else:
             self.send_message("No log file detected!",specific_id=specific_id)
 
+class Face_recognizer(Thread):
+    """Class dedicated to face recognition
+    Each face is saved in a folder inside faces_dir with the following syntax s_idx_subjectName, where idx is the
+    number of direcoties inside faces_dir and subjectName is the name of the person the face belogns to."""
+
+
+    def __init__(self):
+
+        Thread.__init__(self)
+
+        self.faces_dir="Resources/Faces/"
+        self.unkown=self.faces_dir+"Unknown"
+
+
+    def add_image(self, image, subject_name):
+
+        #look for the direcotry and create it if not present
+        if not subject_name in os.listdir(self.faces_dir):
+            self.add_folder(subject_name)
+
+
+        #get the directory name
+        dir=self.get_name_dir(subject_name)
+
+        if not dir: return False
+
+        #get the length of the images in the directory
+        idx=len([name for name in os.listdir(dir) if os.path.isfile(name)])
+
+        image_name=dir+"image_"+str(idx)+".png"
+
+        ret = cv2.imwrite(image_name, image)
+
+        return ret
+
+
+
+
+
+
+    def add_folder(self, name):
+        """Create a folder for the new person"""
+
+        if not name in os.listdir(self.faces_dir):
+            #get how many folder there are in the faces dir
+            idx=len(os.listdir(self.faces_dir))
+            #generate the name
+            name="s_"+str(idx)+"_"+name
+            #create the directory
+            os.makedirs(self.faces_dir+name)
+
+
+    def get_name_dir(self, subject_name):
+
+        for dir in os.listdir(self.faces_dir):
+            if subject_name in dir:
+                return dir
+
+        return False
