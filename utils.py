@@ -1,7 +1,7 @@
 # coding=utf-8
 from datetime import datetime
 from functools import wraps
-
+import cProfile, pstats, io
 MAX_RETRIES = 8
 
 COMMANDS="""
@@ -106,17 +106,22 @@ def read_token_psw():
     return token.decode("utf-8") ,psw.decode("utf-8")
 
 
-def profiler(func):
-    @wraps(func)
 
-    def profile(**kwargs):
+def profiler():
 
-        start=datetime.now()
+    def real_decorator(function):
+        def wrapper(*args, **kwargs):
+            pr = cProfile.Profile()
+            pr.enable()
 
-        func(**kwargs)
+            function(*args, **kwargs)
 
-        end=datetime.now()
+            pr.disable()
+            s = io.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+            print(s.getvalue())
 
-        micro=(end-start).microseconds
-
-        print("{:,}".format(micro)+" miscroseconds")
+        return wrapper
+    return real_decorator
