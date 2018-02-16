@@ -265,9 +265,8 @@ class Cam_movement(Thread):
 
             # send the original video too
             if not self.resetting_ground:
-                if not self.draw_on_frames(to_write):
-                    self.telegram_handler.send_message("Error while writing the file")
-                else: self.telegram_handler.send_video(self.video_name)
+                self.draw_on_frames(to_write)
+                self.telegram_handler.send_message("Error while writing the file")
 
             sleep(3)
 
@@ -384,10 +383,6 @@ class Cam_movement(Thread):
         out= cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
         out.open(self.video_name, 0x00000021, self.fps, self.resolution)
 
-        #If areas has no elements return
-        if len(self.areas)==0: return False
-
-
         for frame in frames:
 
             if faces:
@@ -435,7 +430,6 @@ class Cam_movement(Thread):
 
         #empty areas
         del self.areas[:]
-        return True
 
     def reset_ground(self, msg):
         """function to reset the ground truth image"""
