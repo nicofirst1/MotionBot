@@ -14,6 +14,7 @@ stop - stop surveillance execution
 logsend - send the logger file
 logdel - delete the log file
 bkground - send the background image
+classify - classify the person face
 """
 
 def is_enabled(id):

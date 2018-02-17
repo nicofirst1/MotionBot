@@ -272,6 +272,8 @@ class Face_recognizer(Thread):
         #currently used only for the unknown direcotry
         subject_name=self.unknown
 
+        print("Adding face images to unknown folder...")
+
 
         # look for the direcotry and create it if not present
         if not glob.glob(self.faces_dir+"*_"+subject_name):
@@ -293,6 +295,9 @@ class Face_recognizer(Thread):
             image_name = dir + "image_" + str(idx) + ".png"
             cv2.imwrite(image_name, image)
             idx+=1
+
+        print("...Done")
+
 
         return True
 
