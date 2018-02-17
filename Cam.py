@@ -651,7 +651,7 @@ class Cam_movement(Thread):
                 logger.error("Error during the insertion of face images into dir")
             face=self.denoise_img(crop_frames)
 
-        else: face=False
+        else: face=[]
 
         print(str(faces) + " frames with faces detected")
         print("... face detector end")
