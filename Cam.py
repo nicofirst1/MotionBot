@@ -200,7 +200,7 @@ class Cam_movement(Thread):
         self.fps = 30
 
         self.video_flag = True
-        self.face_photo_flag = False
+        self.face_photo_flag = True
         self.motion_flag = True
         self.debug_flag = False
 
