@@ -59,6 +59,7 @@ class Face_recognizer(Thread):
 
     def run(self):
 
+        self.train_model()
         #updater.start_polling()
         while True:continue
 
@@ -250,6 +251,8 @@ class Face_recognizer(Thread):
 
     def train_model(self):
         """Function to train the recognizer"""
+
+        print("Training model...")
         #flag value
         self.is_training=True
 
@@ -261,12 +264,14 @@ class Face_recognizer(Thread):
 
 
         self.is_training=False
+        print("....Model trained")
 
 
     def predict(self, img):
         """ this function recognizes the person in image passed and draws a
         rectangle around detected face with name of the subject"""
 
+        print("Predicting....")
         #do not try to predict while the model is training
         if self.is_training:
             return False
@@ -276,7 +281,7 @@ class Face_recognizer(Thread):
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
 
-
+        print("...Done")
         return label_text
 
     #===================UTILS=========================
