@@ -276,7 +276,7 @@ class Face_recognizer(Thread):
 
 
         # look for the direcotry and create it if not present
-        if not glob.glob(self.faces_dir+"*_"+subject_name):
+        if not glob.glob(self.faces_dir+subject_name):
             return False
             #self.add_folder(subject_name)
 
