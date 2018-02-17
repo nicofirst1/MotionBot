@@ -300,6 +300,12 @@ It is connected only to the cv.imwrite() function
 ### Solution
 * Send image throught cam_movement class
 
+## Issue
+Get the prediction confidence with the *cv2.face.createLBPHFaceRecognizer().predict()* method
+
+### Solution
+Found [here](http://answers.opencv.org/question/82294/cant-get-predict-confidence/)
+
 # Infos
 
 ## Image difference
