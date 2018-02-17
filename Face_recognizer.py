@@ -259,9 +259,7 @@ class Face_recognizer(Thread):
 
         #prepare the data
         faces,labels=self.prepare_training_data()
-        print(faces)
-        print(labels)
-        # create our LBPH face recognizer
+        # train
         self.face_recognizer.train(faces, np.array(labels))
 
 
@@ -304,8 +302,6 @@ class Face_recognizer(Thread):
 
 
 
-
-
     def prepare_training_data(self):
 
         # ------STEP-1--------
@@ -323,8 +319,10 @@ class Face_recognizer(Thread):
             label = int(dir_name.split("/")[2].split("_")[1])
 
             #for every image in the direcotry append image,label
-            for image in glob.glob(dir_name + "/*.png"):
-                faces.append(image)
+            for image_path in glob.glob(dir_name + "/*.png"):
+                image = cv2.imread(image_path)
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                faces.append(gray)
                 labels.append(label)
 
         return faces, labels
