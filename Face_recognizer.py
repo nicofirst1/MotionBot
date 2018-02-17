@@ -285,9 +285,9 @@ class Face_recognizer(Thread):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # predict the image using our face recognizer
-        collector=[]
+        collector=cv2.PredictCollector()
         non_so_cosa=[]
-        label, confidence = self.face_recognizer.predict(gray,-1,0)
+        label, confidence = self.face_recognizer.predict(gray,collector,0)
         print(label, confidence, collector)
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
