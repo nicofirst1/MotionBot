@@ -103,6 +103,8 @@ There are currently 4 flags which you can set inside the bot.
 
 ### Face recognition
 * https://github.com/informramiz/opencv-face-recognition-python
+* https://docs.opencv.org/2.4/modules/contrib/doc/facerec/facerec_api.html#Ptr<FaceRecognizer> createLBPHFaceRecognizer(int radius, int neighbors, int grid_x, int grid_y, double threshold)
+* https://docs.opencv.org/2.4/modules/contrib/doc/facerec/facerec_api.html
 
 ## Image similarity comparison
 * https://ece.uwaterloo.ca/~z70wang/publications/ssim.pdf
@@ -172,10 +174,11 @@ There are currently 4 flags which you can set inside the bot.
 
 ### Face Recognizer
 - [X] Save faces into corresponding dirs
-- [ ] Train model for every face
-- [ ] Save the model inside the corrisponding dir
-- [ ] Retrain model when there are 10 more images in the dir
-- [ ] Classify person
+- [X] Train model for every face
+- [X] Classify person
+- [ ] Save model 
+- [ ] Load/update model with new faces
+- [ ] Get face confidence to auto classify images
 
 ### Optimization
 - [X] New thread class for image/video/message sending
@@ -186,6 +189,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Optimize are different (replace for with any)
 - [X] Moved from gaussianBlur to blur (x4 times faster)
 - [ ] Optimize face detection in time
+- [ ] Delete subjects face images after the model has been trained with them
 
 - [ ] ~~New thread function to get face in video~~
 

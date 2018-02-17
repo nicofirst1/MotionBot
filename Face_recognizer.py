@@ -276,7 +276,8 @@ class Face_recognizer(Thread):
         if self.is_training:
             return False
 
-        #turn image to grayscale
+        #convert to right unit type and turn image to grayscale
+        img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # predict the image using our face recognizer
