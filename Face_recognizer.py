@@ -287,7 +287,7 @@ class Face_recognizer(Thread):
         # predict the image using our face recognizer
         collector=[]
         non_so_cosa=[]
-        label, confidence = self.face_recognizer.predict(gray,collector,0)
+        label, confidence = self.face_recognizer.predict(gray,-1,0)
         print(label, confidence, collector)
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
