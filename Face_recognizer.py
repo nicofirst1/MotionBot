@@ -23,7 +23,7 @@ class Face_recognizer(Thread):
 
 
         #======RECOGNIZER VARIABLES======
-        self.face_recognizer = cv2.face.createLBPHFaceRecognizer()
+        self.face_recognizer = cv2.face.LBPHFaceRecognizer_create()
         self.is_training=False
 
 
@@ -285,9 +285,9 @@ class Face_recognizer(Thread):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # predict the image using our face recognizer
-        collect = cv2.face.PredictCollector()
-        label=self.face_recognizer.predict(gray,collect)
-        print(label,collect)
+        #collect = cv2.face.PredictCollector()
+        label=self.face_recognizer.predict(gray)
+        print(label)
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
 
