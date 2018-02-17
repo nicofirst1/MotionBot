@@ -25,12 +25,6 @@ Where the input pin is the GPIO0
 * Edit file **token_psw.txt**, insert your token and password after the *=*
 * Edit the fallback_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
 
-# HOW TO USE
-
-To start the bot simply use
-`pyhton main.py`
-If you want to run it even when you close the ssh connection use
-`nohup python main.py &`
 
 ## Parameter Tuning
  You may want to tune some parameters depending on your enviroment (light, distance...). Here you will find a complete list of
@@ -53,9 +47,25 @@ and the area of this difference is grater than the **min_area** parameter, the m
 * **blur** : the mean by which you want to blur the frames before detecting any movement (use the command /bkground to check the blur ratio)
 
 
+### Cam_shotter
+
+You can find the following parameter in the __init__ function
+* **cam_idx** : the index of your camera (it should be zero for one camera)
+
+# HOW TO USE
+
+To start the bot simply use
+`pyhton main.py`
+
+If you want to run it even when you close the ssh connection use
+`nohup python main.py &`
+
 
 
 ## Avaiable telgram commands
+
+These are the currently avaiable commands for the telegram bot
+
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
 * /photo - get a snapshot from the camera and send it trhought telegram 
 * /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
@@ -64,6 +74,8 @@ and the area of this difference is grater than the **min_area** parameter, the m
 * /bkground - send the current background image
 * /logsend - send the log file
 * /logdel - delete the log file
+
+NB: you can change the commands name just by changing the *CommandHandlers* in the *main.py* file
 
 ## Flags
 There are currently 4 flags which you can set inside the bot. 
@@ -199,7 +211,7 @@ OpenCV: FFMPEG: fallback to use tag 0x00000020/' ???'
 
 ### Solutions
 * Changing codec to _cv2.VideoWriter_fourcc(*'avc1')_ and extension to **.mov** sends a file (not a gif) which can be viewd both by the desktop and the mobile version of telegram
-* Final solution: Removed the codec calss and used **0x00000021** instead (with **.mp4** extension), found (here)[https://devtalk.nvidia.com/default/topic/1029451/-python-what-is-the-four-characters-fourcc-code-for-mp4-encoding-on-tx2/]
+* Final solution: Removed the codec calss and used **0x00000021** instead (with **.mp4** extension), found [here](https://devtalk.nvidia.com/default/topic/1029451/-python-what-is-the-four-characters-fourcc-code-for-mp4-encoding-on-tx2/)
 
 ## Issue
 Video difference is laggy 

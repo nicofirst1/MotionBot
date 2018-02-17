@@ -15,7 +15,7 @@ updater = Updater(TOKEN)
 disp = updater.dispatcher
 logger = logging.getLogger('motionlog')
 
-cam = Cam_class(updater.bot)
+cam = Cam_class(updater)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),

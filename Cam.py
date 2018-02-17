@@ -14,6 +14,7 @@ import gc
 import sys
 from memory_profiler import profile
 
+from Face_recognizer import Face_recognizer
 from utils import time_profiler
 
 logger = logging.getLogger('motionlog')
@@ -21,17 +22,23 @@ logger = logging.getLogger('motionlog')
 
 class Cam_class:
 
-    def __init__(self, bot):
-        self.MAX_RETRIES = 4
-        self.frames = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    def __init__(self, updater):
 
-        self.telegram_handler = Telegram_handler(bot)
+        self.frames = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.updater=updater
+        self.disp=updater.dispatcher
+        self.bot=self.disp.bot
+
+        self.telegram_handler = Telegram_handler(  self.bot)
         self.telegram_handler.start()
 
         self.shotter = Cam_shotter(self.frames)
         self.shotter.start()
 
-        self.motion = Cam_movement(self.shotter, self.telegram_handler)
+        self.face_recognizer=Face_recognizer(self.disp)
+        self.face_recognizer.start()
+
+        self.motion = Cam_movement(self.shotter, self.telegram_handler, self.face_recognizer)
         self.motion.start()
         logger.debug("Cam_class started")
 
@@ -164,7 +171,7 @@ class Cam_shotter(Thread):
 class Cam_movement(Thread):
     """Class to detect movement from camera frames"""
 
-    def __init__(self, shotter, telegram):
+    def __init__(self, shotter, telegram, face_recognizer):
         # init the thread
         Thread.__init__(self)
 
@@ -172,10 +179,11 @@ class Cam_movement(Thread):
         self.frame = shotter.queue
         self.telegram_handler = telegram
         self.send_id = 24978334
+        self.face_recognizer=face_recognizer
 
         self.delay = 0.1
         self.image_name = "different.png"
-        self.min_area = 2500
+        self.min_area = 2000
         self.ground_frame = 0
 
         self.frontal_face_cascade = cv2.CascadeClassifier(
@@ -629,6 +637,7 @@ class Cam_movement(Thread):
 
         if len(crop_frames)>0:
 
+            self.face_recognizer.add_image_write(crop_frames)
             face=self.denoise_img(crop_frames)
 
         else: face=()
@@ -823,62 +832,3 @@ class Telegram_handler(Thread):
         else:
             self.send_message("No log file detected!",specific_id=specific_id)
 
-class Face_recognizer(Thread):
-    """Class dedicated to face recognition
-    Each face is saved in a folder inside faces_dir with the following syntax s_idx_subjectName, where idx is the
-    number of direcoties inside faces_dir and subjectName is the name of the person the face belogns to."""
-
-
-    def __init__(self):
-
-        Thread.__init__(self)
-
-        self.faces_dir="Resources/Faces/"
-        self.unkown=self.faces_dir+"Unknown"
-
-
-    def add_image(self, image, subject_name):
-
-        #look for the direcotry and create it if not present
-        if not subject_name in os.listdir(self.faces_dir):
-            self.add_folder(subject_name)
-
-
-        #get the directory name
-        dir=self.get_name_dir(subject_name)
-
-        if not dir: return False
-
-        #get the length of the images in the directory
-        idx=len([name for name in os.listdir(dir) if os.path.isfile(name)])
-
-        image_name=dir+"image_"+str(idx)+".png"
-
-        ret = cv2.imwrite(image_name, image)
-
-        return ret
-
-
-
-
-
-
-    def add_folder(self, name):
-        """Create a folder for the new person"""
-
-        if not name in os.listdir(self.faces_dir):
-            #get how many folder there are in the faces dir
-            idx=len(os.listdir(self.faces_dir))
-            #generate the name
-            name="s_"+str(idx)+"_"+name
-            #create the directory
-            os.makedirs(self.faces_dir+name)
-
-
-    def get_name_dir(self, subject_name):
-
-        for dir in os.listdir(self.faces_dir):
-            if subject_name in dir:
-                return dir
-
-        return False
