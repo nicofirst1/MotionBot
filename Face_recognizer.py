@@ -259,6 +259,8 @@ class Face_recognizer(Thread):
 
         #prepare the data
         faces,labels=self.prepare_training_data()
+        print(faces)
+        print(labels)
         # create our LBPH face recognizer
         self.face_recognizer.train(faces, np.array(labels))
 
