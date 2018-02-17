@@ -23,7 +23,7 @@ class Face_recognizer(Thread):
 
 
         #======RECOGNIZER VARIABLES======
-        self.face_recognizer = cv2.face.LBPHFaceRecognizer_create()
+        self.face_recognizer = cv2.face.createLBPHFaceRecognizer()
         self.is_training=False
 
 
