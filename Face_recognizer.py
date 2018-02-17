@@ -270,7 +270,7 @@ class Face_recognizer(Thread):
     def add_image_write(self, image_list, subject_name=""):
 
         #currently used only for the unknown direcotry
-        subject_name=self.unknown
+        subject_name="Unknown"
 
         print("Adding face images to unknown folder...")
 
