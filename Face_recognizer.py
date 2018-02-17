@@ -2,7 +2,7 @@ import glob
 import random
 from threading import Thread
 import cv2
-
+import numpy as np
 import os
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
@@ -20,9 +20,17 @@ class Face_recognizer(Thread):
 
         self.faces_dir = "Resources/Faces/"
         self.unknown = self.faces_dir + "Unknown/"
+
+
+        #======RECOGNIZER VARIABLES======
+        self.face_recognizer = cv2.face.createLBPHFaceRecognizer()
+        self.is_training=False
+
+
+        #======TELEGRAM VARIABLES========
         self.disp = disp
 
-        # Adding converation handler
+        # Creating conversation handler
         conversation = ConversationHandler(
             [CallbackQueryHandler(self.new_face, pattern="/unknown_new")],
             states={
@@ -32,12 +40,14 @@ class Face_recognizer(Thread):
             fallbacks=[CallbackQueryHandler(self.end_callback, pattern="/end")]
         )
 
+        # Custom inlinekeyboard and start message
         self.classify_start_inline = InlineKeyboardMarkup([
             [InlineKeyboardButton("See Faces", callback_data="/classify_see"),
              InlineKeyboardButton("Save Faces", callback_data="/classify_save")],
             [InlineKeyboardButton("Exit", callback_data="/end")]])
         self.classify_start_msg = "Welcome, here you can choose what you want to do"
 
+        # adding everything to the bot
         disp.add_handler(conversation)
         disp.add_handler(CallbackQueryHandler(self.see_faces, pattern="/classify_see"))
         disp.add_handler(CallbackQueryHandler(self.send_faces, pattern="/view_face"))
@@ -49,6 +59,7 @@ class Face_recognizer(Thread):
 
     def run(self):
 
+        #updater.start_polling()
         while True:continue
 
 
@@ -235,7 +246,82 @@ class Face_recognizer(Thread):
         )
 
 
+    #===================RECOGNIZER=========================
+
+    def train_model(self):
+        """Function to train the recognizer"""
+        #flag value
+        self.is_training=True
+
+
+        #prepare the data
+        faces,labels=self.prepare_training_data()
+        # create our LBPH face recognizer
+        self.face_recognizer.train(faces, np.array(labels))
+
+
+        self.is_training=False
+
+
+    def predict(self, img):
+        """ this function recognizes the person in image passed and draws a
+        rectangle around detected face with name of the subject"""
+
+        #do not try to predict while the model is training
+        if self.is_training:
+            return False
+
+        # predict the image using our face recognizer
+        label = self.face_recognizer.predict(img)
+        # get name of respective label returned by face recognizer
+        label_text = self.name_from_label(label)
+
+
+        return label_text
+
     #===================UTILS=========================
+
+    def name_from_label(self, label):
+        """Function to get the person name by the label"""
+
+        #take all the direcories
+        dirs = glob.glob(self.faces_dir + "s_"+str(label)+"_*")
+
+        # if there are none return false
+        if len(dirs)==0: return False
+        else:dirs=dirs[0]
+
+        #get the name
+
+        return dirs.split("_")[-1]
+
+
+
+
+
+    def prepare_training_data(self):
+
+        # ------STEP-1--------
+        # get the directories (one directory for each subject) in data folder
+        dirs = glob.glob(self.faces_dir + "s_*")
+
+        # list to hold all subject faces
+        faces = []
+        # list to hold labels for all subjects
+        labels = []
+
+        # let's go through each directory and read images within it
+        for dir_name in dirs:
+            # get the subject label (number)
+            label = int(dir_name.split("/")[2].split("_")[1])
+
+            #for every image in the direcotry append image,label
+            for image in glob.glob(dir_name + "/*.png"):
+                faces.append(image)
+                labels.append(label)
+
+        return faces, labels
+
 
     def generate_inline_keyboard(self, callback_data, *args):
 
@@ -357,6 +443,6 @@ class Face_recognizer(Thread):
 
 # updater = Updater("")
 # disp = updater.dispatcher
-#
+# #
 # face=Face_recognizer(disp)
 # face.start()

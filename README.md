@@ -127,7 +127,8 @@ There are currently 4 flags which you can set inside the bot.
 - [X] reorganize prints
 - [X] implement a logger
 - [ ] Add error handling at the origin to not stop the class
-
+- [ ] Fix logging , do not print on terminal
+- [ ] Comment code 
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
@@ -184,6 +185,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Implement profiling function
 - [X] Optimize are different (replace for with any)
 - [X] Moved from gaussianBlur to blur (x4 times faster)
+- [ ] Optimize face detection in time
 
 - [ ] ~~New thread function to get face in video~~
 
