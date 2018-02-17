@@ -127,10 +127,11 @@ class Face_recognizer(Thread):
             message_id=update.callback_query.message.message_id,
 
         )
-
+        to_send="You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
+                ""+str(len(to_choose))+" photos to be classified"
         with open(image, "rb") as file:
             bot.sendPhoto(user_id, file,
-                          caption="You can either choose one of the known faces, create a new one or delete the photo",
+                          caption=to_send,
                           reply_markup=inline)
 
     def move_kwnown_face(self, bot, update):

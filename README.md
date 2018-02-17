@@ -140,6 +140,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Add command to send background image
 - [X] Fix send background command
 - [X] Fix reset background command
+- [ ] Surround with try/except every bot_edit_message for the error *telegram.error.BadRequest: Message is not modified*
 
 ### Camera movement
 - [ ] Use step motor with GPIO to move the camera
@@ -167,6 +168,12 @@ There are currently 4 flags which you can set inside the bot.
 - [X] detect movement direction (right,left) (position of areas) 
 - [X] detect movement direction (incoming, outcoming) (sum of areas)
 - [ ] detect multiple faces
+
+### Face Recognizer
+- [X] Save faces into corresponding dirs
+- [ ] Train model for every face
+- [ ] Save the model inside the corrisponding dir
+- [ ] Retrain model when there are 10 more images in the dir
 - [ ] Classify person
 
 ### Optimization
@@ -184,6 +191,7 @@ There are currently 4 flags which you can set inside the bot.
 
 * Add possibility to send infos to specific id in telegram class
 * Updated README
+* Add class Face_recognizer which allow to save the images of faces with the corresponding name
 
 # Issues
 
