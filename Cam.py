@@ -276,8 +276,9 @@ class Cam_movement(Thread):
                 person=self.face_recognizer.predict(face)
 
 
-                if len(face)==0:
+                if not face:
                     self.telegram_handler.send_message(msg="Face not found")
+
                 elif person:
                     self.telegram_handler.send_image(face, msg=person)
                 else:
@@ -650,7 +651,7 @@ class Cam_movement(Thread):
                 logger.error("Error during the insertion of face images into dir")
             face=self.denoise_img(crop_frames)
 
-        else: face=()
+        else: face=False
 
         print(str(faces) + " frames with faces detected")
         print("... face detector end")
