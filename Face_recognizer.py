@@ -286,7 +286,7 @@ class Face_recognizer(Thread):
 
         # predict the image using our face recognizer
         #collect = cv2.face.StandardCollector_create()
-        self.face_recognizer.setThreshold(0.95)
+        self.face_recognizer.setThreshold(130)
         label=self.face_recognizer.predict(gray)
         print(label)
         #print(collect,collect.getResults())
