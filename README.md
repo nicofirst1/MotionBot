@@ -303,9 +303,12 @@ It is connected only to the cv.imwrite() function
 ## Issue
 Get the prediction confidence with the *cv2.face.createLBPHFaceRecognizer().predict()* method
 
-### Solution
-Found [here](http://answers.opencv.org/question/82294/cant-get-predict-confidence/) ,  be shure to remove **ONLY** the *CV_WRAP* not
- the entire line
+### Tried Fixes
+* Followed [this](http://answers.opencv.org/question/82294/cant-get-predict-confidence/), but no luck
+ 
+ 
+
+
 
 # Infos
 
