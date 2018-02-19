@@ -271,12 +271,12 @@ class Cam_movement(Thread):
             if self.face_photo_flag:
                 # take the face and send it
                 face = self.face_from_video(to_write)
-                if face:
+                if len(face)==0:
                     self.telegram_handler.send_message(msg="Face not found")
 
 
 
-                if self.face_reco_falg:
+                if self.face_reco_falg and len(face)>0:
                     person=self.face_recognizer.predict(face)
                     if person: self.telegram_handler.send_image(face, msg=person)
 
@@ -652,7 +652,7 @@ class Cam_movement(Thread):
 
             face=self.denoise_img(crop_frames)
 
-        else: face=None
+        else: face=[]
 
         print(str(faces) + " frames with faces detected")
         print("... face detector end")

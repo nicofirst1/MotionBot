@@ -276,7 +276,7 @@ class Face_recognizer(Thread):
         if self.is_training:
             return False
 
-        if not img:
+        if len(img)==0:
             print("No image for prediction")
             return False
 
