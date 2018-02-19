@@ -327,6 +327,7 @@ class Face_recognizer(Thread):
 
         # let's go through each directory and read images within it
         for dir_name in dirs:
+            print(dir_name)
             # get the subject label (number)
             label = int(dir_name.split("/")[2].split("_")[1])
 
