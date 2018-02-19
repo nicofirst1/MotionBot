@@ -274,7 +274,8 @@ class Face_recognizer(Thread):
             print("No image for prediction")
             return False
 
-        # convert to right unit type and turn image to grayscale
+        # resize, convert to right unit type and turn image to grayscale
+        img=cv2.resize(self.image_size)
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -288,8 +289,8 @@ class Face_recognizer(Thread):
         label = collector.getLabel()
         confidence = collector.getDist()
         print(label, confidence)
+        
         # get name of respective label returned by face recognizer
-
         label_text = self.name_from_label(label)
 
         print("...Done")
