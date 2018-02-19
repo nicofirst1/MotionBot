@@ -296,7 +296,7 @@ class Face_recognizer(Thread):
         label,confidence=0,0
         collector=MinDistancePredictCollector()
         ret=self.face_recognizer.predict(gray,collector,confidence)
-        print(ret,label,confidence)
+        print(collector,label,confidence)
         #print(collect,collect.getResults())
         # get name of respective label returned by face recognizer
 
