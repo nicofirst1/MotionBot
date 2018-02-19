@@ -335,7 +335,6 @@ class Face_recognizer(Thread):
 
         print("Autotraining on new images...")
 
-        self.is_training = True
 
         # get all the images in the unknown direcotry
         images = glob.glob(self.unknown + "*.png")
@@ -368,7 +367,6 @@ class Face_recognizer(Thread):
 
         self.recognizer.save(self.recognizer_path)
 
-        self.is_training=False
         print("...Autotraining complete")
 
     # ===================UTILS=========================
