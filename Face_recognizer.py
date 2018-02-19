@@ -329,7 +329,7 @@ class Face_recognizer(Thread):
         for dir_name in dirs:
             print(dir_name)
             # get the subject label (number)
-            label = int(dir_name.split("/")[2].split("_")[1])
+            label = int(dir_name.split("/")[-1].split("_")[1])
 
             # for every image in the direcotry append image,label
             for image_path in glob.glob(dir_name + "/*.png"):
