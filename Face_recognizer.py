@@ -300,7 +300,7 @@ class Face_recognizer(Thread):
         # resize, convert to right unit type and turn image to grayscale
         print("1")
 
-        img=cv2.resize(self.image_size)
+        img=cv2.resize(img,self.image_size)
         print("2")
 
         img = np.array(img, dtype=np.uint8)
