@@ -14,9 +14,23 @@ from cv2.face import *
 class Face_recognizer(Thread):
     """Class dedicated to face recognition
     Each face is saved in a folder inside faces_dir with the following syntax s_idx_subjectName, where idx is the
-    number of direcoties inside faces_dir and subjectName is the name of the person the face belogns to."""
+    number of direcoties inside faces_dir and subjectName is the name of the person the face belogns to.
+
+    Attributes:
+        faces_dir : the directory Faces
+        unknown : the Unknown direcotry
+        face_recognizer: the classifier used for face rocognition
+        is_training : bool flag to stop any prediction when training the classifier
+        image_size : the image size for the training and prediction
+        disp : the telegram distpacher
+        classify_start_inline : the inline keyboar for the command /classify
+        classify_start_msg : the message for the command /classify
+
+
+    """
 
     def __init__(self, disp):
+        """Init the class and start the telegram handlers"""
 
         Thread.__init__(self)
 
@@ -59,12 +73,17 @@ class Face_recognizer(Thread):
         disp.add_handler(CallbackQueryHandler(self.end_callback, pattern="/end"))
 
     def run(self):
+        """Run the thread, first train the model then just be alive"""
 
         self.train_model()
         # updater.start_polling()
         while True: continue
 
     # ===================TELEGRAM=========================
+
+    """The following commands all have the same parameters:
+    bot (obj) : the telegram bot
+    update (obj) : the current update (message, inline press...)"""
 
     def classify_start(self, bot, update):
         """Initial function for the classify stage"""
@@ -74,14 +93,17 @@ class Face_recognizer(Thread):
     def see_faces(self, bot, update):
         """Function to choose what face the user want to see"""
 
+        #generate the inline keyboard with the custom callback
         inline = self.generate_inline_keyboard("/view_face ")
 
+        # if there is no inline keyboard it means there are no saved faces
         if not inline:
             self.back_to_start(bot, update, "Sorry... no saved faces were found")
             return
 
         to_send = "What face do you want to see?"
 
+        #edit the previous message
         bot.edit_message_text(
             chat_id=update.callback_query.message.chat_id,
             text=to_send,
@@ -262,8 +284,7 @@ class Face_recognizer(Thread):
         print("....Model trained")
 
     def predict(self, img):
-        """ this function recognizes the person in image passed and draws a
-        rectangle around detected face with name of the subject"""
+        """ This function recognizes the person in image passed and return the person name with the confidence"""
 
         print("Predicting....")
         # do not try to predict while the model is training
@@ -315,6 +336,9 @@ class Face_recognizer(Thread):
         return dirs.split("_")[-1]
 
     def prepare_training_data(self):
+        """Get the saved images from the Faces direcotry, treat them and return two lists with the same lenght:
+        faces : list of images with faces in them
+        labels : list of labels for each face """
 
         # ------STEP-1--------
         # get the directories (one directory for each subject) in data folder
@@ -327,7 +351,7 @@ class Face_recognizer(Thread):
 
         # let's go through each directory and read images within it
         for dir_name in dirs:
-            print(dir_name)
+            #print(dir_name)
             # get the subject label (number)
             label = int(dir_name.split("/")[-1].split("_")[1])
 

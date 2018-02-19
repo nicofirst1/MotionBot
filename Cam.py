@@ -647,9 +647,9 @@ class Cam_movement(Thread):
         if len(crop_frames)>0:
 
             if self.face_reco_falg:
-                self.face_recognizer.add_image_write(crop_frames)
-                print("Error during the insertion of face images into dir")
-                logger.error("Error during the insertion of face images into dir")
+                if not self.face_recognizer.add_image_write(crop_frames):
+                    print("Error during the insertion of face images into dir")
+                    logger.error("Error during the insertion of face images into dir")
 
             face=self.denoise_img(crop_frames)
 

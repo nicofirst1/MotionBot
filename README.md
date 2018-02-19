@@ -129,7 +129,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] reorganize prints
 - [X] implement a logger
 - [ ] Add error handling at the origin to not stop the class
-- [ ] Fix logging , do not print on terminal
+- [X] Fix logging , do not print on terminal
 - [ ] Comment code 
 
 ## Telegram
