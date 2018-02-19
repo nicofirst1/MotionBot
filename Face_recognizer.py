@@ -342,6 +342,7 @@ class Face_recognizer(Thread):
 
         idx = 0
         for image_path in images:
+            print(image_path)
             # predict name
             image = cv2.imread(image_path)
             face_name, distance = self.predict(image)
