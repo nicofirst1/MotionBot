@@ -44,7 +44,7 @@ class Face_recognizer(Thread):
         self.recognizer_path="Resources/recognizer.yaml"
 
         # ======RECOGNIZER VARIABLES======
-        self.recognizer = cv2.face.createLBPHFaceRecognizer()
+        self.recognizer = self.load_recognizer()
         self.is_training = False
         self.image_size = (200, 200)
         self.distance_thres = 90
@@ -333,6 +333,8 @@ class Face_recognizer(Thread):
         """After some images have been added to unkown folder, predict the label and if the confodence
         is high enough update the recognizer"""
 
+        print("Autotraining on new images...")
+
         self.is_training = True
 
         # get all the images in the unknown direcotry
@@ -365,14 +367,24 @@ class Face_recognizer(Thread):
         self.recognizer.save(self.recognizer_path)
 
         self.is_training=False
-
-
-
-
-
-
+        print("...Autotraining complete")
 
     # ===================UTILS=========================
+
+    def load_recognizer(self):
+        """Return the recognizer object, create it if not found"""
+
+        recognizer = cv2.face.createLBPHFaceRecognizer()
+
+        #check for recognizer.yaml existence
+        if not os.path.exists(self.recognizer_path):
+            # if recognizer has been not saved create it and save it
+            recognizer.save(self.recognizer_path)
+            return recognizer
+
+        return recognizer.load(self.recognizer_path)
+
+
 
     def name_from_label(self, label):
         """Function to get the person name by the label"""
@@ -412,10 +424,15 @@ class Face_recognizer(Thread):
 
             # for every image in the direcotry append image,label
             for image_path in glob.glob(dir_name + "/*.png"):
+                #read the image
                 image = cv2.imread(image_path)
+                #convert to gray scale
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # append image
                 faces.append(gray)
                 labels.append(label)
+                #remove image
+                os.remove(image_path)
 
         return faces, labels
 
