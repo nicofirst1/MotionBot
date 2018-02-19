@@ -12,7 +12,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logger.setLevel(logging.DEBUG)
-
+logger.propagate = False
 
 
 if __name__ == "__main__":
