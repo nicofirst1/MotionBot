@@ -1,7 +1,5 @@
-import copy
 import threading
 import traceback
-from multiprocessing import Pool
 from threading import Thread
 import os
 import cv2
@@ -9,7 +7,6 @@ from time import sleep
 import datetime
 import logging
 
-import gc
 
 import sys
 from memory_profiler import profile
@@ -203,7 +200,7 @@ class Cam_movement(Thread):
         self.face_photo_flag = True
         self.motion_flag = True
         self.debug_flag = False
-        self.face_reco_falg=False
+        self.face_reco_falg=True
 
         self.resetting_ground = False
 
@@ -618,7 +615,6 @@ class Cam_movement(Thread):
 
         return ()
 
-    @time_profiler()
     def face_from_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 

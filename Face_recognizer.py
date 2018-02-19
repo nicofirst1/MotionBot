@@ -286,9 +286,11 @@ class Face_recognizer(Thread):
 
         # predict the image using our face recognizer
         #collect = cv2.face.StandardCollector_create()
-        self.face_recognizer.setThreshold(130)
-        label=self.face_recognizer.predict(gray)
-        print(label)
+        #self.face_recognizer.setThreshold(130)
+        #label=self.face_recognizer.predict(gray)
+        label,confidence=0,0
+        self.face_recognizer.predict(gray,label,confidence)
+        print(label,confidence)
         #print(collect,collect.getResults())
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
@@ -457,11 +459,11 @@ class Face_recognizer(Thread):
 
         return s_names
 
-#
+
+
+# uncomment and add token to debug face recognition
 # updater = Updater("")
 # disp = updater.dispatcher
 # # #
 # face=Face_recognizer(disp)
 # face.start()
-# face.train_model()
-# face.predict()
