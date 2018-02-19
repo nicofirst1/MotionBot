@@ -19,9 +19,14 @@ class Face_recognizer(Thread):
     Attributes:
         faces_dir : the directory Faces
         unknown : the Unknown direcotry
-        face_recognizer: the classifier used for face rocognition
+        recognizer_path : the path to the recognizer object
+
+        recognizer: the classifier used for face rocognition
         is_training : bool flag to stop any prediction when training the classifier
         image_size : the image size for the training and prediction
+        distance_thres : the maximum distance accepted for recognition confidence
+        auto_train_dist : the maximum distance accepted for auto recognition and training
+
         disp : the telegram distpacher
         classify_start_inline : the inline keyboar for the command /classify
         classify_start_msg : the message for the command /classify
@@ -36,11 +41,14 @@ class Face_recognizer(Thread):
 
         self.faces_dir = "Faces/"
         self.unknown = self.faces_dir + "Unknown/"
+        self.recognizer_path="Resources/recognizer.yaml"
 
         # ======RECOGNIZER VARIABLES======
-        self.face_recognizer = cv2.face.createLBPHFaceRecognizer()
+        self.recognizer = cv2.face.createLBPHFaceRecognizer()
         self.is_training = False
         self.image_size = (200, 200)
+        self.distance_thres = 90
+        self.auto_train_dist = 85
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -93,7 +101,7 @@ class Face_recognizer(Thread):
     def see_faces(self, bot, update):
         """Function to choose what face the user want to see"""
 
-        #generate the inline keyboard with the custom callback
+        # generate the inline keyboard with the custom callback
         inline = self.generate_inline_keyboard("/view_face ")
 
         # if there is no inline keyboard it means there are no saved faces
@@ -103,7 +111,7 @@ class Face_recognizer(Thread):
 
         to_send = "What face do you want to see?"
 
-        #edit the previous message
+        # edit the previous message
         bot.edit_message_text(
             chat_id=update.callback_query.message.chat_id,
             text=to_send,
@@ -238,7 +246,7 @@ class Face_recognizer(Thread):
             update.message.reply_text("You cannot use the same name for two faces")
             return ConversationHandler.END
 
-        self.add_image_move(self.unknown, image_name, face_name)
+        self.move_image(image_name, face_name)
         update.message.reply_text("Done! You can now check the image under " + face_name)
 
         self.classify_start(bot, update)
@@ -274,13 +282,13 @@ class Face_recognizer(Thread):
         # prepare the data
         faces, labels = self.prepare_training_data()
 
-        print("Training on "+str(len(faces))+" faces")
+        print("Training on " + str(len(faces)) + " faces")
 
-        if len(faces)==0 or len(labels)==0:
+        if len(faces) == 0 or len(labels) == 0:
             print("No data to train with")
             return
         # train
-        self.face_recognizer.train(faces, np.array(labels))
+        self.recognizer.train(faces, np.array(labels))
 
         self.is_training = False
         print("....Model trained")
@@ -298,30 +306,67 @@ class Face_recognizer(Thread):
             return False, False
 
         # resize, convert to right unit type and turn image to grayscale
-        print("1")
-
-        img=cv2.resize(img,self.image_size)
-        print("2")
-
+        img = cv2.resize(img, self.image_size)
         img = np.array(img, dtype=np.uint8)
-        print("3")
-
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-
-        print("4")
-
+        # create the collector to get the label and the confidence
         collector = MinDistancePredictCollector()
-        ret=self.face_recognizer.predict(gray, collector, 0)
-        label =collector.getLabel()
+        # predict face
+        self.recognizer.predict(gray, collector, 0)
+        # get label and confidence
+        label = collector.getLabel()
         confidence = collector.getDist()
-        print(ret, label, confidence)
+        print(label, confidence)
 
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
 
         print("...Prediction end")
         return label_text, confidence
+
+    def auto_train(self):
+        """After some images have been added to unkown folder, predict the label and if the confodence
+        is high enough update the recognizer"""
+
+        self.is_training = True
+
+        # get all the images in the unknown direcotry
+        images = glob.glob(self.unknown + "*.png")
+
+        idx = 0
+        for image in images:
+            # predict name
+            face_name, distance = self.predict(image)
+            # if the confidence is less than the threshold skip
+            if distance < self.auto_train_dist: continue
+
+            #move the image to the face name and increment idx
+            if self.move_image(image, face_name):
+                idx += 1
+
+        print("Moved " + str(idx) + " images")
+
+        # prepare the data
+        faces, labels = self.prepare_training_data()
+
+
+        if len(faces) == 0 or len(labels) == 0:
+            print("No data to train with")
+            return
+        # train
+
+        self.recognizer.update(faces, np.array(labels))
+
+        self.recognizer.save(self.recognizer_path)
+        
+        self.is_training=False
+
+
+
+
+
+
 
     # ===================UTILS=========================
 
@@ -357,7 +402,7 @@ class Face_recognizer(Thread):
 
         # let's go through each directory and read images within it
         for dir_name in dirs:
-            #print(dir_name)
+            # print(dir_name)
             # get the subject label (number)
             label = int(dir_name.split("/")[-1].split("_")[1])
 
@@ -371,6 +416,7 @@ class Face_recognizer(Thread):
         return faces, labels
 
     def generate_inline_keyboard(self, callback_data, *args):
+        """Generate an inline keyboard containing the names of the known faces plus any inlinebutton passed with args"""
 
         # get all the saved subjects names
         names = self.get_dir_subjects()
@@ -379,7 +425,7 @@ class Face_recognizer(Thread):
         if len(names) == 0 and len(args) == 0:
             return False
 
-        #print(names)
+        # print(names)
 
         # add the names to the inline button
         rows = []
@@ -390,12 +436,12 @@ class Face_recognizer(Thread):
             # only three cols allowed
             if len(cols) == 3:
                 rows.append(cols)
-                cols=[]
+                cols = []
             # add the buttom to the row
             cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
 
         # if there was less than three faces append them
-        if len(cols)>0:rows.append(cols)
+        if len(cols) > 0: rows.append(cols)
         if not rows: rows.append(cols)
 
         # if there are other buttons from args, append them
@@ -438,7 +484,7 @@ class Face_recognizer(Thread):
 
         return True
 
-    def add_image_move(self, from_path, image, subject_name):
+    def move_image(self, image, subject_name):
 
         # look for the direcotry and create it if not present
         if not subject_name in os.listdir(self.faces_dir):
