@@ -274,6 +274,8 @@ class Face_recognizer(Thread):
         # prepare the data
         faces, labels = self.prepare_training_data()
 
+        print("Training on "+str(len(faces))+" faces")
+
         if len(faces)==0 or len(labels)==0:
             print("No data to train with")
             return
@@ -300,10 +302,8 @@ class Face_recognizer(Thread):
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # predict the image using our face recognizer
-        # collect = cv2.face.StandardCollector_create()
-        # self.face_recognizer.setThreshold(130)
-        # label=self.face_recognizer.predict(gray)
+
+        print("Image converted")
 
         collector = MinDistancePredictCollector()
         ret=self.face_recognizer.predict(gray, collector, 0)
