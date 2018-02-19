@@ -198,6 +198,7 @@ There are currently 4 flags which you can set inside the bot.
 * Add possibility to send infos to specific id in telegram class
 * Updated README
 * Add class Face_recognizer which allow to save the images of faces with the corresponding name
+* Add flag for face recognition
 
 # Issues
 

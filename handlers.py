@@ -19,9 +19,10 @@ cam = Cam_class(updater)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
-     InlineKeyboardButton("Face Video", callback_data="/flag face_video"),
+     InlineKeyboardButton("Video", callback_data="/flag face_video"),
      InlineKeyboardButton("Face Photo", callback_data="/flag face_photo")],
-    [InlineKeyboardButton("Debug", callback_data="/flag debug"),
+    [InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
+    InlineKeyboardButton("Debug", callback_data="/flag debug"),
      InlineKeyboardButton("Done", callback_data="/flag done")]
 
 ])
@@ -31,6 +32,7 @@ Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 -- <b>Motion Detection</b> : If set to <i>ON</i> the bot will notify, both with a message and with a video, you when a movement has been detected
 ---- <b>Video</b> : If set to <i>ON</i> the video you recieve from the <i>Motion Detection</i> above will highlith faces
 ---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
+-- <b>Face Reco(gnizer)</b> : If set to <i>ON</i> the program will try to guess the person face
 -- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 To set a flag just click on the corrispondent button.
 Note that <b>Face Photo</b> depends on  <b>Face Video</b> which depends on <b>Motion Detection</b>, so unless this last on is set <b>ON</b> the other won't work
@@ -57,6 +59,7 @@ def flag_setting_callback(bot, update):
         if not cam.motion.motion_flag:
             cam.motion.video_flag = False
             cam.motion.faces_video_flag = False
+            cam.motion.face_reco_falg = False
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
     elif param == "face_photo":
@@ -64,6 +67,9 @@ def flag_setting_callback(bot, update):
 
     elif param == "debug":
         cam.motion.debug_flag = not cam.motion.debug_flag
+
+    elif param == "face_reco":
+        cam.motion.face_reco_falg = not cam.motion.face_reco_falg
 
     elif param == "done":
         bot.delete_message(
@@ -239,7 +245,9 @@ def complete_flags():
     motion_detection = cam.motion.motion_flag
     face_v = cam.motion.video_flag
     face_p = cam.motion.face_photo_flag
+    face_r=cam.motion.face_reco_falg
     debug = cam.motion.debug_flag
+
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
 
@@ -262,6 +270,14 @@ def complete_flags():
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
+
+    complete_falg_str += "\n-- <b>Face Reco</b>"
+
+    if face_r:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
 
     complete_falg_str += "\n-- <b>Debug</b>"
 

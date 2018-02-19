@@ -203,6 +203,7 @@ class Cam_movement(Thread):
         self.face_photo_flag = True
         self.motion_flag = True
         self.debug_flag = False
+        self.face_reco_falg=False
 
         self.resetting_ground = False
 
@@ -273,14 +274,15 @@ class Cam_movement(Thread):
             if self.face_photo_flag:
                 # take the face and send it
                 face = self.face_from_video(to_write)
-                person=self.face_recognizer.predict(face)
-
-
-                if len(face)==0:
+                if len(face) == 0:
                     self.telegram_handler.send_message(msg="Face not found")
 
-                elif person:
-                    self.telegram_handler.send_image(face, msg=person)
+
+
+                if self.face_reco_falg:
+                    person=self.face_recognizer.predict(face)
+                    if person: self.telegram_handler.send_image(face, msg=person)
+
                 else:
                     self.telegram_handler.send_image(face, msg="Face found but not recognized")
 
@@ -646,9 +648,11 @@ class Cam_movement(Thread):
 
         if len(crop_frames)>0:
 
-            if not self.face_recognizer.add_image_write(crop_frames):
+            if self.face_reco_falg:
+                self.face_recognizer.add_image_write(crop_frames)
                 print("Error during the insertion of face images into dir")
                 logger.error("Error during the insertion of face images into dir")
+
             face=self.denoise_img(crop_frames)
 
         else: face=[]
