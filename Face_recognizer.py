@@ -381,7 +381,7 @@ class Face_recognizer(Thread):
             # if recognizer has been not saved create it and save it
             recognizer.save(self.recognizer_path)
 
-        else:recognizer=recognizer.load(self.recognizer_path)
+        else:recognizer.load(self.recognizer_path)
 
         return recognizer
 
