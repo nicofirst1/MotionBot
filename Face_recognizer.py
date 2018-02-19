@@ -289,12 +289,12 @@ class Face_recognizer(Thread):
         label = collector.getLabel()
         confidence = collector.getDist()
         print(label, confidence)
-        
+
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
 
         print("...Done")
-        return label_text
+        return label_text, confidence
 
     # ===================UTILS=========================
 

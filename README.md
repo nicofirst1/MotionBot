@@ -178,7 +178,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Train model for every face
 - [X] Classify person
 - [X] Find a goddamn way to get the classification confidence
-- [ ] Resize all training/predition images to same size
+- [X] Resize all training/predition images to same size
 - [ ] Save model 
 - [ ] Load/update model with new faces
 - [ ] Get face confidence to auto classify images (<100 ?)

@@ -277,8 +277,9 @@ class Cam_movement(Thread):
 
 
                 if self.face_reco_falg and len(face)>0:
-                    person=self.face_recognizer.predict(face)
-                    if person: self.telegram_handler.send_image(face, msg=person)
+                    person,confidence=self.face_recognizer.predict(face)
+                    if person:
+                        self.telegram_handler.send_image(face, msg=person+", confidence = "+str(confidence))
 
                 else:
                     self.telegram_handler.send_image(face, msg="Face found but not recognized")
