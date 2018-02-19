@@ -373,7 +373,7 @@ class Face_recognizer(Thread):
         if len(names) == 0 and len(args) == 0:
             return False
 
-        print(names)
+        #print(names)
 
         # add the names to the inline button
         rows = []
@@ -389,6 +389,7 @@ class Face_recognizer(Thread):
             cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
 
         # if there was less than three faces append them
+        if len(cols)>0:rows.append(cols)
         if not rows: rows.append(cols)
 
         # if there are other buttons from args, append them
