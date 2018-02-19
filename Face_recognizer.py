@@ -324,10 +324,12 @@ class Face_recognizer(Thread):
         # get label and confidence
         label = collector.getLabel()
         confidence = collector.getDist()
-        print(label, confidence)
 
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
+
+        print(label,label_text, confidence)
+
 
         print("...Prediction end")
         return label_text, confidence
@@ -515,6 +517,8 @@ class Face_recognizer(Thread):
     def move_image(self, image, subject_name):
 
         # look for the direcotry and create it if not present
+        print(subject_name)
+        subject_name=subject_name.strip()
         if not subject_name in os.listdir(self.faces_dir):
             self.add_folder(subject_name)
 
