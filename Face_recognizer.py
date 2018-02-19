@@ -298,12 +298,18 @@ class Face_recognizer(Thread):
             return False, False
 
         # resize, convert to right unit type and turn image to grayscale
+        print("1")
+
         img=cv2.resize(self.image_size)
+        print("2")
+
         img = np.array(img, dtype=np.uint8)
+        print("3")
+
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-        print("Image converted")
+        print("4")
 
         collector = MinDistancePredictCollector()
         ret=self.face_recognizer.predict(gray, collector, 0)
