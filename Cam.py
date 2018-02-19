@@ -670,10 +670,12 @@ class Cam_movement(Thread):
         if degub:
             to_send += "Score is " + str(score) + "\n"
 
-        if self.video_flag and not self.face_photo_flag:
-            to_send += "<b>Video</b> is <b>ON</b>...it may take a minute or two"
+        if self.face_photo_flag and self.video_flag and self.face_reco_falg:
+            to_send += "<b>Video</b>, <b>Face Photo</b> and <b>Face Reco</b> are <b>ON</b> ... it may take a while"
         elif self.face_photo_flag and self.video_flag:
             to_send += "Both <b>Video</b> and <b>Face Photo</b> are <b>ON</b> ... it may take a while"
+        elif self.video_flag:
+            to_send += "<b>Video</b> is <b>ON</b>...it may take a minute or two"
 
         self.telegram_handler.send_message(to_send, parse_mode="HTML")
 
