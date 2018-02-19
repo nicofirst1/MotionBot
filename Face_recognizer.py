@@ -295,7 +295,7 @@ class Face_recognizer(Thread):
 
 
         self.is_training = False
-        print("....Model trained")
+        print("....Model trained and saved")
 
     def predict(self, img):
         """ This function recognizes the person in image passed and return the person name with the confidence"""
