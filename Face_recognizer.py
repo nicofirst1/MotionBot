@@ -313,7 +313,7 @@ class Face_recognizer(Thread):
 
         collector = MinDistancePredictCollector()
         ret=self.face_recognizer.predict(gray, collector, 0)
-        label = 0
+        label =collector.getLabel()
         confidence = collector.getDist()
         print(ret, label, confidence)
 
