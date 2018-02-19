@@ -251,6 +251,10 @@ class Face_recognizer(Thread):
 
         # prepare the data
         faces, labels = self.prepare_training_data()
+
+        if len(faces)==0 or len(labels)==0:
+            print("No data to train with")
+            return
         # train
         self.face_recognizer.train(faces, np.array(labels))
 
