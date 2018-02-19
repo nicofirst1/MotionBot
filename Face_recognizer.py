@@ -303,16 +303,19 @@ class Face_recognizer(Thread):
         print("Predicting....")
         # do not try to predict while the model is training
         if self.is_training:
-            return False
+            return False,False
 
         if len(img) == 0:
             print("No image for prediction")
             return False, False
 
         # resize, convert to right unit type and turn image to grayscale
-        img = cv2.resize(img, self.image_size)
+        if (img.shape[0],img.shape[1])!= self.image_size:
+            img = cv2.resize(img, self.image_size)
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        print("images preprocessed")
 
         # create the collector to get the label and the confidence
         collector = MinDistancePredictCollector()
