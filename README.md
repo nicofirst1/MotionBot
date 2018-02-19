@@ -182,7 +182,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Resize all training/predition images to same size
 - [X] Save model 
 - [ ] Load/update model with new faces
-- [ ] Get face confidence to auto classify images (<90)
+- [X] Get face confidence to auto classify images (<90)
 
 ## Optimization
 - [X] New thread class for image/video/message sending
