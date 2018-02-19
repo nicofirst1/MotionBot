@@ -359,7 +359,7 @@ class Face_recognizer(Thread):
         self.recognizer.update(faces, np.array(labels))
 
         self.recognizer.save(self.recognizer_path)
-        
+
         self.is_training=False
 
 

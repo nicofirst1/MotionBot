@@ -180,7 +180,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Classify person
 - [X] Find a goddamn way to get the classification confidence
 - [X] Resize all training/predition images to same size
-- [ ] Save model 
+- [X] Save model 
 - [ ] Load/update model with new faces
 - [ ] Get face confidence to auto classify images (<90)
 
@@ -205,6 +205,8 @@ There are currently 4 flags which you can set inside the bot.
 * Add class Face_recognizer which allow to save the images of faces with the corresponding name
 * Add flag for face recognition
 * Finally got the face recognition confidence
+* Auto train for the recognizer and unknown images, with the update method
+* Save/Load the recognizer from yaml file
 
 # Issues
 
