@@ -521,7 +521,8 @@ class Face_recognizer(Thread):
         print(subject_name)
         subject_name=subject_name.strip()
         if not subject_name in os.listdir(self.faces_dir):
-            self.add_folder(subject_name)
+            #self.add_folder(subject_name)
+            return
 
         # get the directory name
         dir = self.get_name_dir(subject_name)
