@@ -10,6 +10,7 @@ from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Ca
 
 from cv2.face import *
 
+
 class Face_recognizer(Thread):
     """Class dedicated to face recognition
     Each face is saved in a folder inside faces_dir with the following syntax s_idx_subjectName, where idx is the
@@ -19,16 +20,15 @@ class Face_recognizer(Thread):
 
         Thread.__init__(self)
 
-        self.faces_dir = "Resources/Faces/"
+        self.faces_dir = "Faces/"
         self.unknown = self.faces_dir + "Unknown/"
 
-
-        #======RECOGNIZER VARIABLES======
+        # ======RECOGNIZER VARIABLES======
         self.face_recognizer = cv2.face.createLBPHFaceRecognizer()
-        self.is_training=False
+        self.is_training = False
+        self.image_size = (200, 200)
 
-
-        #======TELEGRAM VARIABLES========
+        # ======TELEGRAM VARIABLES========
         self.disp = disp
 
         # Creating conversation handler
@@ -61,13 +61,10 @@ class Face_recognizer(Thread):
     def run(self):
 
         self.train_model()
-        #updater.start_polling()
-        while True:continue
+        # updater.start_polling()
+        while True: continue
 
-
-    #===================TELEGRAM=========================
-
-
+    # ===================TELEGRAM=========================
 
     def classify_start(self, bot, update):
         """Initial function for the classify stage"""
@@ -107,7 +104,7 @@ class Face_recognizer(Thread):
             return
 
         # take the dir name
-        dir_name = dir_name[0]+"/"
+        dir_name = dir_name[0] + "/"
         # for every image in the dir
         for image in glob.glob(self.faces_dir + dir_name + '*.png'):
             # open the image and send it
@@ -121,10 +118,10 @@ class Face_recognizer(Thread):
     def send_unknown_face(self, bot, update):
         """Function to send an unknown face (in the Unknown dir)"""
 
-        to_choose=glob.glob(self.unknown + '*.png')
+        to_choose = glob.glob(self.unknown + '*.png')
 
-        if len(to_choose)==0:
-            self.back_to_start(bot,update,"Sorry, no photos found")
+        if len(to_choose) == 0:
+            self.back_to_start(bot, update, "Sorry, no photos found")
             return
 
         image = random.choice(to_choose)
@@ -140,8 +137,8 @@ class Face_recognizer(Thread):
             message_id=update.callback_query.message.message_id,
 
         )
-        to_send="You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
-                ""+str(len(to_choose))+" photos to be classified"
+        to_send = "You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
+                  "" + str(len(to_choose)) + " photos to be classified"
         with open(image, "rb") as file:
             bot.sendPhoto(user_id, file,
                           caption=to_send,
@@ -156,22 +153,21 @@ class Face_recognizer(Thread):
         dir_name = param[2]
 
         # get the length of the images in the directory
-        dir_name=self.faces_dir+self.get_name_dir(dir_name)+"/"
-        idx = len([name for name in os.listdir( dir_name)])
-        #generate new image name
-        new_image_name=dir_name+"image_"+str(idx)+".png"
+        dir_name = self.faces_dir + self.get_name_dir(dir_name) + "/"
+        idx = len([name for name in os.listdir(dir_name)])
+        # generate new image name
+        new_image_name = dir_name + "image_" + str(idx) + ".png"
 
         # delete the photo message
         self.end_callback(bot, update)
 
         # move the image
         try:
-            os.rename(image_name,new_image_name)
+            os.rename(image_name, new_image_name)
         except FileNotFoundError:
             update.callback_query.message.reply_text("Photo not found")
 
-
-        self.classify_start(bot,update.callback_query)
+        self.classify_start(bot, update.callback_query)
 
     def delete_unkwon_face(self, bot, update):
         """Function to delete a photo from the unknown dir"""
@@ -184,10 +180,9 @@ class Face_recognizer(Thread):
             update.callback_query.message.reply_text("Photo not found!")
             return
 
-
         update.callback_query.message.reply_text("Photo deleted")
 
-        self.classify_start(bot,update.callback_query)
+        self.classify_start(bot, update.callback_query)
 
     def new_face(self, bot, update):
         """Function to ask the user the name of the new subject"""
@@ -197,14 +192,12 @@ class Face_recognizer(Thread):
         to_send = "Please insert the subject name right after the image name. Like the following format : " \
                   "\n" + image + " subject_name\nYou have just one chance so be careful"
 
-
         bot.edit_message_caption(
             chat_id=update.callback_query.message.chat_id,
             caption=to_send,
             message_id=update.callback_query.message.message_id,
             parse_mode="HTML")
-        update.callback_query.message.reply_text("<code>"+image+"</code>",parse_mode="HTML")
-
+        update.callback_query.message.reply_text("<code>" + image + "</code>", parse_mode="HTML")
 
         return 1
 
@@ -219,14 +212,14 @@ class Face_recognizer(Thread):
             update.message.reply_text("I told you to be carefull!")
             return ConversationHandler.END
 
-        if glob.glob(self.faces_dir+"*_"+face_name):
+        if glob.glob(self.faces_dir + "*_" + face_name):
             update.message.reply_text("You cannot use the same name for two faces")
             return ConversationHandler.END
 
         self.add_image_move(self.unknown, image_name, face_name)
         update.message.reply_text("Done! You can now check the image under " + face_name)
 
-        self.classify_start(bot,update)
+        self.classify_start(bot, update)
         return ConversationHandler.END
 
     def back_to_start(self, bot, update, msg):
@@ -247,83 +240,74 @@ class Face_recognizer(Thread):
 
         )
 
-
-    #===================RECOGNIZER=========================
+    # ===================RECOGNIZER=========================
 
     def train_model(self):
         """Function to train the recognizer"""
 
         print("Training model...")
-        #flag value
-        self.is_training=True
+        # flag value
+        self.is_training = True
 
-
-        #prepare the data
-        faces,labels=self.prepare_training_data()
+        # prepare the data
+        faces, labels = self.prepare_training_data()
         # train
         self.face_recognizer.train(faces, np.array(labels))
 
-
-        self.is_training=False
+        self.is_training = False
         print("....Model trained")
-
 
     def predict(self, img):
         """ this function recognizes the person in image passed and draws a
         rectangle around detected face with name of the subject"""
 
         print("Predicting....")
-        #do not try to predict while the model is training
+        # do not try to predict while the model is training
         if self.is_training:
             return False
 
-        if len(img)==0:
+        if len(img) == 0:
             print("No image for prediction")
             return False
 
-        #convert to right unit type and turn image to grayscale
+        # convert to right unit type and turn image to grayscale
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # predict the image using our face recognizer
-        #collect = cv2.face.StandardCollector_create()
-        #self.face_recognizer.setThreshold(130)
-        #label=self.face_recognizer.predict(gray)
+        # collect = cv2.face.StandardCollector_create()
+        # self.face_recognizer.setThreshold(130)
+        # label=self.face_recognizer.predict(gray)
 
-        print(self.face_recognizer.getThreshold(),self.face_recognizer.getNeighbors(), self.face_recognizer.getRadius())
-
-
-        collector=MinDistancePredictCollector()
-        self.face_recognizer.predict(gray,collector,0)
-        label=collector.getLabel()
-        confidence=collector.getDist()
-        print(label,confidence)
+        collector = MinDistancePredictCollector()
+        self.face_recognizer.predict(gray, collector, 0)
+        label = collector.getLabel()
+        confidence = collector.getDist()
+        print(label, confidence)
         # get name of respective label returned by face recognizer
-
-
 
         label_text = self.name_from_label(label)
 
         print("...Done")
         return label_text
 
-    #===================UTILS=========================
+    # ===================UTILS=========================
 
     def name_from_label(self, label):
         """Function to get the person name by the label"""
 
-        #take all the direcories
-        dirs = glob.glob(self.faces_dir + "s_"+str(label)+"_*")
+        # take all the direcories
+        dirs = glob.glob(self.faces_dir + "s_" + str(label) + "_*")
 
         # if there are none return false
-        if len(dirs)==0: return False
-        else:dirs=dirs[0]
+        if len(dirs) == 0:
+            return False
+        else:
+            dirs = dirs[0]
 
-        #get the name
+        # get the name
 
         return dirs.split("_")[-1]
-
-
 
     def prepare_training_data(self):
 
@@ -341,7 +325,7 @@ class Face_recognizer(Thread):
             # get the subject label (number)
             label = int(dir_name.split("/")[2].split("_")[1])
 
-            #for every image in the direcotry append image,label
+            # for every image in the direcotry append image,label
             for image_path in glob.glob(dir_name + "/*.png"):
                 image = cv2.imread(image_path)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -350,14 +334,13 @@ class Face_recognizer(Thread):
 
         return faces, labels
 
-
     def generate_inline_keyboard(self, callback_data, *args):
 
         # get all the saved subjects names
         names = self.get_dir_subjects()
 
         # uf there are none return
-        if len(names) == 0 and len(args)==0:
+        if len(names) == 0 and len(args) == 0:
             return False
 
         # add the names to the inline button
@@ -373,10 +356,10 @@ class Face_recognizer(Thread):
             # add the buttom to the row
             cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
 
-        #if there was less than three faces append them
+        # if there was less than three faces append them
         if not rows: rows.append(cols)
 
-        #if there are other buttons from args, append them
+        # if there are other buttons from args, append them
         if args: rows.append(args)
 
         inline = InlineKeyboardMarkup(rows)
@@ -385,16 +368,15 @@ class Face_recognizer(Thread):
 
     def add_image_write(self, image_list, subject_name=""):
 
-        #currently used only for the unknown direcotry
-        subject_name="Unknown"
+        # currently used only for the unknown direcotry
+        subject_name = "Unknown"
 
         print("Adding face images to unknown folder...")
 
-
         # look for the direcotry and create it if not present
-        if not glob.glob(self.faces_dir+subject_name):
+        if not glob.glob(self.faces_dir + subject_name):
             return False
-            #self.add_folder(subject_name)
+            # self.add_folder(subject_name)
 
         # get the directory name
         dir = self.get_name_dir(subject_name)
@@ -409,11 +391,11 @@ class Face_recognizer(Thread):
 
         for image in image_list:
             image_name = dir + "image_" + str(idx) + ".png"
+            cv2.resize(image, self.image_size)
             cv2.imwrite(image_name, image)
-            idx+=1
+            idx += 1
 
         print("...Done")
-
 
         return True
 
@@ -426,8 +408,10 @@ class Face_recognizer(Thread):
         # get the directory name
         dir = self.get_name_dir(subject_name)
 
-        if not dir: return False
-        else: dir=self.faces_dir+dir+"/"
+        if not dir:
+            return False
+        else:
+            dir = self.faces_dir + dir + "/"
 
         # get the length of the images in the directory
         idx = len([name for name in os.listdir(dir) if os.path.isfile(name)])
@@ -467,8 +451,6 @@ class Face_recognizer(Thread):
             s_names.append(name.split("_")[2])
 
         return s_names
-
-
 
 # uncomment and add token to debug face recognition
 # updater = Updater("")

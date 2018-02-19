@@ -177,10 +177,11 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Save faces into corresponding dirs
 - [X] Train model for every face
 - [X] Classify person
-- [ ] Find a goddamn way to get the classification confidence
+- [X] Find a goddamn way to get the classification confidence
+- [ ] Resize all training/predition images to same size
 - [ ] Save model 
 - [ ] Load/update model with new faces
-- [ ] Get face confidence to auto classify images
+- [ ] Get face confidence to auto classify images (<100 ?)
 
 ## Optimization
 - [X] New thread class for image/video/message sending
@@ -202,6 +203,7 @@ There are currently 4 flags which you can set inside the bot.
 * Updated README
 * Add class Face_recognizer which allow to save the images of faces with the corresponding name
 * Add flag for face recognition
+* Finally got the face recognition confidence
 
 # Issues
 
@@ -309,6 +311,9 @@ Get the prediction confidence with the *cv2.face.createLBPHFaceRecognizer().pred
 
 ### Tried Fixes
 * Followed [this](http://answers.opencv.org/question/82294/cant-get-predict-confidence/), but no luck
+
+### Solved
+solved by using the collector object
  
  
 
