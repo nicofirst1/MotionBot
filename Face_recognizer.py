@@ -293,11 +293,11 @@ class Face_recognizer(Thread):
         print(self.face_recognizer.getThreshold(),self.face_recognizer.getNeighbors(), self.face_recognizer.getRadius())
 
 
-        label,confidence=0,0
         collector=MinDistancePredictCollector()
-        ret=self.face_recognizer.predict(gray,collector,confidence)
-        print(collector,label,confidence)
-        print(collector,collector.getDist())
+        self.face_recognizer.predict(gray,collector,0)
+        label=collector.getLabel()
+        confidence=collector.getDist()
+        print(label,confidence)
         # get name of respective label returned by face recognizer
 
 
