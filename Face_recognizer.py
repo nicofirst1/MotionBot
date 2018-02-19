@@ -289,7 +289,7 @@ class Face_recognizer(Thread):
         #self.face_recognizer.setThreshold(130)
         #label=self.face_recognizer.predict(gray)
 
-        print(self.face_recognizer.getThreshold())
+        print(self.face_recognizer.getThreshold(),self.face_recognizer.getNeighbors(), self.face_recognizer.getRadius())
 
 
         label,confidence=0,0
