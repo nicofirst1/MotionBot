@@ -486,6 +486,8 @@ class Face_recognizer(Thread):
 
         print("...Done")
 
+        self.auto_train()
+
         return True
 
     def move_image(self, image, subject_name):
