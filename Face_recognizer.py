@@ -437,7 +437,7 @@ class Face_recognizer(Thread):
                 faces.append(gray)
                 labels.append(label)
                 #remove image
-                os.remove(image_path)
+                #os.remove(image_path)
 
         return faces, labels
 
