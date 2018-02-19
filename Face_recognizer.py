@@ -290,6 +290,10 @@ class Face_recognizer(Thread):
         # train
         self.recognizer.train(faces, np.array(labels))
 
+        #saving the recognizer object
+        self.recognizer.save(self.recognizer_path)
+
+
         self.is_training = False
         print("....Model trained")
 
