@@ -8,6 +8,7 @@ import os
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
 
+from cv2.face import *
 
 class Face_recognizer(Thread):
     """Class dedicated to face recognition
@@ -297,6 +298,10 @@ class Face_recognizer(Thread):
         print(ret,label,confidence)
         #print(collect,collect.getResults())
         # get name of respective label returned by face recognizer
+
+        collector=MinDistancePredictCollector()
+        
+
         label_text = self.name_from_label(label)
 
         print("...Done")
