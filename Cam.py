@@ -640,9 +640,8 @@ class Cam_movement(Thread):
                     if self.face_photo_flag:
                         crop_frames.append(frame[y:y + h, x:x + w])
 
-
-
-
+        print(str(faces) + " frames with faces detected")
+        print("... face detector end")
 
         if len(crop_frames)>0:
 
@@ -655,8 +654,6 @@ class Cam_movement(Thread):
 
         else: face=[]
 
-        print(str(faces) + " frames with faces detected")
-        print("... face detector end")
 
 
         return face
