@@ -288,7 +288,8 @@ class Face_recognizer(Thread):
             print("No data to train with")
             return
         # train
-        self.recognizer.update(faces, np.array(labels))
+        #self.recognizer.update(faces, np.array(labels))
+        self.recognizer.train(faces, np.array(labels))
 
         #saving the recognizer object
         self.recognizer.save(self.recognizer_path)
