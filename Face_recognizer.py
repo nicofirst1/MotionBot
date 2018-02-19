@@ -384,7 +384,7 @@ class Face_recognizer(Thread):
             # only three cols allowed
             if len(cols) == 3:
                 rows.append(cols)
-                del cols[:]
+                cols=[]
             # add the buttom to the row
             cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
 
