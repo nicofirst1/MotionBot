@@ -181,7 +181,8 @@ There are currently 4 flags which you can set inside the bot.
 - [X] Find a goddamn way to get the classification confidence
 - [X] Resize all training/predition images to same size
 - [X] Save model 
-- [ ] Load/update model with new faces
+- [X] Load/update model with new faces
+- [ ] Delete faces which have been updated into the recognitor
 - [X] Get face confidence to auto classify images (<90)
 
 ## Optimization
