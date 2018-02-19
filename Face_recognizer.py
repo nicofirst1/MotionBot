@@ -373,6 +373,8 @@ class Face_recognizer(Thread):
         if len(names) == 0 and len(args) == 0:
             return False
 
+        print(names)
+
         # add the names to the inline button
         rows = []
         cols = []
