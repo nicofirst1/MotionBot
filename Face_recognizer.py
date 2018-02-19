@@ -380,9 +380,11 @@ class Face_recognizer(Thread):
         if not os.path.exists(self.recognizer_path):
             # if recognizer has been not saved create it and save it
             recognizer.save(self.recognizer_path)
-            return recognizer
 
-        return recognizer.load(self.recognizer_path)
+        else:recognizer=recognizer.load(self.recognizer_path)
+
+        return recognizer
+
 
 
 
