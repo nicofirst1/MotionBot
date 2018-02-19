@@ -171,6 +171,7 @@ There are currently 4 flags which you can set inside the bot.
 - [X] detect movement direction (right,left) (position of areas) 
 - [X] detect movement direction (incoming, outcoming) (sum of areas)
 - [ ] detect multiple faces
+- [ ] Update motion notifier
 
 ## Face Recognizer
 - [X] Save faces into corresponding dirs

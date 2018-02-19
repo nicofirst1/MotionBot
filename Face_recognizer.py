@@ -289,8 +289,8 @@ class Face_recognizer(Thread):
         #self.face_recognizer.setThreshold(130)
         #label=self.face_recognizer.predict(gray)
         label,confidence=0,0
-        self.face_recognizer.predict(gray,label,confidence)
-        print(label,confidence)
+        ret=self.face_recognizer.predict(gray,label,confidence)
+        print(ret,label,confidence)
         #print(collect,collect.getResults())
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
