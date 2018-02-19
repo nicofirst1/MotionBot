@@ -232,6 +232,47 @@ def send_ground(bot, update):
     print("...Done")
 
 
+@elegible_user
+def help(bot, update):
+
+    help_str="""
+Welcome to this bot!
+You can use it to with a camera to create your own surveillance system.
+The avaiable commands are the following:
+- /start - start bot
+- /photo : get a camshot from the camera
+- /video seconds : get a video from the camera with <i>seconds</i> duration, the default duration is 5 seconds
+- /flags : set the flags 
+- /resetg : reset the backgroud image 
+- /stop : stop surveillance execution
+- /logsend : send the logger file
+- /logdel : delete the log file
+- /bkground : send the background image
+- /classify : classify the person face
+
+This bot has multiple functionalities:
+<b>==Movement detection==</b>
+When there is a detected change between the background image and the current frame from the camera you will be notified with a message. 
+You can set the flags (try the /flags command) to get multiple information from the camera, such as the video of the movement, the detected faces in the video and so on.
+
+<b>==Camera shotter==</b>
+You can use the commands /photo and /video to get a <b>live</b> update of what the camera is seeing
+
+<b>==Telegram access==</b>
+When a new user starts the bot it will be asked for the password. This password can be set from the source code <b>ONLY</b> and you will have <b>just one chance</b> to get it right.
+If you fail the bot will block you and no commands will be executed. Otherwise you will be granted full access to the bot functionalities.
+The bot password can be set in the <i>Resources/token_psw.txt</i> file (check out the README).
+When a movement is detected, depending on the flags values, every id in the ids file will be notified (if not blocked).
+
+<b>==Face recognizer==</b>
+If the proper falg is set to True and a face has been detected in the video, the face recognizer will try to guess the person whose face has been seen.
+When the bot first starts it will train the face recognizer with the saved faces. To save a new faces simply use the /classify command and follow th instructions.
+The more faces the recognizer find out the more precise it will be
+
+Thank you for choosing this bot, I hope you like it.
+"""
+    update.message.reply_text(help_str,parse_mode="HTML")
+
 # ===============Utils===================
 
 

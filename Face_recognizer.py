@@ -272,7 +272,7 @@ class Face_recognizer(Thread):
 
         if len(img) == 0:
             print("No image for prediction")
-            return False
+            return False, False
 
         # resize, convert to right unit type and turn image to grayscale
         img=cv2.resize(self.image_size)

@@ -762,7 +762,8 @@ class Telegram_handler(Thread):
             # every line has the id as the first element of a split(,)
             ids = []
             for id in lines:
-                ids.append(int(id.split(",")[0]))
+                if int(id.split(",")[1]):
+                    ids.append(int(id.split(",")[0]))
             return ids
 
 
