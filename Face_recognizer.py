@@ -341,8 +341,9 @@ class Face_recognizer(Thread):
         images = glob.glob(self.unknown + "*.png")
 
         idx = 0
-        for image in images:
+        for image_path in images:
             # predict name
+            image = cv2.imread(image_path)
             face_name, distance = self.predict(image)
             # if the confidence is less than the threshold skip
             if distance < self.auto_train_dist: continue
