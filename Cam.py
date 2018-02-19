@@ -618,6 +618,7 @@ class Cam_movement(Thread):
 
         return ()
 
+    @time_profiler
     def face_from_video(self, frames):
         """This funcion add a rectangle on recognized faces"""
 
