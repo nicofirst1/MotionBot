@@ -288,6 +288,10 @@ class Face_recognizer(Thread):
         #collect = cv2.face.StandardCollector_create()
         #self.face_recognizer.setThreshold(130)
         #label=self.face_recognizer.predict(gray)
+
+        print(self.face_recognizer.getThreshold())
+
+
         label,confidence=0,0
         ret=self.face_recognizer.predict(gray,label,confidence)
         print(ret,label,confidence)
