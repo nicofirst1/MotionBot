@@ -6,21 +6,21 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
 ## Table of Content
 
 - [Behavior](#behavior)
-    + [Starting up](#starting-up)
-    + [Flags and log](#flags-and-log)
-    + [Movement detection](#movement-detection)
-    + [Face recognition](#face-recognition)
+  * [Starting up](#starting-up)
+  * [Flags and log](#flags-and-log)
+  * [Movement detection](#movement-detection)
+  * [Face recognition](#face-recognition)
 - [Getting Started](#getting-started)
-    + [Package Setup](#package-setup)
-    + [Physical Setup](#physical-setup)
-    + [Final Setup](#final-setup)
-    + [Parameter Tuning](#parameter-tuning)
+  * [Package Setup](#package-setup)
+  * [Physical Setup](#physical-setup)
+  * [Final Setup](#final-setup)
+  * [Parameter Tuning](#parameter-tuning)
       - [Cam_movement](#cam-movement)
       - [Cam_shotter](#cam-shotter)
       - [Face_recognizer](#face-recognizer)
 - [Usage](#usage)
-    + [Avaiable telgram commands](#avaiable-telgram-commands)
-    + [Flags](#flags)
+  * [Avaiable telgram commands](#avaiable-telgram-commands)
+  * [Flags](#flags)
 
 
 ## Behavior
