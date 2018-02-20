@@ -49,6 +49,18 @@ class Cam_class:
         # try to save the image
         return cv2.imwrite(image_name, img)
 
+    def stop(self):
+        self.motion.stop()
+        self.motion.join()
+
+        self.face_recognizer.stop()
+        self.face_recognizer.join()
+
+        self.shotter.stop()
+        self.shotter.join()
+
+        logger.info("Stopping Cam class")
+        return
 
 
     def capture_video(self, video_name, seconds):
@@ -84,6 +96,8 @@ class Cam_shotter(Thread):
         # init the thread
         Thread.__init__(self)
 
+        self.stop_event = threading.Event()
+
         # get camera and queue
         self.cam_idx = 0
         self.CAM = cv2.VideoCapture(self.cam_idx)
@@ -99,6 +113,15 @@ class Cam_shotter(Thread):
         """Main thread loop"""
 
         while True:
+
+            if self.stopped():
+
+                self.CAM.release()
+                sleep(1)
+                del self.queue[:]
+                self.lock.release()
+                logger.info("Stopping Cam shotter")
+                return
 
             # read frame form camera
             ret, img = self.CAM.read()
@@ -165,12 +188,22 @@ class Cam_shotter(Thread):
             self.CAM.open(0)
 
 
+    def stop(self):
+        self.stop_event.set()
+
+    def stopped(self):
+        return self.stop_event.is_set()
+
+
 class Cam_movement(Thread):
     """Class to detect movement from camera frames"""
 
     def __init__(self, shotter, telegram, face_recognizer):
         # init the thread
         Thread.__init__(self)
+        self.stop_event = threading.Event()
+
+
 
         self.shotter = shotter
         self.frame = shotter.queue
@@ -229,6 +262,19 @@ class Cam_movement(Thread):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
                 logger.error(''.join('!! ' + line for line in lines))  # Log it or whatever here
+
+
+            if self.stopped():
+                logger.info("Stopping Cam movement")
+                return
+
+
+
+    def stop(self):
+        self.stop_event.set()
+
+    def stopped(self):
+        return self.stop_event.is_set()
 
     def detect_motion_video(self):
 

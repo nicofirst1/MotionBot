@@ -1,5 +1,6 @@
 import glob
 import random
+import threading
 from threading import Thread
 import cv2
 import numpy as np
@@ -20,6 +21,7 @@ class Face_recognizer(Thread):
         faces_dir : the directory Faces
         unknown : the Unknown direcotry
         recognizer_path : the path to the recognizer object
+        stop_event : The event to handle thread stopping
 
         recognizer: the classifier used for face rocognition
         is_training : bool flag to stop any prediction when training the classifier
@@ -42,6 +44,8 @@ class Face_recognizer(Thread):
         self.faces_dir = "Faces/"
         self.unknown = self.faces_dir + "Unknown/"
         self.recognizer_path="Resources/recognizer.yaml"
+        self.stop_event = threading.Event()
+
 
         # ======RECOGNIZER VARIABLES======
         self.recognizer = self.load_recognizer()
@@ -85,7 +89,19 @@ class Face_recognizer(Thread):
 
         self.train_model()
         # updater.start_polling()
-        while True: continue
+
+        while True:
+            #if the thread has been stopped
+            if self.stopped():
+                #save the recognizer
+                self.recognizer.save(self.recognizer_path)
+                return
+
+    def stop(self):
+        self.stop_event.set()
+
+    def stopped(self):
+        return self.stop_event.is_set()
 
     # ===================TELEGRAM=========================
 

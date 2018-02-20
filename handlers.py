@@ -187,8 +187,9 @@ def stop_execution(bot, update):
     """Telegram command to stop the bot execution """
     logger.info("stop command called")
 
-    logger.info("Stopping execution")
     cam.telegram_handler.send_message("Stopping surveillance")
+    cam.stop()
+    logger.info("Stopping execution")
     sys.exit(0)
 
 

@@ -11,6 +11,7 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Install profiler fuction `pip install -U memory_profiler`
 
 ## Physical Setup
+**THIS PART IS NOT IMPLEMENTED YET**
 For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro-Helicopter-Airplane-Controls/dp/B00JJZXRR0)
 * Connect it like this
 
@@ -24,7 +25,6 @@ Where the input pin is the GPIO0
 ## Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=*
 * Edit the fallback_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
-
 
 ## Parameter Tuning
  You may want to tune some parameters depending on your enviroment (light, distance...). Here you will find a complete list of
@@ -46,11 +46,16 @@ and the area of this difference is grater than the **min_area** parameter, the m
 * **face_photo/motion/debug/video flags** : You can directly run the bot with the default falgs value by setting these parameters (see the flag section below)
 * **blur** : the mean by which you want to blur the frames before detecting any movement (use the command /bkground to check the blur ratio)
 
-
 ### Cam_shotter
 
 You can find the following parameter in the __init__ function
 * **cam_idx** : the index of your camera (it should be zero for one camera)
+
+### Face_recognizer
+* **distance_thres** : The maximum euclidean distance between the frame containing a face and the recognitor label (sort of a confidence)
+* **auto_train_dist** : Same as before, but this threshold should be kept low since it deletes images in the unknown direcotry if the confidence
+ is less then than this threshold
+* **image_size** : the image size on with execute the trainig and prediction
 
 # HOW TO USE
 
@@ -64,7 +69,7 @@ If you want to run it even when you close the ssh connection use
 
 ## Avaiable telgram commands
 
-These are the currently avaiable commands for the telegram bot
+These are the currently avaiable commands for the telegram bot, check out the /help command either in the *handlers.py* file or trhought the bot itself
 
 * /start - strat the bot and provide the password (you get only one chanche to type the correct one)
 * /photo - get a snapshot from the camera and send it trhought telegram 
@@ -74,6 +79,8 @@ These are the currently avaiable commands for the telegram bot
 * /bkground - send the current background image
 * /logsend - send the log file
 * /logdel - delete the log file
+* /classify : classify the person face
+* /help : sends the help 
 
 NB: you can change the commands name just by changing the *CommandHandlers* in the *main.py* file
 
