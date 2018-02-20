@@ -48,7 +48,7 @@ class Face_recognizer(Thread):
         self.is_training = False
         self.image_size = (200, 200)
         self.distance_thres = 90
-        self.auto_train_dist = 85
+        self.auto_train_dist = 70
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -288,8 +288,8 @@ class Face_recognizer(Thread):
             print("No data to train with")
             return
         # train
-        #self.recognizer.update(faces, np.array(labels))
-        self.recognizer.train(faces, np.array(labels))
+        self.recognizer.update(faces, np.array(labels))
+        #self.recognizer.train(faces, np.array(labels))
 
         #saving the recognizer object
         self.recognizer.save(self.recognizer_path)
@@ -336,8 +336,8 @@ class Face_recognizer(Thread):
         return label_text, confidence
 
     def auto_train(self):
-        """After some images have been added to unkown folder, predict the label and if the confodence
-        is high enough update the recognizer"""
+        """After some images have been added to unkown folder, predict the label and if the confidence
+        is high enough delete the image"""
 
         print("Autotraining on new images...")
 
@@ -354,24 +354,12 @@ class Face_recognizer(Thread):
             # if the confidence is less than the threshold skip
             if distance < self.auto_train_dist: continue
 
-            #move the image to the face name and increment idx
-            if self.move_image(image, face_name):
+            else:
+                os.remove(image_path)
                 idx += 1
 
-        print("Moved " + str(idx) + " images")
+        print("Deleted " + str(idx) + " images")
 
-        # prepare the data
-        faces, labels = self.prepare_training_data()
-
-
-        if len(faces) == 0 or len(labels) == 0:
-            print("No data to train with")
-            return
-        # train
-
-        self.recognizer.update(faces, np.array(labels))
-
-        self.recognizer.save(self.recognizer_path)
 
         print("...Autotraining complete")
 
@@ -440,7 +428,7 @@ class Face_recognizer(Thread):
                 faces.append(gray)
                 labels.append(label)
                 #remove image
-                #os.remove(image_path)
+                os.remove(image_path)
 
         return faces, labels
 
