@@ -12,10 +12,10 @@ When you first start the bot it will take an image of what the camera is seeing 
 program when there are no moving objects in the camera field of view, the program can programmatically reset your ground image
  but it will take some time.
 
-Here there is a screenshot i captured from my telegram account
+Here there is are some screenshots I captured from my telegram account
 
 ![image](https://i.imgur.com/QTtrvGT.png)
-As you can see above image is an actual photo from the camera while the other one is the blurred, grayscaled background image.
+As you can see the first image is an actual photo from the camera while the other one is the blurred, grayscaled background image.
 
 As previous mentioned the ground image will programmatically adjusts when some changes in the background are detected, 
 like moving chairs, or different light condition. You can force this change to happen with the /resetg command and check the 
@@ -28,17 +28,17 @@ current background image with /bkground
 You can set various flags within telegram that will change the behavior of the program (for more infos read the *Usage->Flags* section).
 To chenge the flag values just click on the inline button.
 ![image](https://i.imgur.com/Pz7LkwM.png)
-This project make use of a logger, as you can see the file connected with the logger can be sent and deleted with two simple telegram commands.
+This project make use of a logger, as might be seen the file connected with the logger can be sent and deleted with two simple telegram commands.
 
 
 ### Movement detection
 
-The core about this project is motion detection, that is the ability to determine a movement in the current camera field of view
+The core of this project is motion detection, that is the ability to determine a movement in the current camera field of view
 and notify the user about it.
 Depending on the flags value you will get different information from the camera. For example:
 
 When the only flag you set to True is *Motion* you will just get a notification from the camera, if you set bot *Motion* and 
-*Video* you will be sent the video of the movemento too.
+*Video* you will be sent the video of the movement too.
 If you set all the flags to True (debug excepted) you will get this:
 ![image](https://i.imgur.com/Ny34Of9.png)
 As you can see, first you have the notification, then the recognized face, Nicolo which is me, (the confidence is just a debug feature 
@@ -47,6 +47,7 @@ and will disappear later in the development), and a gif file with a video.
 The gif file will have different squares on it, which you will be able to remove with future implementation.
 The green ones are for the area of the camera that has been changed, while the red ones are the recognized faces.
 ![gif](https://i.imgur.com/1to6cw8.mp4)
+
 Moreover the date and the movement direction (Incoming/Outgoing , Left/right) will be displayed at the bottom of the gif.
 
 
