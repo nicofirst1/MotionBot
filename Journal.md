@@ -44,7 +44,7 @@
 - [ ] Add error handling at the origin to not stop the class
 - [X] Fix logging , do not print on terminal
 - [ ] Comment code 
-- [ ] Add requirements.txt
+- [X] Add requirements.txt
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
