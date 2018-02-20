@@ -5,10 +5,15 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
 
 ## Table of Content
 
+----
+
+## On this page
+{:.no_toc}
 
 - TOC
 {:toc}
 
+----
 
 
 # Behavior
