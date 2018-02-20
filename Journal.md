@@ -59,6 +59,7 @@
 - [X] Fix reset background command
 - [ ] Surround with try/except every bot_edit_message for the error *telegram.error.BadRequest: Message is not modified*
 - [X] Write help command
+- [ ] Add help command 
 
 ## Camera movement
 - [ ] Use step motor with GPIO to move the camera
