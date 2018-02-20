@@ -21,7 +21,7 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
 - [Usage](#usage)
   * [Avaiable telgram commands](#avaiable-telgram-commands)
   * [Flags](#flags)
-- [Author](#uthor)
+- [Author](#author)
 
 
 ## Behavior
