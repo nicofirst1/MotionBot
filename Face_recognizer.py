@@ -270,6 +270,9 @@ class Face_recognizer(Thread):
 
         )
 
+        #look for new images in the Unknown direcotory and delete recognized ones
+        self.auto_train()
+
     # ===================RECOGNIZER=========================
 
     def train_model(self):
