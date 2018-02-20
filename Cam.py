@@ -17,7 +17,10 @@ from utils import time_profiler
 logger = logging.getLogger('motionlog')
 
 
-class Cam_class:
+class Main_class:
+    """This class is the one handling the thread initialization and the coordination between them.
+    It also handles the telegram command to event execution"""
+
 
     def __init__(self, updater):
 
@@ -119,7 +122,6 @@ class Cam_shotter(Thread):
                 self.CAM.release()
                 sleep(1)
                 del self.queue[:]
-                self.lock.release()
                 logger.info("Stopping Cam shotter")
                 return
 

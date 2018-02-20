@@ -24,7 +24,6 @@ class Face_recognizer(Thread):
         stop_event : The event to handle thread stopping
 
         recognizer: the classifier used for face rocognition
-        is_training : bool flag to stop any prediction when training the classifier
         image_size : the image size for the training and prediction
         distance_thres : the maximum distance accepted for recognition confidence
         auto_train_dist : the maximum distance accepted for auto recognition and training
@@ -49,7 +48,6 @@ class Face_recognizer(Thread):
 
         # ======RECOGNIZER VARIABLES======
         self.recognizer = self.load_recognizer()
-        self.is_training = False
         self.image_size = (200, 200)
         self.distance_thres = 90
         self.auto_train_dist = 70
@@ -295,8 +293,6 @@ class Face_recognizer(Thread):
         """Function to train the recognizer"""
 
         print("Training model...")
-        # flag value
-        self.is_training = True
 
         # prepare the data
         faces, labels = self.prepare_training_data()
@@ -314,7 +310,6 @@ class Face_recognizer(Thread):
         self.recognizer.save(self.recognizer_path)
 
 
-        self.is_training = False
         print("....Model trained and saved")
 
     def predict(self, img):
@@ -322,8 +317,6 @@ class Face_recognizer(Thread):
 
         print("Predicting....")
         # do not try to predict while the model is training
-        if self.is_training:
-            return False,False
 
         if len(img) == 0:
             print("No image for prediction")

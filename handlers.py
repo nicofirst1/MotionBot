@@ -5,7 +5,7 @@ import logging
 
 import os, sys
 
-from Cam import Cam_class
+from Cam import Main_class
 from utils import add_id, elegible_user, read_token_psw
 
 TOKEN, psw = read_token_psw()
@@ -15,7 +15,7 @@ updater = Updater(TOKEN)
 disp = updater.dispatcher
 logger = logging.getLogger('motionlog')
 
-cam = Cam_class(updater)
+cam = Main_class(updater)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
