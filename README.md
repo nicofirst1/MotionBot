@@ -3,6 +3,8 @@
 This project combines visual perception, with Opencv, and telegram bots.
 The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.
 
+[[_TOC_]] 
+
 ## Behavior
 In this section I will demonstrate the behavior of the bot.
 
@@ -60,8 +62,9 @@ Moreover the date and the movement direction (Incoming/Outgoing , Left/right) wi
 
 This project uses a face recognition algorithm [LBPH](https://github.com/informramiz/opencv-face-recognition-python) to guess 
 whose face the images belongs to. To do so you must first tell it which face belongs to which person.
+Here is where you want to use the /classify command. 
 
-Here is where you want to use the /classify command. When you first use it this will show up:
+When you first use it this will show up:
 
 ![image](https://i.imgur.com/jYTxQ7H.png) 
 
@@ -71,13 +74,13 @@ By clicking on **Save Faces** you will get the following
 
 ![image](https://i.imgur.com/kMirsmy.png)
 
-Since I'm using the desktop version of thelegram the button are cut for space problems, so I got the a screenshots from the mobile version
+Since I'm using the desktop version of telegram the button are cut for space problems, so I got the a screenshots from the mobile version
 
 ![image](https://i.imgur.com/4XNBQ0M.jpg)
 
 As you can see you have 4 options to choose from.
 * The first lines are occupied by saved faces buttons, these are programmatically generated every time you add a new face. By clicking on them
-you tell the bot that THAT specific face belongs to THAT specific person.
+you are telling the bot that THAT specific face belongs to THAT specific person.
 * Next you have the **New** button to add a person face. Simply follow the instructions afterwards.
 * You may choose to **Delete** the photo if you think it won't be useful to the face recognition (i.e. when the image is blurred, black or even 
 not a face)
@@ -136,7 +139,7 @@ You can find the following parameter in the __init__ function
 * **min_area** : the minimum area for the movement detection. If the current frame has a difference with the ground image
 and the area of this difference is grater than the **min_area** parameter, the movement is detected
 * **frontal_face_cascade/profile_face_cascade** : they must be set to the cascades in the *opencv/data* direcotry you downloaded
-* **max_seconds_retries** (optional) : The movement will be detected for a maximum of **max_seconds_retries** second then, the 
+* **max_seconds_retries** (optional) : The movement will be detected for a maximum of *max_seconds_retries* second, then the 
  program will look for background changes
 * **resolution** : the resolution you want to use for your camera (Note that if you change this parameter telegram will read the video files
  as Document rather than Gif)
