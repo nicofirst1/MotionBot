@@ -352,11 +352,10 @@ class Face_recognizer(Thread):
             image = cv2.imread(image_path)
             face_name, distance = self.predict(image)
             # if the confidence is less than the threshold skip
-            if distance < self.auto_train_dist: continue
-
-            else:
+            if distance < self.auto_train_dist:
                 os.remove(image_path)
                 idx += 1
+
 
         print("Deleted " + str(idx) + " images")
 
