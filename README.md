@@ -4,14 +4,13 @@ This project combines visual perception, with Opencv, and telegram bots.
 The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.
 
 ## Table of Content
-- [MotionBot](#motionbot)
-  * [Table of Content](#table-of-content)
-  * [Behavior](#behavior)
+
+- [Behavior](#behavior)
     + [Starting up](#starting-up)
     + [Flags and log](#flags-and-log)
     + [Movement detection](#movement-detection)
     + [Face recognition](#face-recognition)
-  * [Getting Started](#getting-started)
+- [Getting Started](#getting-started)
     + [Package Setup](#package-setup)
     + [Physical Setup](#physical-setup)
     + [Final Setup](#final-setup)
@@ -19,7 +18,7 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
       - [Cam_movement](#cam-movement)
       - [Cam_shotter](#cam-shotter)
       - [Face_recognizer](#face-recognizer)
-  * [Usage](#usage)
+- [Usage](#usage)
     + [Avaiable telgram commands](#avaiable-telgram-commands)
     + [Flags](#flags)
 
