@@ -234,7 +234,7 @@ def send_ground(bot, update):
 
 
 @elegible_user
-def help(bot, update):
+def help_bot(bot, update):
 
     help_str="""
 Welcome to this bot!

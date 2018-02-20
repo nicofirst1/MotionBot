@@ -2,7 +2,8 @@ from telegram.ext import (
     ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
 import logging
 from handlers import start, annulla, get_camshot, stream, disp, updater, \
-    flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw, delete_log
+    flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw, delete_log, \
+    help_bot
 
 #Implementing logger
 
@@ -38,6 +39,7 @@ if __name__ == "__main__":
     disp.add_handler(CommandHandler("logsend",send_log))
     disp.add_handler(CommandHandler("bkground",send_ground))
     disp.add_handler(CommandHandler("logdel",delete_log))
+    disp.add_handler(CommandHandler("help",help_bot))
     #Adding CallcbackQuery
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
 
