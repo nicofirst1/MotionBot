@@ -8,10 +8,10 @@ import datetime
 import logging
 
 import sys
-from memory_profiler import profile
+#from memory_profiler import profile
 
-from Face_recognizer import Face_recognizer
-from utils import time_profiler
+from Face_recognizer import FaceRecognizer
+#from utils import time_profiler
 
 logger = logging.getLogger('motionlog')
 
@@ -50,7 +50,7 @@ class MainClass:
         self.shotter = CamShotter(self.frames)
         self.shotter.start()
 
-        self.face_recognizer = Face_recognizer(self.disp)
+        self.face_recognizer = FaceRecognizer(self.disp)
         self.face_recognizer.start()
 
         self.motion = CamMovement(self.shotter, self.telegram_handler, self.face_recognizer)

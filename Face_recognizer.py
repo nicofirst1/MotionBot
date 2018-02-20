@@ -12,7 +12,7 @@ from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Ca
 from cv2.face import *
 
 
-class Face_recognizer(Thread):
+class FaceRecognizer(Thread):
     """Class dedicated to face recognition
     Each face is saved in a folder inside faces_dir with the following syntax s_idx_subjectName, where idx is the
     number of direcoties inside faces_dir and subjectName is the name of the person the face belogns to.
