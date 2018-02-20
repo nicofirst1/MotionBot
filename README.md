@@ -1,24 +1,34 @@
-
-----
-
-- TOC
-{:toc}
-
-----
-
-
 # MotionBot
 
 This project combines visual perception, with Opencv, and telegram bots.
 The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.
 
 ## Table of Content
+- [MotionBot](#motionbot)
+- [Behavior](#behavior)
+   * [Starting up](#starting-up)
+   * [Flags and log](#flags-and-log)
+   * [Movement detection](#movement-detection)
+   * [Face recognition](#face-recognition)
+- [Getting Started](#getting-started)
+   * [Package Setup](#package-setup)
+   * [Physical Setup](#physical-setup)
+   * [Final Setup](#final-setup)
+   * [Parameter Tuning](#parameter-tuning)
+     - [Cam_movement](#cam-movement)
+     - [Cam_shotter](#cam-shotter)
+     - [Face_recognizer](#face-recognizer)
+ * [Usage](#usage)
+   + [Avaiable telgram commands](#avaiable-telgram-commands)
+   + [Flags](#flags)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
-# Behavior
+## Behavior
 In this section I will demonstrate the behavior of the bot.
 
-## Starting up
+### Starting up
 
 When you first start the bot it will take an image of what the camera is seeing and save it as a background. You should always start the 
 program when there are no moving objects in the camera field of view, the program can programmatically reset your ground image
