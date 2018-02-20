@@ -21,6 +21,7 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
 - [Usage](#usage)
   * [Avaiable telgram commands](#avaiable-telgram-commands)
   * [Flags](#flags)
+- [Author](#uthor)
 
 
 ## Behavior
@@ -211,3 +212,9 @@ There are currently 4 flags which you can set inside the bot.
   * **Face Reco(gnizer)** : When a face is detected from the video, it will try to predict the face name
 * **Debug** : When enable you will recieve debug image, like the absDifference, thresholding an so on. Note that this slows down the program a lot
 
+
+## Author
+
+The only Author is Nicolò Brandizzi, [me](https://www.linkedin.com/in/nicol%C3%B2-brandizzi-04091b153/).
+I made this project both for pleasure and to exercise my self in writing better README. I made use of some code from the internet, you can 
+find everything i used in the *Journal.md* under the *Useful Links* section
