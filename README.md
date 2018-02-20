@@ -7,7 +7,6 @@ The goal is to have a cheap, easy to use, surveillance system that you can insta
 
 ----
 
-## On this page
 {:.no_toc}
 
 - TOC
