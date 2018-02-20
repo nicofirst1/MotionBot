@@ -3,7 +3,7 @@
 This project combines visual perception, with Opencv, and telegram bots.
 The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.
 
-[[_TOC_]] 
+[TOC]]
 
 ## Behavior
 In this section I will demonstrate the behavior of the bot.
