@@ -24,7 +24,7 @@ Where the input pin is the GPIO0
 
 ## Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=*
-* Edit the fallback_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
+* Edit the default_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
 
 ## Parameter Tuning
  You may want to tune some parameters depending on your enviroment (light, distance...). Here you will find a complete list of
