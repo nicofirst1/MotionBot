@@ -180,7 +180,7 @@ You can find the following parameter in the __init__ function
 ## Usage
 
 To start the bot simply use
-`pyhton main.py`
+`python main.py`
 
 If you want to run it even when you close the ssh connection use
 `nohup python main.py &`
