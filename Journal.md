@@ -11,7 +11,6 @@
 ### CAPTURE VIDEO
 * http://answers.opencv.org/question/128081/python-frame-grabbing-from-ip-camera-and-process-in-a-different-thread/
 
-
 ### Motion detection
 * https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 
@@ -39,16 +38,17 @@
 - [ ] Get Classifier path from home direcotry
 - [ ] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
-- [ ] Stop/start cam_motion class by flag value
+- [X] Stop/start cam_motion class by flag value
 - [X] reorganize prints
 - [X] implement a logger
 - [ ] Add error handling at the origin to not stop the class
 - [X] Fix logging , do not print on terminal
 - [ ] Comment code 
+- [ ] Add requirements.txt
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
-- [ ] Command to stop bot execution
+- [X] Command to stop bot execution
 - [X] Make custom inline keyboard to set flags
 - [X] User friendly motion detection notification
 - [X] Send caption with image

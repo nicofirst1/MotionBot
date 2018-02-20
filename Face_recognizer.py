@@ -155,7 +155,7 @@ class FaceRecognizer(Thread):
             with open(image, "rb") as file:
                 bot.sendPhoto(user_id, file)
 
-        self.end_callback(bot, update)
+        self.end_callback(bot, update,calling=False)
 
         self.classify_start(bot, update.callback_query)
 
@@ -203,7 +203,7 @@ class FaceRecognizer(Thread):
         new_image_name = dir_name + "image_" + str(idx) + ".png"
 
         # delete the photo message
-        self.end_callback(bot, update)
+        self.end_callback(bot, update,calling=False)
 
         # move the image
         try:
@@ -216,7 +216,7 @@ class FaceRecognizer(Thread):
     def delete_unkwon_face(self, bot, update):
         """Function to delete a photo from the unknown dir"""
         image = update.callback_query.data.split()[1]
-        self.end_callback(bot, update)
+        self.end_callback(bot, update,calling=False)
 
         try:
             os.remove(image)
@@ -276,7 +276,7 @@ class FaceRecognizer(Thread):
             reply_markup=self.classify_start_inline
         )
 
-    def end_callback(self, bot, update):
+    def end_callback(self, bot, update,calling=True):
 
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,
@@ -285,7 +285,7 @@ class FaceRecognizer(Thread):
         )
 
         #look for new images in the Unknown direcotory and delete recognized ones
-        self.auto_train()
+        if calling: self.auto_train()
 
     # ===================RECOGNIZER=========================
 
