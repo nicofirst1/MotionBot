@@ -15,6 +15,7 @@ program when there are no moving objects in the camera field of view, the progra
 Here there is are some screenshots I captured from my telegram account
 
 ![image](https://i.imgur.com/QTtrvGT.png)
+
 As you can see the first image is an actual photo from the camera while the other one is the blurred, grayscaled background image.
 
 As previous mentioned the ground image will programmatically adjusts when some changes in the background are detected, 
@@ -27,7 +28,9 @@ current background image with /bkground
 
 You can set various flags within telegram that will change the behavior of the program (for more infos read the *Usage->Flags* section).
 To chenge the flag values just click on the inline button.
+
 ![image](https://i.imgur.com/Pz7LkwM.png)
+
 This project make use of a logger, as might be seen the file connected with the logger can be sent and deleted with two simple telegram commands.
 
 
@@ -40,12 +43,15 @@ Depending on the flags value you will get different information from the camera.
 When the only flag you set to True is *Motion* you will just get a notification from the camera, if you set bot *Motion* and 
 *Video* you will be sent the video of the movement too.
 If you set all the flags to True (debug excepted) you will get this:
+
 ![image](https://i.imgur.com/Ny34Of9.png)
+
 As you can see, first you have the notification, then the recognized face, Nicolo which is me, (the confidence is just a debug feature 
 and will disappear later in the development), and a gif file with a video.
 
 The gif file will have different squares on it, which you will be able to remove with future implementation.
 The green ones are for the area of the camera that has been changed, while the red ones are the recognized faces.
+
 ![gif](https://i.imgur.com/1to6cw8.mp4)
 
 Moreover the date and the movement direction (Incoming/Outgoing , Left/right) will be displayed at the bottom of the gif.
@@ -56,10 +62,13 @@ This project uses a face recognition algorithm [LBPH](https://github.com/informr
 whose face the images belongs to. To do so you must first tell it which face belongs to which person.
 
 Here is where you want to use the /classify command. When you first use it this will show up:
+
 ![image](https://i.imgur.com/jYTxQ7H.png) 
+
 The **Save Faces** button will let you map faces with names, while the **See Faces** will show all the saved images with the relative name.
 
 By clicking on **Save Faces** you will get the following
+
 ![image](https://i.imgur.com/kMirsmy.png)
 
 Since I'm using the desktop version of thelegram the button are cut for space problems, so I got the a screenshots from the mobile version
@@ -75,6 +84,7 @@ not a face)
 * Finally you can **Exit** the classification, remember to always do so since that button will trigger the re-training of the recognizer.
 
 If you rather see the saved faces, click on the **See Faces** button and this will show up
+
 ![image](https://i.imgur.com/dDHzJfe.png)
 
 Here you can choose, from the saved faces, which you would like to see. The bot will then send you the remaining images from that person
