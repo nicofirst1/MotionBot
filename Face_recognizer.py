@@ -285,7 +285,7 @@ class FaceRecognizer(Thread):
         )
 
         #look for new images in the Unknown direcotory and delete recognized ones
-        if calling: self.auto_train()
+        if calling: self.train_model()
 
     # ===================RECOGNIZER=========================
 
