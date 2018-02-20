@@ -50,21 +50,52 @@ The green ones are for the area of the camera that has been changed, while the r
 
 Moreover the date and the movement direction (Incoming/Outgoing , Left/right) will be displayed at the bottom of the gif.
 
+### Face recognition
+
+This project uses a face recognition algorithm [LBPH](https://github.com/informramiz/opencv-face-recognition-python) to guess 
+whose face the images belongs to. To do so you must first tell it which face belongs to which person.
+
+Here is where you want to use the /classify command. When you first use it this will show up:
+![image](https://i.imgur.com/jYTxQ7H.png) 
+The **Save Faces** button will let you map faces with names, while the **See Faces** will show all the saved images with the relative name.
+
+By clicking on **Save Faces** you will get the following
+![image](https://i.imgur.com/kMirsmy.png)
+
+Since I'm using the desktop version of thelegram the button are cut for space problems, so I got the a screenshots from the mobile version
+
+![image](https://i.imgur.com/4XNBQ0M.jpg)
+
+As you can see you have 4 options to choose from.
+* The first lines are occupied by saved faces buttons, these are programmatically generated every time you add a new face. By clicking on them
+you tell the bot that THAT specific face belongs to THAT specific person.
+* Next you have the **New** button to add a person face. Simply follow the instructions afterwards.
+* You may choose to **Delete** the photo if you think it won't be useful to the face recognition (i.e. when the image is blurred, black or even 
+not a face)
+* Finally you can **Exit** the classification, remember to always do so since that button will trigger the re-training of the recognizer.
+
+If you rather see the saved faces, click on the **See Faces** button and this will show up
+![image](https://i.imgur.com/dDHzJfe.png)
+
+Here you can choose, from the saved faces, which you would like to see. The bot will then send you the remaining images from that person
+
+![image](https://i.imgur.com/Du65pvR.png)
+
+
 
 ## Getting Started
 
 If you are having any kind of problems related to the following steps check out the *Journal.md* under the *Issues* section. 
 
 ### Package Setup
-This repo is currently working with **raspberry pi 3 model B** with **Python 3.5** and a **Logitech webcam**
-* First install the *fswebcam package* (you can check [this tutorial](https://www.raspberrypi.org/documentation/usage/webcams/)) with 
-`sudo apt-get install fswebcam`, check if the cam is working correctly by running `fswebcam image.jpg` (use `eog image.jpg` to view the image throught ssh)
+This project is currently working with **raspberry pi 3 model B**, **Python 3.5** and a **Logitech webcam**
+* First install the *fswebcam package* (you can check out [this tutorial](https://www.raspberrypi.org/documentation/usage/webcams/)) with 
+`sudo apt-get install fswebcam`, control that the cam is working correctly by running `fswebcam image.jpg` (use `eog image.jpg` to view the image throught ssh)
 * Then follow [this tutorial](https://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
 To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
-* Then install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
+* Next install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
-* Install [face_recognition](https://github.com/ageitgey/face_recognition) with `pip3 install face_recognition`
-* Install profiler fuction `pip install -U memory_profiler`
+* (Optional) Install profiler fuction `pip install -U memory_profiler`
 
 ### Physical Setup
 **THIS PART IS NOT IMPLEMENTED YET, YOU CAN SKIP IT**

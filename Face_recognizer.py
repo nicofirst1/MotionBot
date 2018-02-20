@@ -390,9 +390,6 @@ class FaceRecognizer(Thread):
 
         return recognizer
 
-
-
-
     def name_from_label(self, label):
         """Function to get the person name by the label"""
 
