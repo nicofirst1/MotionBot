@@ -48,7 +48,7 @@ current background image with /bkground
 ### Flags and log
 
 You can set various flags within telegram that will change the behavior of the program (for more infos read the *Usage->Flags* section).
-To chenge the flag values just click on the inline button.
+To change the flag values just click on the inline button.
 
 ![image](https://i.imgur.com/Pz7LkwM.png)
 
@@ -122,7 +122,7 @@ If you are having any kind of problems related to the following steps check out 
 ### Package Setup
 This project is currently working with **raspberry pi 3 model B**, **Python 3.5** and a **Logitech webcam**
 * First install the *fswebcam package* (you can check out [this tutorial](https://www.raspberrypi.org/documentation/usage/webcams/)) with 
-`sudo apt-get install fswebcam`, control that the cam is working correctly by running `fswebcam image.jpg` (use `eog image.jpg` to view the image throught ssh)
+`sudo apt-get install fswebcam`, control that the cam is working correctly by running `fswebcam image.jpg` (use `eog image.jpg` to view the image through ssh)
 * Then follow [this tutorial](https://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/)
 To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Next install the **scikit-image** package by running `sudo apt-get install python-skimage` followed by `pip install scikit-image` (be sure to be in the correct virtual enviroment using python3.5)
@@ -157,7 +157,7 @@ You can find the following parameter in the __init__ function
 * **send_id** : your telegram id
 * **min_area** : the minimum area for the movement detection. If the current frame has a difference with the ground image
 and the area of this difference is grater than the **min_area** parameter, the movement is detected
-* **frontal_face_cascade/profile_face_cascade** : they must be set to the cascades in the *opencv/data* direcotry you downloaded
+* **frontal_face_cascade/profile_face_cascade** : they must be set to the cascades in the *opencv/data* directory you downloaded
 * **max_seconds_retries** (optional) : The movement will be detected for a maximum of *max_seconds_retries* second, then the 
  program will look for background changes
 * **resolution** : the resolution you want to use for your camera (Note that if you change this parameter telegram will read the video files
@@ -173,7 +173,7 @@ You can find the following parameter in the __init__ function
 
 #### Face_recognizer
 * **distance_thres** : The maximum euclidean distance between the frame containing a face and the recognitor label (sort of a confidence)
-* **auto_train_dist** : Same as before, but this threshold should be kept low since it deletes images in the unknown direcotry if the confidence
+* **auto_train_dist** : Same as before, but this threshold should be kept low since it deletes images in the unknown directory if the confidence
  is less then than this threshold
 * **image_size** : the image size on with execute the trainig and prediction
 
@@ -189,11 +189,11 @@ If you want to run it even when you close the ssh connection use
 
 ### Avaiable telgram commands
 
-These are the currently avaiable commands for the telegram bot, check out the /help command either in the *handlers.py* file or trhought the bot itself
+These are the currently available commands for the telegram bot, check out the /help command either in the *handlers.py* file or through the bot itself
 
-* /start - strat the bot and provide the password (you get only one chanche to type the correct one)
-* /photo - get a snapshot from the camera and send it trhought telegram 
-* /video seconds - you can usit with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
+* /start - start the bot and provide the password (you get only one chance to type the correct one)
+* /photo - get a snapshot from the camera and send it through telegram 
+* /video seconds - you can use it with or without the parameter *seconds* and it will send you a gif of form the camera (default duration 5 seconds)
 * /flags - you can dis/enable the notification from the movement detection 
 * /resetg - reset the ground image in *cam_movement*
 * /bkground - send the current background image
@@ -210,7 +210,7 @@ There are currently 4 flags which you can set inside the bot.
   * **Video** : When a movement is detected a video from the camera will be sent as a gif file
   * **Face Photo** : When a movement is detected, the bot will look for faces in the video above and send a face photo (if found)
   * **Face Reco(gnizer)** : When a face is detected from the video, it will try to predict the face name
-* **Debug** : When enable you will recieve debug image, like the absDifference, thresholding an so on. Note that this slows down the program a lot
+* **Debug** : When enable you will receive debug image, like the absDifference, thresholding an so on. Note that this slows down the program a lot
 
 
 ## Author
