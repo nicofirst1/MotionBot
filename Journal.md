@@ -110,7 +110,7 @@
 - [X] Optimize are different (replace for with any)
 - [X] Moved from gaussianBlur to blur (x4 times faster)
 - [ ] Optimize face recognition 
-- [ ] Optimize face detection in time (detectMultiScale is slow)
+- [X] Optimize face detection in time (detectMultiScale is slow)
 - [ ] Delete subjects face images after the model has been trained with them
 - [ ] Saving the recognizer object create a yaml file of 17M, while the photo in the Faces direcories are 4M...
 check out if the yaml file increses i or stays constant in size
@@ -126,6 +126,7 @@ check out if the yaml file increses i or stays constant in size
 * Finally got the face recognition confidence
 * Auto train for the recognizer and unknown images, with the update method
 * Save/Load the recognizer from yaml file
+* Removed detectMultiScale and replace it with multiple face prediction to get the best face
 
 # Issues
 

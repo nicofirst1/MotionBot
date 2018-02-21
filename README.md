@@ -113,6 +113,8 @@ Here you can choose, from the saved faces, which you would like to see. The bot 
 
 ![image](https://i.imgur.com/Du65pvR.png)
 
+**NB** : As mentioned before, every time you save a face and then exit the face recognition model will be retrained. This will
+increase the size of the model with approximately 10M every 70 images saved.
 
 
 ## Getting Started
