@@ -353,6 +353,8 @@ class FaceRecognizer(Thread):
         :return: list of triples (face_name, confidence,image) for every Different face in the image list
         """
 
+        print("Predict mutli started...")
+
         #if there are no images return
         if len(imgs)==0: return []
 
@@ -369,11 +371,8 @@ class FaceRecognizer(Thread):
                 to_filter.append((face_name,confidence,img))
             else: to_add.append(img)
 
-        print(to_filter)
 
         self.add_image_write(to_add)
-
-        if len(to_filter)==0: return []
 
         filtered=[]
         #group will be all the tirples with the same face_name
@@ -382,6 +381,8 @@ class FaceRecognizer(Thread):
             filtered.append(min(group, key = lambda t: t[1]))
 
         print(filtered)
+
+        print("...Predict multi ended")
         return filtered
 
 
