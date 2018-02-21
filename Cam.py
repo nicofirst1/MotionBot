@@ -397,8 +397,9 @@ class CamMovement(Thread):
                         self.telegram_handler.send_image(face, msg=person + ", confidence = " + str(confidence))
 
                 else:
-                    # just send the face
-                    self.telegram_handler.send_image(face, msg="Face found but not recognized")
+                    for elem in face:
+                        self.telegram_handler.send_image(elem[2], msg="Found "+elem[0]+" with conficence = "+str(elem[1]))
+
 
             # send the original video too
             if not self.resetting_ground:
@@ -730,12 +731,12 @@ class CamMovement(Thread):
                     logger.error("Error during the insertion of face images into dir")
 
             # get the final face image denoising the others
-            face = self.denoise_img(crop_frames)
+            faces_img=self.face_recognizer.predict_multi(crop_frames)
 
         else:
-            face = []
+            faces_img = []
 
-        return face
+        return faces_img
 
     def detect_face(self, img):
         """Detect faces using the cascades"""

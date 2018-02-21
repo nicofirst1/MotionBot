@@ -347,6 +347,40 @@ class FaceRecognizer(Thread):
         print("...Prediction end")
         return label_text, confidence
 
+    def predict_multi(self, imgs):
+        """ Predict faces in multiple images
+        :param imgs: list of images
+        :return: list of triples (face_name, confidence,image) for every Different face in the image list
+        """
+
+        #if there are no images return
+        if len(imgs)==0: return
+
+
+
+        to_filter=[]
+        to_add=[] #list to store iamges to add to Unknown folder
+
+        for img in imgs:
+            #get the name and the confidence
+            face_name, confidence=self.predict(img)
+            #append infos if confidence is less than trheshold
+            if confidence<=self.auto_train_dist:
+                to_filter.append((face_name,confidence,img))
+            else: to_add.append(img)
+
+        self.add_image_write(to_add)
+
+        filtered=[]
+        #group will be all the tirples with the same face_name
+        for key, group in np.itertools.groupby(to_filter, np.operator.itemgetter(0)):
+            #append to filtered the face with the smallest confidence
+            filtered.append(min(group, key = lambda t: t[1]))
+
+
+        return filtered
+
+
     def auto_train(self):
         """After some images have been added to unkown folder, predict the label and if the confidence
         is high enough delete the image"""
@@ -507,7 +541,7 @@ class FaceRecognizer(Thread):
 
         print("...Done")
 
-        self.auto_train()
+        #self.auto_train()
 
         return True
 
