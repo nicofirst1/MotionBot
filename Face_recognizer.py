@@ -5,6 +5,7 @@ from threading import Thread
 import cv2
 import numpy as np
 import os
+from itertools import groupby
 import operator
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
@@ -376,7 +377,7 @@ class FaceRecognizer(Thread):
 
         filtered=[]
         #group will be all the tirples with the same face_name
-        for key, group in operator.itertools.groupby(to_filter, operator.itemgetter(0)):
+        for key, group in groupby(to_filter, operator.itemgetter(0)):
             #append to filtered the face with the smallest confidence
             filtered.append(min(group, key = lambda t: t[1]))
 
