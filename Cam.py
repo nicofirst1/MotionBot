@@ -389,13 +389,6 @@ class CamMovement(Thread):
                 if len(face) == 0:
                     self.telegram_handler.send_message(msg="Face not found")
 
-                # if the users want to recognize the face
-                elif self.face_reco_falg:
-                    person, confidence = self.face_recognizer.predict(face)
-                    # if the face has been recognized
-                    if person:
-                        self.telegram_handler.send_image(face, msg=person + ", confidence = " + str(confidence))
-
                 else:
                     for elem in face:
                         self.telegram_handler.send_image(elem[2], msg="Found "+elem[0]+" with conficence = "+str(elem[1]))

@@ -377,7 +377,7 @@ class FaceRecognizer(Thread):
             #append to filtered the face with the smallest confidence
             filtered.append(min(group, key = lambda t: t[1]))
 
-
+        print(filtered)
         return filtered
 
 
