@@ -480,7 +480,7 @@ class CamMovement(Thread):
         # it may be that there is no apparent motion
         if not retry:
             # wait a little and retry
-            sleep(0.5)
+            sleep(1.5)
             self.loop_difference(1, initial_frame, 1, True)
 
         print("End of difference loop")
