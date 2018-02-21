@@ -51,7 +51,7 @@ class FaceRecognizer(Thread):
         self.recognizer = self.load_recognizer()
         self.image_size = (200, 200)
         self.distance_thres = 100
-        self.auto_train_dist = 70
+        self.auto_train_dist = 78
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
