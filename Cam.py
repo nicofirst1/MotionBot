@@ -879,7 +879,7 @@ class TelegramHandler(Thread):
         self.default_id = 24978334
         self.ids = self.get_ids(self.default_id)
 
-        print(self.ids)
+        #print(self.ids)
 
         logger.info("Telegram handler started")
 
