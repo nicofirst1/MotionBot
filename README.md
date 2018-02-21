@@ -117,6 +117,11 @@ Here you can choose, from the saved faces, which you would like to see. The bot 
 
 ## Getting Started
 
+**IMPORTANT**
+
+If you see the **debugging** commit do not pull the repo yet, the most secure updates are the **APLHA/BETA** releases. 
+Other commits comments may introduce new features and bugs too.
+
 If you are having any kind of problems related to the following steps check out the *Journal.md* under the *Issues* section. 
 
 ### Package Setup

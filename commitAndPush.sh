@@ -3,7 +3,7 @@
 
 if [ $# -eq 0 ]
   then
-    comment="bug fixed"
+    comment="debugging"
   else
     comment="$@"
 fi
