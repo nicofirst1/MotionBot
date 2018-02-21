@@ -790,10 +790,11 @@ class CamMovement(Thread):
             temporalWindowSize = len(image_list)
             hColor = 3
             searchWindowSize=17
+            hForColorComponents=1
             # print(temporalWindowSize, imgToDenoiseIndex)
 
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor,searchWindowSize=searchWindowSize)
+                                                            hColor=hColor,searchWindowSize=searchWindowSize,hForColorComponents=1)
         print("denosed")
 
         return denoised
