@@ -354,7 +354,7 @@ class FaceRecognizer(Thread):
         """
 
         #if there are no images return
-        if len(imgs)==0: return
+        if len(imgs)==0: return []
 
 
 
@@ -372,6 +372,8 @@ class FaceRecognizer(Thread):
         print(to_filter)
 
         self.add_image_write(to_add)
+
+        if len(to_filter)==0: return []
 
         filtered=[]
         #group will be all the tirples with the same face_name
