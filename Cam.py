@@ -692,7 +692,7 @@ class CamMovement(Thread):
 
     # =========================FACE DETECION=======================================
 
-    @time_profiler()
+    #@time_profiler()
     def face_from_video(self, frames):
         """Detect faces from list of frames"""
 
@@ -789,10 +789,11 @@ class CamMovement(Thread):
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
             hColor = 3
+            searchWindowSize=17
             # print(temporalWindowSize, imgToDenoiseIndex)
 
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor)
+                                                            hColor=hColor,searchWindowSize=searchWindowSize)
         print("denosed")
 
         return denoised
