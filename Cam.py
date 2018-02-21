@@ -794,7 +794,8 @@ class CamMovement(Thread):
             # print(temporalWindowSize, imgToDenoiseIndex)
 
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor,searchWindowSize=searchWindowSize,hForColorComponents=1)
+                                                            hColor=hColor,searchWindowSize=searchWindowSize,
+                                                            hForColorComponents=hForColorComponents)
         print("denosed")
 
         return denoised
@@ -883,6 +884,8 @@ class TelegramHandler(Thread):
         self.bot = bot
         self.default_id = 24978334
         self.ids = self.get_ids(self.default_id)
+
+        print(self.ids)
 
         logger.info("Telegram handler started")
 
