@@ -11,7 +11,7 @@ import sys
 #from memory_profiler import profile
 
 from Face_recognizer import FaceRecognizer
-#from utils import time_profiler
+from utils import time_profiler
 
 logger = logging.getLogger('motionlog')
 
@@ -692,6 +692,7 @@ class CamMovement(Thread):
 
     # =========================FACE DETECION=======================================
 
+    @time_profiler()
     def face_from_video(self, frames):
         """Detect faces from list of frames"""
 
@@ -748,11 +749,11 @@ class CamMovement(Thread):
         if len(faces) > 0:
             # print("face detcted!")
             return faces
-        else:
-            # if there are no frontface, detect the profile ones
-            faces = self.profile_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight)
-            if len(faces) > 0:
-                return faces
+        # else:
+        #     # if there are no frontface, detect the profile ones
+        #     faces = self.profile_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight)
+        #     if len(faces) > 0:
+        #         return faces
 
         return ()
 
