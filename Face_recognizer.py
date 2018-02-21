@@ -49,7 +49,7 @@ class FaceRecognizer(Thread):
         # ======RECOGNIZER VARIABLES======
         self.recognizer = self.load_recognizer()
         self.image_size = (200, 200)
-        self.distance_thres = 90
+        self.distance_thres = 100
         self.auto_train_dist = 70
 
         # ======TELEGRAM VARIABLES========
@@ -315,7 +315,7 @@ class FaceRecognizer(Thread):
     def predict(self, img):
         """ This function recognizes the person in image passed and return the person name with the confidence"""
 
-        print("Predicting....")
+        #print("Predicting....")
         # do not try to predict while the model is training
 
         if len(img) == 0:
@@ -328,7 +328,7 @@ class FaceRecognizer(Thread):
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        print("images preprocessed")
+        #print("images preprocessed")
 
         # create the collector to get the label and the confidence
         collector = MinDistancePredictCollector()
@@ -344,7 +344,7 @@ class FaceRecognizer(Thread):
         print(label,label_text, confidence)
 
 
-        print("...Prediction end")
+        #print("...Prediction end")
         return label_text, confidence
 
     def predict_multi(self, imgs):
@@ -368,6 +368,8 @@ class FaceRecognizer(Thread):
             if confidence<=self.auto_train_dist:
                 to_filter.append((face_name,confidence,img))
             else: to_add.append(img)
+
+        print(to_filter)
 
         self.add_image_write(to_add)
 
