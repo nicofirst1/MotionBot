@@ -149,6 +149,11 @@ def memory_profiler():
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
             print(s.getvalue())
+            try:
+                with open("Resources/time_profiler","r+") as file:
+                    file.writelines(s.getvalue())
+            except FileNotFoundError:
+                pass
 
         return wrapper
     return real_decorator
