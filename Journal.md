@@ -279,6 +279,7 @@ solved by using the collector object
 
 * Currently detectMultiScale is the slowest part of the program, it takes up to 30 seconds fo detect an image. With a time per call of 0.065
 * I'm using  scale_factor = 1.4 and min_neight = 3.
-* Setting min_size freezes the algorithm
+* Setting min_size fto (20,20) doesn't change anything
+* Setting the min_size to (50,50)
 
 A solution could be paralleling the function for all the frames
