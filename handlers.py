@@ -125,15 +125,15 @@ def reset_ground(bot, update):
     """Telegram command to reset the ground truth image (the background)"""
     update.message.reply_text("Resetting ground image")
 
-    user_id = update.message.from_user.id
-    cam.motion.reset_ground("Reset ground asked from " + str(user_id))
+    username = update.message.from_user.username
+    cam.motion.reset_ground("Reset ground asked from @" + username)
     update.message.reply_text("Ground image has been reset")
 
 
 @elegible_user
 def get_camshot(bot, update):
     """Telegram command to get a camshot from the camera"""
-    image = "image.png"
+    image = "image_"+str(update.message.from_user.id)+".png"
     ret = cam.capture_image(image)
     logger.info("photo command called")
 
@@ -168,7 +168,7 @@ def stream(bot, update, args):
             update.message.reply_text("The maximum seconds is " + str(max_seconds) + "...setting deafult 5s")
             SECONDS = 5
 
-    video_name = "video.mp4"
+    video_name = "video_"+str(update.message.from_user.id)+".mp4"
 
     update.message.reply_text("Wait " + str(SECONDS) + " seconds...")
 
@@ -177,7 +177,7 @@ def stream(bot, update, args):
     logger.info("Sending a " + str(SECONDS) + " seconds video")
     print("Capture complete")
 
-   
+
 
 @elegible_user
 def stop_execution(bot, update):

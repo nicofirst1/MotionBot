@@ -36,7 +36,7 @@
 ## General
 - [X] Get token and psw from file
 - [ ] Get Classifier path from home direcotry
-- [ ] Save images/videos with format *video-user_id.extension*
+- [X] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
 - [X] Stop/start cam_motion class by flag value
 - [X] reorganize prints
@@ -45,7 +45,7 @@
 - [X] Fix logging , do not print on terminal
 - [ ] Comment code 
 - [X] Add requirements.txt
-- [ ] Forgivness instead of Permission
+- [ ] Forgiveness instead of Permission
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
@@ -61,7 +61,7 @@
 - [ ] Surround with try/except every bot_edit_message for the error *telegram.error.BadRequest: Message is not modified*
 - [X] Write help command
 - [X] Add help command 
-- [ ] Fix video command
+- [X] Fix video command
 
 ## Camera movement
 - [ ] Use step motor with GPIO to move the camera
