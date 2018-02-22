@@ -173,18 +173,19 @@ class CamShotter(Thread):
                     # sleep to wait for auto-focus/brightness
                     sleep(3)
 
-                #grayscale the last frame
-
+                #grayscale the future last frame
                 try:
-                    self.queue[1]=cv2.cvtColor(self.queue[1],cv2.COLOR_BGR2GRAY)
+                    gray=self.queue[1]
+                    self.queue[1]=cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
                 except cv2.error as e:
                     error_log = "Cv Error: " + str(e)
                     print(error_log)
                     pass
 
-                
+
                 # pop first element
                 self.queue.pop(0)
+                print(self.queue[0].shape)
 
                 # append image at last
                 self.queue.append(img)
