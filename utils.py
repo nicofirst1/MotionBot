@@ -147,11 +147,12 @@ def memory_profiler():
             s = io.StringIO()
             sortby = 'cumulative'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            ps.print_stats()
-            #print(s.getvalue())
+           # ps.print_stats()
+            #ps.get_print_list()
+            print(ps.get_print_list())
             try:
                 with open("Resources/time_profiler","a+") as file:
-                    file.write(s.getvalue())
+                    file.write(ps.get_print_list())
             except FileNotFoundError:
                 print("Time profiler file not found")
                 pass
