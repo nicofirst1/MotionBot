@@ -177,7 +177,9 @@ class CamShotter(Thread):
                 #grayscale the last frame
                 try:
                     self.queue[0]=cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
-                except cv2.error:
+                except cv2.error as e:
+                    error_log = "Cv Error: " + str(e)
+                    print(error_log)
                     pass
                 # append image at last
                 self.queue.append(img)
@@ -505,7 +507,6 @@ class CamMovement(Thread):
 
         # blur and convert to grayscale
         #gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        print(img2.shape)
         gray = cv2.blur(img2, self.blur, 0)
 
         # compute the absolute difference between the current frame and
