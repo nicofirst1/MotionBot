@@ -9,6 +9,7 @@ import logging
 
 import sys
 #from memory_profiler import profile
+import numpy as np
 
 from Face_recognizer import FaceRecognizer
 from utils import time_profiler
@@ -174,7 +175,8 @@ class CamShotter(Thread):
                 # pop first element
                 self.queue.pop(0)
                 #grayscale the last frame
-                self.queue[0]=cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
+                img = np.array(self.queue[0], dtype=np.uint8)
+                self.queue[0]=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
                 # append image at last
                 self.queue.append(img)
                 if self.capture_bool:
