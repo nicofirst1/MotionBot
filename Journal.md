@@ -127,7 +127,7 @@ check out if the yaml file increses i or stays constant in size
 * Finally got the face recognition confidence
 * Auto train for the recognizer and unknown images, with the update method
 * Save/Load the recognizer from yaml file
-* Removed detectMultiScale and replace it with multiple face prediction to get the best face
+* Removed detectMultiScale and replace it with multiple face prediction to get the best faces and  faster prediction
 
 # Issues
 
