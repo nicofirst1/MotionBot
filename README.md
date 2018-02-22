@@ -227,7 +227,7 @@ There are currently 4 flags which you can set inside the bot.
 
 ## Author
 
-The only Author is Nicolò Brandizzi, [me](https://www.linkedin.com/in/nicol%C3%B2-brandizzi-04091b153/).
+The only Author is [me](https://www.linkedin.com/in/nicol%C3%B2-brandizzi-04091b153/), Nicolò Brandizzi.
 
 I made this project both for pleasure and to exercise my self in writing better README. I made use of some code from the internet, you can 
 find everything i used in the *Journal.md* under the *Useful Links* section
