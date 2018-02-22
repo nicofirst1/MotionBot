@@ -19,6 +19,13 @@ classify - classify the person face
 help - send the help text
 """
 
+TIME_PROFILER_FILE="Resources/time_profiler"
+
+#clear the time profiler
+with open(TIME_PROFILER_FILE,"w+") as file:
+    file.write("START")
+
+
 def is_enabled(id):
     IDS=read_ids()
     for elem in IDS:
