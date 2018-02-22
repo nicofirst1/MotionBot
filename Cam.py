@@ -175,10 +175,8 @@ class CamShotter(Thread):
                 # pop first element
                 self.queue.pop(0)
                 #grayscale the last frame
-                print(self.queue[0])
                 try:
-                    zero = np.array(self.queue[0], dtype=np.uint8)
-                    self.queue[0]=cv2.cvtColor(zero,cv2.COLOR_BGR2GRAY)
+                    self.queue[0]=cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
                 except cv2.error:
                     pass
                 # append image at last
@@ -507,6 +505,7 @@ class CamMovement(Thread):
 
         # blur and convert to grayscale
         #gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        print(img2.shape)
         gray = cv2.blur(img2, self.blur, 0)
 
         # compute the absolute difference between the current frame and
