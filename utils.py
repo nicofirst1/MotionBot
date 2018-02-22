@@ -121,12 +121,20 @@ def time_profiler():
             pr.disable()
             s = io.StringIO()
             sortby = 'tottime'
-            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            ps.print_stats()
-            print("\n\n=====================TIMER PROFILER START========================\n")
-            print("\n"+str(function)+  "\n")
-            print(s.getvalue())
-            print("\n=====================TIMER PROFILER END========================\n\n")
+            #ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            #ps.print_stats()
+            to_print=""
+            to_print += "\n\n=====================TIMER PROFILER START========================\n"
+            to_print += "\n"+str(function)+  "\n"
+            to_print +=s.getvalue()
+            to_print +="\n=====================TIMER PROFILER END========================\n\n"
+
+            try:
+                with open("Resources/time_profiler", "a+") as file:
+                    file.write(to_print)
+            except FileNotFoundError:
+                print("Time profiler file not found")
+                pass
 
 
         return wrapper
@@ -147,15 +155,9 @@ def memory_profiler():
             s = io.StringIO()
             sortby = 'cumulative'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-           # ps.print_stats()
-            #ps.get_print_list()
-            print(ps.get_print_list())
-            try:
-                with open("Resources/time_profiler","a+") as file:
-                    file.write(ps.get_print_list())
-            except FileNotFoundError:
-                print("Time profiler file not found")
-                pass
+            ps.print_stats()
+            print(s.getvalue())
+
 
         return wrapper
     return real_decorator
