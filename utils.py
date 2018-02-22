@@ -151,8 +151,9 @@ def memory_profiler():
             print(s.getvalue())
             try:
                 with open("Resources/time_profiler","w+") as file:
-                    file.writelines(s.getvalue())
+                    file.write(s.getvalue())
             except FileNotFoundError:
+                print("Time profiler file not found")
                 pass
 
         return wrapper
