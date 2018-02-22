@@ -177,10 +177,7 @@ def stream(bot, update, args):
     logger.info("Sending a " + str(SECONDS) + " seconds video")
     print("Capture complete")
 
-    with open(video_name, "rb") as file:
-        bot.sendVideo(update.message.from_user.id, file)
-    os.remove(video_name)
-
+   
 
 @elegible_user
 def stop_execution(bot, update):
