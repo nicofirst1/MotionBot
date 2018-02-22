@@ -43,9 +43,8 @@ class FaceRecognizer(Thread):
 
         self.faces_dir = "Faces/"
         self.unknown = self.faces_dir + "Unknown/"
-        self.recognizer_path="Resources/recognizer.yaml"
+        self.recognizer_path = "Resources/recognizer.yaml"
         self.stop_event = threading.Event()
-
 
         # ======RECOGNIZER VARIABLES======
         self.recognizer = self.load_recognizer()
@@ -90,9 +89,9 @@ class FaceRecognizer(Thread):
         # updater.start_polling()
 
         while True:
-            #if the thread has been stopped
+            # if the thread has been stopped
             if self.stopped():
-                #save the recognizer
+                # save the recognizer
                 self.recognizer.save(self.recognizer_path)
                 return
 
@@ -156,7 +155,7 @@ class FaceRecognizer(Thread):
             with open(image, "rb") as file:
                 bot.sendPhoto(user_id, file)
 
-        self.end_callback(bot, update,calling=False)
+        self.end_callback(bot, update, calling=False)
 
         self.classify_start(bot, update.callback_query)
 
@@ -204,7 +203,7 @@ class FaceRecognizer(Thread):
         new_image_name = dir_name + "image_" + str(idx) + ".png"
 
         # delete the photo message
-        self.end_callback(bot, update,calling=False)
+        self.end_callback(bot, update, calling=False)
 
         # move the image
         try:
@@ -217,7 +216,7 @@ class FaceRecognizer(Thread):
     def delete_unkwon_face(self, bot, update):
         """Function to delete a photo from the unknown dir"""
         image = update.callback_query.data.split()[1]
-        self.end_callback(bot, update,calling=False)
+        self.end_callback(bot, update, calling=False)
 
         try:
             os.remove(image)
@@ -277,7 +276,7 @@ class FaceRecognizer(Thread):
             reply_markup=self.classify_start_inline
         )
 
-    def end_callback(self, bot, update,calling=True):
+    def end_callback(self, bot, update, calling=True):
 
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,
@@ -285,7 +284,7 @@ class FaceRecognizer(Thread):
 
         )
 
-        #look for new images in the Unknown direcotory and delete recognized ones
+        # look for new images in the Unknown direcotory and delete recognized ones
         if calling: self.train_model()
 
     # ===================RECOGNIZER=========================
@@ -305,18 +304,23 @@ class FaceRecognizer(Thread):
             return
         # train
         self.recognizer.update(faces, np.array(labels))
-        #self.recognizer.train(faces, np.array(labels))
+        # self.recognizer.train(faces, np.array(labels))
 
-        #saving the recognizer object
+        # saving the recognizer object
         self.recognizer.save(self.recognizer_path)
-
 
         print("....Model trained and saved")
 
     def predict(self, img):
-        """ This function recognizes the person in image passed and return the person name with the confidence"""
+        """
+        Predict the person face in the image
+        :param img: a opencv image (list of lists)
+        :returns:
+            label_text : name of the predicted person
+            confidence : euclidean distance between the image and the prediction
+        """
 
-        #print("Predicting....")
+        # print("Predicting....")
         # do not try to predict while the model is training
 
         if len(img) == 0:
@@ -324,12 +328,12 @@ class FaceRecognizer(Thread):
             return False, False
 
         # resize, convert to right unit type and turn image to grayscale
-        if (img.shape[0],img.shape[1])!= self.image_size:
+        if (img.shape[0], img.shape[1]) != self.image_size:
             img = cv2.resize(img, self.image_size)
         img = np.array(img, dtype=np.uint8)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        #print("images preprocessed")
+        # print("images preprocessed")
 
         # create the collector to get the label and the confidence
         collector = MinDistancePredictCollector()
@@ -342,10 +346,9 @@ class FaceRecognizer(Thread):
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
 
-        print(label,label_text, confidence)
+        print(label, label_text, confidence)
 
-
-        #print("...Prediction end")
+        # print("...Prediction end")
         return label_text, confidence
 
     def predict_multi(self, imgs):
@@ -356,43 +359,39 @@ class FaceRecognizer(Thread):
 
         print("Predict mutli started...")
 
-        #if there are no images return
-        if len(imgs)==0: return []
+        # if there are no images return
+        if len(imgs) == 0: return []
 
-
-
-        to_filter=[]
-        to_add=[] #list to store iamges to add to Unknown folder
+        to_filter = []
+        to_add = []  # list to store iamges to add to Unknown folder
 
         for img in imgs:
-            #get the name and the confidence
-            face_name, confidence=self.predict(img)
-            #append infos if confidence is less than trheshold
-            if confidence<=self.auto_train_dist:
-                to_filter.append((face_name,confidence,img))
-            else: to_add.append(img)
-
+            # get the name and the confidence
+            face_name, confidence = self.predict(img)
+            # append infos if confidence is less than threshold
+            if confidence <= self.distance_thres:
+                to_filter.append((face_name, confidence, img))
+            if confidence > self.auto_train_dist: to_add.append(img)
 
         self.add_image_write(to_add)
 
-        filtered=[]
-        #group will be all the tirples with the same face_name
+        filtered = []
+        # group will be all the tirples with the same face_name
         for key, group in groupby(to_filter, operator.itemgetter(0)):
-            #append to filtered the face with the smallest confidence
-            filtered.append(min(group, key = lambda t: t[1]))
+            # append to filtered the face with the smallest confidence
+            filtered.append(min(group, key=lambda t: t[1]))
 
-        #print(filtered)
+        # print(filtered)
 
         print("...Predict multi ended")
         return filtered
 
-
     def auto_train(self):
         """After some images have been added to unkown folder, predict the label and if the confidence
-        is high enough delete the image"""
+        is high enough delete the image
+        """
 
         print("Autotraining on new images...")
-
 
         # get all the images in the unknown direcotry
         images = glob.glob(self.unknown + "*.png")
@@ -408,9 +407,7 @@ class FaceRecognizer(Thread):
                 os.remove(image_path)
                 idx += 1
 
-
         print("Deleted " + str(idx) + " images")
-
 
         print("...Autotraining complete")
 
@@ -421,12 +418,13 @@ class FaceRecognizer(Thread):
 
         recognizer = cv2.face.createLBPHFaceRecognizer()
 
-        #check for recognizer.yaml existence
+        # check for recognizer.yaml existence
         if not os.path.exists(self.recognizer_path):
             # if recognizer has been not saved create it and save it
             recognizer.save(self.recognizer_path)
 
-        else:recognizer.load(self.recognizer_path)
+        else:
+            recognizer.load(self.recognizer_path)
 
         return recognizer
 
@@ -468,14 +466,14 @@ class FaceRecognizer(Thread):
 
             # for every image in the direcotry append image,label
             for image_path in glob.glob(dir_name + "/*.png"):
-                #read the image
+                # read the image
                 image = cv2.imread(image_path)
-                #convert to gray scale
+                # convert to gray scale
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 # append image
                 faces.append(gray)
                 labels.append(label)
-                #remove image
+                # remove image
                 os.remove(image_path)
 
         return faces, labels
@@ -547,7 +545,7 @@ class FaceRecognizer(Thread):
 
         print("...Done")
 
-        #self.auto_train()
+        # self.auto_train()
 
         return True
 
@@ -555,9 +553,9 @@ class FaceRecognizer(Thread):
 
         # look for the direcotry and create it if not present
         print(subject_name)
-        subject_name=subject_name.strip()
+        subject_name = subject_name.strip()
         if not subject_name in os.listdir(self.faces_dir):
-            #self.add_folder(subject_name)
+            # self.add_folder(subject_name)
             return
 
         # get the directory name
