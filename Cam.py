@@ -179,7 +179,7 @@ class CamShotter(Thread):
                     self.capture_queue.append(img)
 
                 #grayscale the last frame
-                cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
+                self.queue[0]=cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
                 # print("saved")
             else:
                 # try to reopen the camera
