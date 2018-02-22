@@ -129,6 +129,7 @@ check out if the yaml file increses or stays constant in size
 * Auto train for the recognizer and unknown images, with the update method
 * Save/Load the recognizer from yaml file
 * Removed detectMultiScale and replace it with multiple face prediction to get the best faces and  faster prediction
+* Optimized code now it is 27% faster
 
 # Issues
 
@@ -282,10 +283,16 @@ solved by using the collector object
 * I'm using  scale_factor = 1.4 and min_neight = 3.
 * Setting min_size fto (20,20) doesn't change anything
 * Setting the min_size to (50,50) speeds up the computation by x3
-* Setting mi_size to (100,100)... small faces won't be recognized
+* Setting mi_size to (100,100) ... small faces won't be recognized
 * Setting the min_size to (75,75) too big ... keeping 50
 
 A solution could be paralleling the function for all the frames
 
 ## cvtColor
 * Taking up to 12% of total time, per call time is   0.013. It is done twice for every frame
+
+A solution could be using the cvtColor inside the cam_shotter, for every first frame.
+
+## face_FaceRecognizer.predict
+* Taking up 10% of time with 0.117 seconds per call.
+* Try to use paralleling programming

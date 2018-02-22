@@ -177,6 +177,9 @@ class CamShotter(Thread):
                 self.queue.append(img)
                 if self.capture_bool:
                     self.capture_queue.append(img)
+
+                #grayscale the last frame
+                cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
                 # print("saved")
             else:
                 # try to reopen the camera
@@ -457,8 +460,8 @@ class CamMovement(Thread):
         # while there is some changes and the ground is not being resetted
         while score and not self.resetting_ground:
 
-            # take another frame
-            prov = self.frame[-1]
+            # take the already grayscaled frame
+            prov = self.frame[0]
 
             # check if images are different
             score = self.are_different(initial_frame, prov)
@@ -496,8 +499,8 @@ class CamMovement(Thread):
         The ground image is supposed to be already preprocessed"""
 
         # blur and convert to grayscale
-        gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        gray = cv2.blur(gray, self.blur, 0)
+        #gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        gray = cv2.blur(img2, self.blur, 0)
 
         # compute the absolute difference between the current frame and
         # first frame
@@ -741,7 +744,7 @@ class CamMovement(Thread):
         # setting the parameters
         scale_factor = 1.4
         min_neight = 3
-        min_size=(self.face_size,self.face_size)
+        min_size=(self.face_size,self.)
         # converting to gray
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
