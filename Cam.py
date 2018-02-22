@@ -615,7 +615,6 @@ class CamMovement(Thread):
 
             # write frames on file
             out.write(frame)
-            print(str(idx)+"/"+str(len(frames)))
 
         # free file
         out.release()
