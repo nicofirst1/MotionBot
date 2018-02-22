@@ -150,7 +150,7 @@ def memory_profiler():
             ps.print_stats()
             print(s.getvalue())
             try:
-                with open("Resources/time_profiler","r+") as file:
+                with open("Resources/time_profiler","w+") as file:
                     file.writelines(s.getvalue())
             except FileNotFoundError:
                 pass
