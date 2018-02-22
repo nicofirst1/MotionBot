@@ -33,7 +33,7 @@ When you first start the bot it will take an image of what the camera is seeing 
 program when there are no moving objects in the camera field of view, the program can programmatically reset your ground image
  but it will take some time.
 
-Here there is are some screenshots I captured from my telegram account
+Here there are some screenshots I captured from my telegram account
 
 ![image](https://i.imgur.com/QTtrvGT.png)
 
@@ -73,7 +73,8 @@ and will disappear later in the development), and a gif file with a video.
 The gif file will have different squares on it, which you will be able to remove with future implementation.
 The green ones are for the area of the camera that has been changed, while the red ones are the recognized faces.
 
-![gif](https://i.imgur.com/1to6cw8.mp4)
+
+![video](https://youtu.be/jjpNof2T4MI)
 
 Moreover the date and the movement direction (Incoming/Outgoing , Left/right) will be displayed at the bottom of the gif.
 

@@ -35,7 +35,7 @@
 
 ## General
 - [X] Get token and psw from file
-- [ ] Get Classifier path from home direcotry
+- [ ] ~~Get Classifier path from home direcotry~~ 
 - [X] Save images/videos with format *video-user_id.extension*
 - [X] use Cam_shotter to get video
 - [X] Stop/start cam_motion class by flag value

@@ -108,12 +108,20 @@ class FaceRecognizer(Thread):
     update (obj) : the current update (message, inline press...)"""
 
     def classify_start(self, bot, update):
-        """Initial function for the classify stage"""
+        """
+        Initial function for the classify stage
+        :param bot: the telegram bot
+        :param update: the update recieved
+        :return:
+        """
 
         update.message.reply_text(self.classify_start_msg, reply_markup=self.classify_start_inline)
 
     def see_faces(self, bot, update):
-        """Function to choose what face the user want to see"""
+        """Function to choose what face the user want to see
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
 
         # generate the inline keyboard with the custom callback
         inline = self.generate_inline_keyboard("/view_face ")
@@ -135,7 +143,10 @@ class FaceRecognizer(Thread):
         )
 
     def send_faces(self, bot, update):
-        """Function to send all the photo of a specific subdir"""
+        """Function to send all the photo of a specific subdir
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
 
         # get the param
         s_name = update.callback_query.data.split()[1]
@@ -160,7 +171,10 @@ class FaceRecognizer(Thread):
         self.classify_start(bot, update.callback_query)
 
     def send_unknown_face(self, bot, update):
-        """Function to send an unknown face (in the Unknown dir)"""
+        """Function to send an unknown face (in the Unknown dir)
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
 
         to_choose = glob.glob(self.unknown + '*.png')
 
@@ -189,7 +203,10 @@ class FaceRecognizer(Thread):
                           reply_markup=inline)
 
     def move_kwnown_face(self, bot, update):
-        """Function to move a known face from Unknown dir to face_dir"""
+        """Function to move a known face from Unknown dir to face_dir
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
 
         # the param has the format:  image_name dir_name
         param = update.callback_query.data.split()
@@ -214,7 +231,10 @@ class FaceRecognizer(Thread):
         self.classify_start(bot, update.callback_query)
 
     def delete_unkwon_face(self, bot, update):
-        """Function to delete a photo from the unknown dir"""
+        """Function to delete a photo from the unknown dir
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
         image = update.callback_query.data.split()[1]
         self.end_callback(bot, update, calling=False)
 
@@ -229,7 +249,10 @@ class FaceRecognizer(Thread):
         self.classify_start(bot, update.callback_query)
 
     def new_face(self, bot, update):
-        """Function to ask the user the name of the new subject"""
+        """Function to ask the user the name of the new subject
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
 
         image = update.callback_query.data.split()[1]
 
@@ -246,7 +269,10 @@ class FaceRecognizer(Thread):
         return 1
 
     def get_new_name(self, bot, update):
-        """Function to get a user name and create a folder"""
+        """Function to get a user name and create a folder
+         :param bot: the telegram bot
+        :param update: the update recieved
+        :return:"""
         param = update.message.text.split(" ")
 
         try:
@@ -267,6 +293,13 @@ class FaceRecognizer(Thread):
         return ConversationHandler.END
 
     def back_to_start(self, bot, update, msg):
+        """
+        Send the initial start message
+        :param bot: the telegram bot
+        :param update: the update recieved
+        :param msg: Custom message
+        :return:
+        """
 
         bot.edit_message_text(
             chat_id=update.callback_query.message.chat_id,
@@ -277,6 +310,13 @@ class FaceRecognizer(Thread):
         )
 
     def end_callback(self, bot, update, calling=True):
+        """
+        End the calssify deleting the message
+        :param bot: the telegram bot
+        :param update: the update recieved
+        :param calling: if the button EXIT has not been pressed calling will be false
+        :return:
+        """
 
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,
@@ -360,7 +400,7 @@ class FaceRecognizer(Thread):
         print("Predict mutli started...")
 
         # if there are no images return
-        if len(imgs) == 0: return []
+        if len(imgs) == 0: return None
 
         to_filter = []
         to_add = []  # list to store iamges to add to Unknown folder
