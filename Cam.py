@@ -345,6 +345,7 @@ class CamMovement(Thread):
         """Check for the flag value"""
         return self.stop_event.is_set()
 
+    @time_profiler()
     def detect_motion_video(self):
         """Principal function for this class
         It takes a new frame from the queue and check if it different from the ground image
