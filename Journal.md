@@ -45,6 +45,7 @@
 - [X] Fix logging , do not print on terminal
 - [ ] Comment code 
 - [X] Add requirements.txt
+- [ ] Forgivness instead of Permission
 
 ## Telegram
 - [X] fix mp4 video on telegram mobile

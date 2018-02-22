@@ -83,7 +83,7 @@ class MainClass:
         logger.info("Stopping Cam class")
         return
 
-    def capture_video(self, video_name, seconds):
+    def capture_video(self, video_name, seconds,user_id):
         """Get a video from the camera"""
         # set camera resolution, fps and codec
         frame_width = 640
@@ -106,7 +106,7 @@ class MainClass:
             out.write(elem)
         out.release()
 
-        self.telegram_handler.send_video(video_name, str(seconds) + " seconds record")
+        self.telegram_handler.send_video(video_name, user_id,str(seconds) + " seconds record")
 
 
 class CamShotter(Thread):
