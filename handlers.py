@@ -172,7 +172,7 @@ def stream(bot, update, args):
 
     update.message.reply_text("Wait " + str(SECONDS) + " seconds...")
 
-    cam.capture_video(video_name, update.message.from_user.id, SECONDS)
+    cam.capture_video(video_name, SECONDS,update.message.from_user.id)
 
     logger.info("Sending a " + str(SECONDS) + " seconds video")
     print("Capture complete")

@@ -112,9 +112,9 @@
 - [X] Moved from gaussianBlur to blur (x4 times faster)
 - [ ] Optimize face recognition 
 - [X] Optimize face detection in time (detectMultiScale is slow)
-- [ ] Delete subjects face images after the model has been trained with them
+- [X] Delete subjects face images after the model has been trained with them
 - [ ] Saving the recognizer object create a yaml file of 17M, while the photo in the Faces direcories are 4M...
-check out if the yaml file increses i or stays constant in size
+check out if the yaml file increses or stays constant in size
 
 - [ ] ~~New thread function to get face in video~~
 
