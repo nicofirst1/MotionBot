@@ -744,7 +744,7 @@ class CamMovement(Thread):
         # setting the parameters
         scale_factor = 1.4
         min_neight = 3
-        min_size=(self.face_size,self.)
+        min_size=(self.face_size,self.face_size)
         # converting to gray
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face

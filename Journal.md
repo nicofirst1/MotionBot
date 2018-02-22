@@ -289,7 +289,7 @@ solved by using the collector object
 A solution could be paralleling the function for all the frames
 
 ## cvtColor
-* Taking up to 12% of total time, per call time is   0.013. It is done twice for every frame
+* Taking up to 12% of total time, per call time is   0.013. It is done 3 times for every frame
 
 A solution could be using the cvtColor inside the cam_shotter, for every first frame.
 
