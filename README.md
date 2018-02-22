@@ -73,8 +73,7 @@ and will disappear later in the development), and a gif file with a video.
 The gif file will have different squares on it, which you will be able to remove with future implementation.
 The green ones are for the area of the camera that has been changed, while the red ones are the recognized faces.
 
-
-![video](https://youtu.be/jjpNof2T4MI)
+[![](http://img.youtube.com/vi/jjpNof2T4MI/0.jpg)](http://www.youtube.com/watch?v=jjpNof2T4MI "Video")
 
 Moreover the date and the movement direction (Incoming/Outgoing , Left/right) will be displayed at the bottom of the gif.
 
