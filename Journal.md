@@ -243,7 +243,7 @@ solved by using the collector object
 
 
 
-# Infos
+# Optimization
 
 ## Image difference
 
@@ -256,14 +256,13 @@ solved by using the collector object
 | NRMSE            | 0.035                | x  >   0.3      |
 | MSE              | 0.025                | x  > 500       |
 
-## Image difference log
 
 ### MSE
 * Change in shadow with value 3919
 * It does not detect image far away persons
 * Switched to PSNR
 
-## PSNR
+### PSNR
 * Way more sensible than MSE (in a good way)
 * Not so sensitive to shadow changes
 * Change detected with score 24, while there was none 
@@ -271,7 +270,13 @@ solved by using the collector object
 * In bright places it becomes very sensitive -> the use of an *equalizeHist* seems to resolve the problem
 * No good in poor light condition
 
-## SSIM
+### SSIM
 * Using gaussian_weights=True -> time increases to 0.7 seconds
 
 ### Passing to  cv2.absdiff
+
+## detectMultiScale
+
+* Currently detectMultiScale is the slowest part of the program, it takes up to 30 seconds fo detect an image. With a time per call of 0.065
+* I'm using  scale_factor = 1.4 and min_neight = 3.
+* Setting min_size freezes the algorithm
