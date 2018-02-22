@@ -281,6 +281,7 @@ solved by using the collector object
 * I'm using  scale_factor = 1.4 and min_neight = 3.
 * Setting min_size fto (20,20) doesn't change anything
 * Setting the min_size to (50,50) speeds up the computation by x3
-* Settin mi_size to (100,100)
+* Setting mi_size to (100,100)... small faces won't be recognized
+* Setting the min_size to (75,75) speeds up the computation by x3
 
 A solution could be paralleling the function for all the frames
