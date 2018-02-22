@@ -552,7 +552,7 @@ class CamMovement(Thread):
                 face = self.detect_face(frame)
 
                 # if there is a face
-                if len(face) > 0:
+                if face is not None:
                     # get the corners of the faces
                     for (x, y, w, h) in face:
                         # draw a rectangle around the corners
