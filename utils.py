@@ -2,6 +2,7 @@
 from datetime import datetime
 from functools import wraps
 import cProfile, pstats, io
+import datetime
 MAX_RETRIES = 8
 
 COMMANDS="""
@@ -115,8 +116,15 @@ def time_profiler():
         def wrapper(*args, **kwargs):
             pr = cProfile.Profile()
             pr.enable()
+            # take the time
+            start = datetime.datetime.now()
+            max_seconds=7
 
             function(*args, **kwargs)
+
+            end = datetime.datetime.now()
+
+            if (end-start).seconds<max_seconds: return
 
             pr.disable()
             s = io.StringIO()
@@ -128,6 +136,8 @@ def time_profiler():
             to_print += "\n"+str(function)+  "\n"
             to_print +=str(s.getvalue())
             to_print +="\n=====================TIMER PROFILER END========================\n\n"
+
+
 
             try:
                 with open("Resources/time_profiler", "a+") as file:

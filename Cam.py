@@ -737,10 +737,11 @@ class CamMovement(Thread):
         # setting the parameters
         scale_factor = 1.4
         min_neight = 3
+        min_size=(30,30)
         # converting to gray
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
-        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight)
+        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,min_size=min_size)
         if len(faces) > 0:
             # print("face detcted!")
             return faces
