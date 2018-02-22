@@ -178,13 +178,14 @@ class CamShotter(Thread):
                     gray=self.queue[1]
                     self.queue[1]=cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
                 except cv2.error as e:
-                    error_log = "Cv Error: " + str(e)
+                    #error_log = "Cv Error: " + str(e)
                     #print(error_log)
                     pass
 
 
                 # pop first element
                 self.queue.pop(0)
+
 
                 # append image at last
                 self.queue.append(img)
@@ -376,7 +377,7 @@ class CamMovement(Thread):
 
         # get end frame after delay seconds
         sleep(self.delay)
-        end_frame = self.frame[-1]
+        end_frame = self.frame[0]
 
         # calculate diversity
         score = self.are_different(self.ground_frame, end_frame)
@@ -433,15 +434,17 @@ class CamMovement(Thread):
         score = 0
 
         # setting initial frame
-        gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
+        #gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         # gray = cv2.GaussianBlur(gray, (21, 21), 0)
-        gray = cv2.blur(gray, self.blur, 0)
+        gray = cv2.blur(initial_frame, self.blur, 0)
 
         # While there is movement
         while not score:
 
             # take another frame
-            prov = self.frame[-1]
+            prov = self.frame[0]
+
+            #print(prov.shape)
 
             # check if images are different
             score = self.are_different(gray, prov)
@@ -474,7 +477,7 @@ class CamMovement(Thread):
 
             # take the already grayscaled frame
             prov = self.frame[0]
-            print(prov.shape)
+            #print(prov.shape)
 
             # check if images are different
             score = self.are_different(initial_frame, prov)
@@ -565,10 +568,12 @@ class CamMovement(Thread):
         print(len(frames))
         for frame in frames:
 
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
             if self.face_photo_flag:
 
                 # detect if there is a face
-                face = self.detect_face(frame)
+                face = self.detect_face(gray)
 
                 # if there is a face
                 if face is not None:
@@ -579,7 +584,7 @@ class CamMovement(Thread):
 
             # draw movement
             if areas:
-                cnts = self.compute_img_difference(self.ground_frame, frame)
+                cnts = self.compute_img_difference(self.ground_frame, gray)
 
                 # draw contours
                 for c in cnts:
@@ -759,7 +764,7 @@ class CamMovement(Thread):
         min_neight = 3
         min_size=(self.face_size,self.face_size)
         # converting to gray
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
         faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,minSize=min_size)
         if len(faces) > 0:
@@ -773,48 +778,6 @@ class CamMovement(Thread):
 
         return None
 
-    @staticmethod
-    def denoise_img(image_list):
-        """Denoise one or multiple images"""
-
-        print("denoising")
-
-        if len(image_list) == 1:
-            denoised = cv2.fastNlMeansDenoisingColored(image_list[0], None, 10, 10, 7, 21)
-
-        else:
-
-            # make the list odd
-            if (len(image_list)) % 2 == 0:
-                image_list.pop()
-            # get the middle element
-            middle = int(float(len(image_list)) / 2 - 0.5)
-
-            width = sys.maxsize
-            heigth = sys.maxsize
-
-            # getting smallest images size
-            for img in image_list:
-                size = tuple(img.shape[1::-1])
-                if size[0] < width: width = size[0]
-                if size[1] < heigth: heigth = size[1]
-
-            # resizing all images to the smallest one
-            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
-
-            imgToDenoiseIndex = middle
-            temporalWindowSize = len(image_list)
-            hColor = 3
-            searchWindowSize=17
-            hForColorComponents=1
-            # print(temporalWindowSize, imgToDenoiseIndex)
-
-            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor,searchWindowSize=searchWindowSize,
-                                                            hForColorComponents=hForColorComponents)
-        print("denosed")
-
-        return denoised
 
     # =========================TELEGRAM BOT=======================================
 
@@ -888,6 +851,50 @@ class CamMovement(Thread):
             if not foud_face:
                 self.telegram_handler.send_image(end_frame, msg="Face not detected")
             sleep(3)
+
+
+    @staticmethod
+    def denoise_img(image_list):
+        """Denoise one or multiple images"""
+
+        print("denoising")
+
+        if len(image_list) == 1:
+            denoised = cv2.fastNlMeansDenoisingColored(image_list[0], None, 10, 10, 7, 21)
+
+        else:
+
+            # make the list odd
+            if (len(image_list)) % 2 == 0:
+                image_list.pop()
+            # get the middle element
+            middle = int(float(len(image_list)) / 2 - 0.5)
+
+            width = sys.maxsize
+            heigth = sys.maxsize
+
+            # getting smallest images size
+            for img in image_list:
+                size = tuple(img.shape[1::-1])
+                if size[0] < width: width = size[0]
+                if size[1] < heigth: heigth = size[1]
+
+            # resizing all images to the smallest one
+            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
+
+            imgToDenoiseIndex = middle
+            temporalWindowSize = len(image_list)
+            hColor = 3
+            searchWindowSize=17
+            hForColorComponents=1
+            # print(temporalWindowSize, imgToDenoiseIndex)
+
+            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
+                                                            hColor=hColor,searchWindowSize=searchWindowSize,
+                                                            hForColorComponents=hForColorComponents)
+        print("denosed")
+
+        return denoised
 
 
 class TelegramHandler(Thread):

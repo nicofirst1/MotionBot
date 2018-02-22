@@ -46,7 +46,9 @@
 - [ ] Comment code 
 - [X] Add requirements.txt
 - [ ] Forgiveness instead of Permission
+- [ ] Catch OpenCV Error: Assertion failed in CamShotter self.queue[1]=cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
 
+ 
 ## Telegram
 - [X] fix mp4 video on telegram mobile
 - [X] Command to stop bot execution
@@ -130,6 +132,8 @@ check out if the yaml file increses or stays constant in size
 * Save/Load the recognizer from yaml file
 * Removed detectMultiScale and replace it with multiple face prediction to get the best faces and  faster prediction
 * Optimized code now it is 27% faster
+* Optimized code, now running 25% times faster
+* Using rsync.. no more debugging push!
 
 # Issues
 
@@ -289,9 +293,11 @@ solved by using the collector object
 A solution could be paralleling the function for all the frames
 
 ## cvtColor
-* Taking up to 12% of total time, per call time is   0.013. It is done 3 times for every frame
+* Taking up to 12% of total time, per call time is   0.013. It is done 3.3 times for every frame
 
 A solution could be using the cvtColor inside the cam_shotter, for every first frame.
+
+* With the previous change the calls of cvtColor went down to 1.5 times for frame. The total time dropped by by 25%
 
 ## face_FaceRecognizer.predict
 * Taking up 10% of time with 0.117 seconds per call.
