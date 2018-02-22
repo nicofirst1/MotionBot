@@ -286,6 +286,9 @@ class CamMovement(Thread):
         debug_flag : flag used to check if the user want to recieve the debug images (can be set by telegram , it slows down the program)
         face_reco_falg : flag used to check if the user want to recieve the predicted face with the photo (can be set by telegram)
 
+        faces_cnts : list of contours for detected faces
+        max_blurrines : the maximum threshold for blurriness detection, discard face images with blur>max_blurrines
+
     """
 
     def __init__(self, shotter, telegram, face_recognizer):
@@ -324,6 +327,9 @@ class CamMovement(Thread):
         self.face_reco_falg = True
 
         self.resetting_ground = False
+
+        self.faces_cnts=[]
+        self.max_blurrines=100
 
         logger.debug("Cam_movement started")
 
@@ -564,16 +570,19 @@ class CamMovement(Thread):
 
         prov_cnts = 0
         idx = 0
+        face_idx=0
         to_write = "Unkown - Unkown"
-        print(len(frames))
+        print("Total frames to save : "+str(len(frames)))
+        print("Total frames contours : "+str(len(self.faces_cnts)))
         for frame in frames:
 
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             if self.face_photo_flag:
 
-                # detect if there is a face
-                face = self.detect_face(gray)
+                # take the corresponding contours for the frame
+                face = self.faces_cnts[face_idx]
+                face_idx+=1
 
                 # if there is a face
                 if face is not None:
@@ -639,6 +648,9 @@ class CamMovement(Thread):
 
             # write frames on file
             out.write(frame)
+
+        #empty the face contours list
+        self.faces_cnts=[]
 
         # free file
         out.release()
@@ -726,22 +738,32 @@ class CamMovement(Thread):
 
             # detect if there is a face
             face = self.detect_face(frame)
+            self.faces_cnts.append(face)
 
             # if there is a face
             if face is not None:
                 faces += 1
                 # get the corners of the faces
-                for (x, y, w, h) in face:
+                # if user want the face video too crop the image where face is detected
+                if self.face_photo_flag:
+                    for (x, y, w, h) in face:
+                        blur_var=cv2.Laplacian(frame[y:y + h, x:x + w], cv2.CV_64F).var()
+                        #print(blur_var)
+                        #if the blur index of the image is grather than the threshold
+                        if blur_var>=self.max_blurrines:
+                            crop_frames.append(frame[y:y + h, x:x + w])
+                            #self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Blurr ok : "+str(blur_var))
 
-                    # if user want the face video too crop the image where face is detected
-                    if self.face_photo_flag:
-                        crop_frames.append(frame[y:y + h, x:x + w])
+                        else:
+                            #self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Too blurry : "+str(blur_var))
+                            pass
 
         print(str(faces) + " frames with faces detected")
         print("... face detector end")
 
         # if there are some images with faces only
         if len(crop_frames) > 0:
+
             # if the users want to recognize faces
             if self.face_reco_falg:
                 # try to move te images to the Unknown folder

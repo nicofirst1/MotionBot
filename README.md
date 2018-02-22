@@ -174,6 +174,9 @@ and the area of this difference is grater than the **min_area** parameter, the m
 * **fps** : the frame per second for your cam
 * **face_photo/motion/debug/video flags** : You can directly run the bot with the default falgs value by setting these parameters (see the flag section below)
 * **blur** : the mean by which you want to blur the frames before detecting any movement (use the command /bkground to check the blur ratio)
+* **face_size** : the minimum window size to look for faces, the bigger the faster the program gets. But for distant
+ people small values are to be taken into account
+* **max_blurrines** : the maximum threshold for blurriness detection
 
 #### Cam_shotter
 

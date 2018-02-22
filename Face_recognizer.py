@@ -49,8 +49,8 @@ class FaceRecognizer(Thread):
         # ======RECOGNIZER VARIABLES======
         self.recognizer = self.load_recognizer()
         self.image_size = (200, 200)
-        self.distance_thres = 90
-        self.auto_train_dist = 75
+        self.distance_thres = 95
+        self.auto_train_dist = 80
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -595,7 +595,7 @@ class FaceRecognizer(Thread):
         print(subject_name)
         subject_name = subject_name.strip()
         if not subject_name in os.listdir(self.faces_dir):
-            # self.add_folder(subject_name)
+            self.add_folder(subject_name)
             return
 
         # get the directory name

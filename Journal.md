@@ -13,6 +13,7 @@
 
 ### Motion detection
 * https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
+* https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
 
 ### Face recognition
 * https://github.com/informramiz/opencv-face-recognition-python
@@ -104,6 +105,8 @@
 - [X] Get face confidence
 - [X] Delete unkown faces classified with a confidence < 70
 - [ ] Send photo and recognize faces in image
+- [X] Fix add new face
+- [ ] Try to recognize less blur images (blur index?)
 
 ## Optimization
 - [X] New thread class for image/video/message sending
@@ -134,6 +137,7 @@ check out if the yaml file increses or stays constant in size
 * Optimized code now it is 27% faster
 * Optimized code, now running 25% times faster
 * Using rsync.. no more debugging push!
+* Implemented blur detection for face image
 
 # Issues
 
@@ -290,7 +294,10 @@ solved by using the collector object
 * Setting mi_size to (100,100) ... small faces won't be recognized
 * Setting the min_size to (75,75) too big ... keeping 50
 
-A solution could be paralleling the function for all the frames
+* detectMultiScale is called twice per frame. One for finding the face and another to get the contours
+
+A solution might be saving the list of contours and then using it later. It worked! now the detectMultiScale is computed once for every frame
+
 
 ## cvtColor
 * Taking up to 12% of total time, per call time is   0.013. It is done 3.3 times for every frame
@@ -300,5 +307,9 @@ A solution could be using the cvtColor inside the cam_shotter, for every first f
 * With the previous change the calls of cvtColor went down to 1.5 times for frame. The total time dropped by by 25%
 
 ## face_FaceRecognizer.predict
-* Taking up 10% of time with 0.117 seconds per call.
+* Taking up 10% of time with 0.2 seconds per call.
 * Try to use paralleling programming
+
+
+## dilate
+* It is been called 1.3 times per frame, and takes up 10% of total time
