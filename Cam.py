@@ -185,7 +185,9 @@ class CamShotter(Thread):
 
                 # pop first element
                 self.queue.pop(0)
-                print(self.queue[0].shape)
+                try:
+                    print(self.queue[0].shape)
+                except AttributeError: pass
 
                 # append image at last
                 self.queue.append(img)
