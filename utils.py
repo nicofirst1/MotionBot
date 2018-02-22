@@ -148,9 +148,9 @@ def memory_profiler():
             sortby = 'cumulative'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
-            print(s.getvalue())
+            #print(s.getvalue())
             try:
-                with open("Resources/time_profiler","w+") as file:
+                with open("Resources/time_profiler","a+") as file:
                     file.write(s.getvalue())
             except FileNotFoundError:
                 print("Time profiler file not found")
