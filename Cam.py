@@ -253,6 +253,8 @@ class CamMovement(Thread):
 
         frontal_face_cascade : the object that detects frontal faces
         profile_face_cascade : the object that detects frontal faces
+        face_size : the minimum window size to look for faces, the bigger the faster the program gets. But for distant
+            people small values are to be taken into account
 
         max_seconds_retries : if a movement is detected for longer than max_seconds_retries the program will check for a
         background change, do not increase this parameter to much since it will slow down tremendously the program execution
@@ -291,6 +293,7 @@ class CamMovement(Thread):
             '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_frontalface.xml')
         self.profile_face_cascade = cv2.CascadeClassifier(
             '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_profileface.xml')
+        self.face_size=50
 
         self.max_seconds_retries = 10
 
@@ -738,7 +741,7 @@ class CamMovement(Thread):
         # setting the parameters
         scale_factor = 1.4
         min_neight = 3
-        min_size=(75,75)
+        min_size=(self.face_size,self.face_size)
         # converting to gray
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
