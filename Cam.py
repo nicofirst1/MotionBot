@@ -691,7 +691,7 @@ class CamMovement(Thread):
     def face_from_video(self, frames):
         """Detect faces from list of frames"""
 
-        print("Starting face detector...")
+        print("Starting face detection...")
 
         crop_frames = []
         faces = 0
@@ -703,7 +703,7 @@ class CamMovement(Thread):
             face = self.detect_face(frame)
 
             # if there is a face
-            if len(face) > 0:
+            if face is not None:
                 faces += 1
                 # get the corners of the faces
                 for (x, y, w, h) in face:
@@ -741,7 +741,7 @@ class CamMovement(Thread):
         # converting to gray
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
-        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,min_size=min_size)
+        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight)
         print("1")
         if len(faces) > 0:
             # print("face detcted!")
@@ -752,7 +752,7 @@ class CamMovement(Thread):
         #     if len(faces) > 0:
         #         return faces
 
-        return ()
+        return None
 
     @staticmethod
     def denoise_img(image_list):
