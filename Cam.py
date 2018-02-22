@@ -179,15 +179,12 @@ class CamShotter(Thread):
                     self.queue[1]=cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
                 except cv2.error as e:
                     error_log = "Cv Error: " + str(e)
-                    print(error_log)
+                    #print(error_log)
                     pass
 
 
                 # pop first element
                 self.queue.pop(0)
-                try:
-                    print(self.queue[0].shape)
-                except AttributeError: pass
 
                 # append image at last
                 self.queue.append(img)
@@ -477,6 +474,7 @@ class CamMovement(Thread):
 
             # take the already grayscaled frame
             prov = self.frame[0]
+            print(prov.shape)
 
             # check if images are different
             score = self.are_different(initial_frame, prov)
