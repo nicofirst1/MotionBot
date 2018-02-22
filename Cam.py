@@ -172,15 +172,20 @@ class CamShotter(Thread):
                     self.camera_connected = True
                     # sleep to wait for auto-focus/brightness
                     sleep(3)
-                # pop first element
-                self.queue.pop(0)
+
                 #grayscale the last frame
+
                 try:
-                    self.queue[0]=cv2.cvtColor(self.queue[0],cv2.COLOR_BGR2GRAY)
+                    self.queue[1]=cv2.cvtColor(self.queue[1],cv2.COLOR_BGR2GRAY)
                 except cv2.error as e:
                     error_log = "Cv Error: " + str(e)
                     print(error_log)
                     pass
+
+                
+                # pop first element
+                self.queue.pop(0)
+
                 # append image at last
                 self.queue.append(img)
                 if self.capture_bool:
