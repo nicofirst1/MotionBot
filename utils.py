@@ -121,12 +121,12 @@ def time_profiler():
             pr.disable()
             s = io.StringIO()
             sortby = 'tottime'
-            #ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            #ps.print_stats()
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
             to_print=""
             to_print += "\n\n=====================TIMER PROFILER START========================\n"
             to_print += "\n"+str(function)+  "\n"
-            to_print +=s.getvalue()
+            to_print +=str(s.getvalue())
             to_print +="\n=====================TIMER PROFILER END========================\n\n"
 
             try:
