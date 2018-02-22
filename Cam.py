@@ -543,6 +543,7 @@ class CamMovement(Thread):
         prov_cnts = 0
         idx = 0
         to_write = "Unkown - Unkown"
+        print(len(frames))
         for frame in frames:
 
             if self.face_photo_flag:
@@ -614,6 +615,7 @@ class CamMovement(Thread):
 
             # write frames on file
             out.write(frame)
+            print(str(idx)+"/"+str(len(frames)))
 
         # free file
         out.release()
