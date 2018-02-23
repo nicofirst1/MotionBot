@@ -3,7 +3,7 @@ from telegram.ext import (
 import logging
 from handlers import start, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw, delete_log, \
-    help_bot
+    help_bot, predict_face
 
 #Implementing logger
 
@@ -42,6 +42,9 @@ if __name__ == "__main__":
     disp.add_handler(CommandHandler("help",help_bot))
     #Adding CallcbackQuery
     disp.add_handler(CallbackQueryHandler(flag_setting_callback, pattern="/flag"))
+    #adding message handler
+    disp.add_handler(MessageHandler(Filters.photo,predict_face))
+
 
     print("Polling...")
     logger.info("Start polling")

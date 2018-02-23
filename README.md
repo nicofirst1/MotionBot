@@ -213,6 +213,8 @@ These are the currently available commands for the telegram bot, check out the /
 * /logdel - delete the log file
 * /classify : classify the person face
 * /help : sends the help 
+* Sending a photo will trigger the face recognition which will send you the predicted faces
+
 
 NB: you can change the commands name just by changing the *CommandHandlers* in the *main.py* file
 

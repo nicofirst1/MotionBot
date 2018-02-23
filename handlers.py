@@ -2,7 +2,7 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 import logging
-
+import urllib.request
 import os, sys
 
 from Cam import MainClass
@@ -270,6 +270,34 @@ The more faces the recognizer find out the more precise it will be
 Thank you for choosing this bot, I hope you like it.
 """
     update.message.reply_text(help_str,parse_mode="HTML")
+
+@elegible_user
+def predict_face(bot, update):
+    """
+    Predict the face in the photo
+    :param bot:
+    :param update:
+    :return:
+    """
+
+    file_path="downloaded.jpg"
+    #get the photo file
+    fileID = update.message.photo[-1].file_id
+    file_url = bot.get_file(fileID).file_path
+
+    urllib.request.urlretrieve(file_url, file_path)
+
+    #get the text to send
+    img=cam.predict_face(file_path)
+
+    if img is None:
+        update.message.reply_text("Sorry...no faces found", parse_mode="HTML")
+        return
+
+    cam.telegram_handler.send_image(img,update.message.from_user.id)
+
+
+
 
 # ===============Utils===================
 

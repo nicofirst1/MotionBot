@@ -110,6 +110,52 @@ class MainClass:
         self.telegram_handler.send_video(video_name, user_id,str(seconds) + " seconds record")
 
 
+    def predict_face(self, img_path):
+        """
+            Predic the face in a photo and draw on it
+        :param img_path: the path of the image to be predicted
+        :return: string
+        """
+
+        #read the image and remove it from disk
+        img=cv2.imread(img_path)
+        os.remove(img_path)
+
+        gray=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        #find faces
+        faces=self.motion.detect_face(gray,scale_factor=1.1,min_neight=5)
+
+        print(faces)
+
+
+        if faces is None:
+            return faces
+
+
+        #for every face predict the person and confidence
+        for (x, y, w, h) in faces:
+            name, confidence=self.face_recognizer.predict(img[y:y + h, x:x + w])
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            if confidence<=self.face_recognizer.auto_train_dist:
+                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+                cv2.putText(img,"For sure!" , (x , y + h+15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+
+            elif confidence<=self.face_recognizer.distance_thres:
+                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+                cv2.putText(img,"Maybe..." , (x , y + h+15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+
+            else :
+                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+                cv2.putText(img, "Just guessing", (x, y + h + 15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+
+        return img
+
+
+
+
+
 class CamShotter(Thread):
     """Class to take frames from camera, it is the only one who has access to the VideoCapture ojbect
 
@@ -288,6 +334,8 @@ class CamMovement(Thread):
 
         faces_cnts : list of contours for detected faces
         max_blurrines : the maximum threshold for blurriness detection, discard face images with blur>max_blurrines
+        min_bk_threshold : the minimum difference in the background grayscaled image for the movement to be detected. When high
+            only the bigger black/white difference will be detected. The range is (0,255) which is the intensity of the pixel
 
     """
 
@@ -330,6 +378,8 @@ class CamMovement(Thread):
 
         self.faces_cnts=[]
         self.max_blurrines=100
+        self.min_bk_threshold=75
+        self.dilate_window_size=(17,13)
 
         logger.debug("Cam_movement started")
 
@@ -538,11 +588,12 @@ class CamMovement(Thread):
             return True
 
         # get the thresholded image
-        thresh_original = cv2.threshold(frameDelta, 70, 255, cv2.THRESH_BINARY)[1]
+        thresh_original = cv2.threshold(frameDelta, self.min_bk_threshold, 255, cv2.THRESH_BINARY)[1]
 
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
-        thresh = cv2.dilate(thresh_original, None, iterations=5)
+        kernel= cv2.getStructuringElement(cv2.MORPH_RECT, self.dilate_window_size)
+        thresh = cv2.dilate(thresh_original, kernel, iterations=1)
         # get the contours of the changes
         (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -779,11 +830,11 @@ class CamMovement(Thread):
 
         return faces_img
 
-    def detect_face(self, img):
+    def detect_face(self, img,scale_factor=1.4,min_neight=3):
         """Detect faces using the cascades"""
         # setting the parameters
-        scale_factor = 1.4
-        min_neight = 3
+        scale_factor = scale_factor
+        min_neight = min_neight
         min_size=(self.face_size,self.face_size)
         # converting to gray
         #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

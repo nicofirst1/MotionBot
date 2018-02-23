@@ -14,6 +14,7 @@
 ### Motion detection
 * https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 * https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
+* https://stackoverflow.com/questions/45070004/iterations-vs-kernel-size-in-morphological-operations-opencv
 
 ### Face recognition
 * https://github.com/informramiz/opencv-face-recognition-python
@@ -106,7 +107,7 @@
 - [X] Delete unkown faces classified with a confidence < 70
 - [ ] Send photo and recognize faces in image
 - [X] Fix add new face
-- [ ] Try to recognize less blur images (blur index?)
+- [X] Try to recognize less blur images (blur index?)
 
 ## Optimization
 - [X] New thread class for image/video/message sending
@@ -138,6 +139,7 @@ check out if the yaml file increses or stays constant in size
 * Optimized code, now running 25% times faster
 * Using rsync.. no more debugging push!
 * Implemented blur detection for face image
+* Implemented face recognition from sent image
 
 # Issues
 
@@ -313,3 +315,29 @@ A solution could be using the cvtColor inside the cam_shotter, for every first f
 
 ## dilate
 * It is been called 1.3 times per frame, and takes up 10% of total time
+
+
+### np.ones kernel
+* Trying to change the kernel as mentioned [here](https://stackoverflow.com/questions/31025368/erode-is-too-slow-opencv)
+* Using np.ones((11, 11)) as kernel slows the percall time to 0.124
+* Reduced iteration from 5 to 3... now it runs ato 0.083 seconds per call
+* Changing kernel to np.ones((5, 5)) ...percall now is 0.044
+* dilate is still the first function in total time taken but now running 10 times faster
+* changing iteration to 1 gives a percall of 0.034 seconds
+
+### Cross kernel
+
+* Using kernel= cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5)) with one iteration... percall is 0.022 but the dilation is
+ not enough
+* Same kernel as before but 2 iterations ... percall is 0.036 but not enough dilation
+* kernel= cv2.getStructuringElement(cv2.MORPH_CROSS, (7, 7)) with 2 iterationd...still not enough dilation and percall 0.048
+* cv2.getStructuringElement(cv2.MORPH_CROSS, (33, 25)) with 1 iteration... sufficient dilation, percall 0.091
+
+### Rectangular kernel
+
+* cv2.getStructuringElement(cv2.MORPH_RECT, (7, 13)) with 1 iterations... not enough dilation, percall 0.032
+* cv2.getStructuringElement(cv2.MORPH_RECT, (33, 25)) with 1 iteration... good dilation, percall 0.078
+* cv2.getStructuringElement(cv2.MORPH_RECT, (17, 13)) with 1 iteration... good enough, percall 0.048 **Stopping Here**
+
+### Ellipse kernel
+* cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (33, 25)) with 1 iteration... sufficient dilation, percall 0.8 slowest so far

@@ -7,6 +7,8 @@ import numpy as np
 import os
 from itertools import groupby
 import operator
+
+import sys
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
 
@@ -361,11 +363,9 @@ class FaceRecognizer(Thread):
         """
 
         # print("Predicting....")
-        # do not try to predict while the model is training
-
         if len(img) == 0:
             print("No image for prediction")
-            return False, False
+            return -1, sys.maxsize
 
         # resize, convert to right unit type and turn image to grayscale
         if (img.shape[0], img.shape[1]) != self.image_size:
@@ -378,7 +378,12 @@ class FaceRecognizer(Thread):
         # create the collector to get the label and the confidence
         collector = MinDistancePredictCollector()
         # predict face
-        self.recognizer.predict(gray, collector, 0)
+        try:
+            self.recognizer.predict(gray, collector, 0)
+        except cv2.error:
+            # the prediction may not work when the model has not been trained before
+            return -1, sys.maxsize
+
         # get label and confidence
         label = collector.getLabel()
         confidence = collector.getDist()
