@@ -122,6 +122,7 @@
 - [X] Delete subjects face images after the model has been trained with them
 - [ ] Saving the recognizer object create a yaml file of 17M, while the photo in the Faces direcories are 4M...
 check out if the yaml file increses or stays constant in size
+- [ ] Parallelize draw_on_frames
 
 - [ ] ~~New thread function to get face in video~~
 
@@ -140,6 +141,7 @@ check out if the yaml file increses or stays constant in size
 * Using rsync.. no more debugging push!
 * Implemented blur detection for face image
 * Implemented face recognition from sent image
+* Added flag for green square on movement
 
 # Issues
 
@@ -341,3 +343,14 @@ A solution could be using the cvtColor inside the cam_shotter, for every first f
 
 ### Ellipse kernel
 * cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (33, 25)) with 1 iteration... sufficient dilation, percall 0.8 slowest so far
+
+
+## draw_on_frames
+* Takes the majority of the time to generate the video 
+
+A solution may be remove the compute_img_difference for the frames, this will take away the green squares surrounding 
+the movement. It worked perfectly, the total time to send a video has been halved!
+
+## VideoWriter.write
+* Slowest command when not using the square flag, percall= 0.045
+* Trying changinf fps from 30 to 20... reduced the percall to 0.033 and gives the video a slower movement which is nice

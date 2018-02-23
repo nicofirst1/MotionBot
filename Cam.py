@@ -299,6 +299,7 @@ class CamShotter(Thread):
 
 class CamMovement(Thread):
     """Class to detect movement from camera frames, recognize faces, movement direction and much more
+
     Attributes:
 
         shotter : the cam_shotter object
@@ -323,7 +324,9 @@ class CamMovement(Thread):
 
         video_name : the name of the video to be send throught telegram
         resolution : the resolution of the video, do not change or telegram will not recognize the video as a gif
-        fps : the frame per second of the video
+        fps : the frame per second of the video, higher values will result in slightly slower computation and more of a
+            time loop video. Lower values will speed up the program (from 30 to 20 will give you a 25% speedup PER FUNCTION
+            CALL) and will give the video a slower movement.
 
 
         motion_flag : flag used to check if the user want to recieve a notification (can be set by telegram)
@@ -366,13 +369,14 @@ class CamMovement(Thread):
 
         self.video_name = "detect_motion_video.mp4"
         self.resolution = (640, 480)  # width,height
-        self.fps = 30
+        self.fps = 20
 
         self.video_flag = True
         self.face_photo_flag = True
         self.motion_flag = True
         self.debug_flag = False
         self.face_reco_falg = True
+        self.green_squares=False
 
         self.resetting_ground = False
 
@@ -420,7 +424,6 @@ class CamMovement(Thread):
         """Check for the flag value"""
         return self.stop_event.is_set()
 
-    @time_profiler()
     def detect_motion_video(self):
         """Principal function for this class
         It takes a new frame from the queue and check if it different from the ground image
@@ -608,7 +611,8 @@ class CamMovement(Thread):
         return cnts
 
     # =========================UTILS=======================================
-    def draw_on_frames(self, frames, areas=True, date=True):
+    @time_profiler()
+    def draw_on_frames(self, frames, date=True):
         """Function to draw on frames"""
 
         face_color = (0, 0, 255)  # red
@@ -643,7 +647,7 @@ class CamMovement(Thread):
                         cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
 
             # draw movement
-            if areas:
+            if self.green_squares:
                 cnts = self.compute_img_difference(self.ground_frame, gray)
 
                 # draw contours
@@ -1042,7 +1046,7 @@ class TelegramHandler(Thread):
         except FileNotFoundError:
             pass
 
-        
+
         logger.info("Image sent")
 
     def send_message(self, msg, specific_id=0, parse_mode=""):
