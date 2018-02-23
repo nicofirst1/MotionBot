@@ -1037,7 +1037,12 @@ class TelegramHandler(Thread):
                     else:
                         self.bot.sendPhoto(specific_id, file)
 
-        os.remove(image_name)
+        try:
+            os.remove(image_name)
+        except FileNotFoundError:
+            pass
+
+        
         logger.info("Image sent")
 
     def send_message(self, msg, specific_id=0, parse_mode=""):
