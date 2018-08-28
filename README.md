@@ -152,7 +152,7 @@ Where the input pin is the GPIO0
 ![connection](https://cdn.instructables.com/F7X/KHKG/IZT6TIS5/F7XKHKGIZT6TIS5.LARGE.jpg) 
 
 ### Final Setup
-* Edit file **token_psw.txt**, insert your token and password after the *=*
+* Edit file **token_psw.txt**, insert your token and password after the *=* - the password can be any random string and will be used for authentication against the bot.
 * Edit the default_id in *Cam.py* -> *Telegram_handler* -> *__init__*, to your telegram id
 
 ### Parameter Tuning
