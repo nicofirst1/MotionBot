@@ -138,18 +138,6 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 * (Optional) Install profiler fuction `pip install -U memory_profiler`
 
-### Physical Setup
-**THIS PART IS NOT IMPLEMENTED YET, YOU CAN SKIP IT**
-
-For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro-Helicopter-Airplane-Controls/dp/B00JJZXRR0)
-* Connect it like this
-
-![connection](https://cdn.instructables.com/F6Y/Y4UA/IZT6TFQN/F6YY4UAIZT6TFQN.MEDIUM.jpg)
-![connection](https://cdn.instructables.com/F91/2AHG/IZT6TFNU/F912AHGIZT6TFNU.MEDIUM.jpg)
-
-Where the input pin is the GPIO0
-
-![connection](https://cdn.instructables.com/F7X/KHKG/IZT6TIS5/F7XKHKGIZT6TIS5.LARGE.jpg) 
 
 ### Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=* - the password can be any random string and will be used for authentication against the bot.
