@@ -3,4 +3,15 @@
 
 __pycache__/
 
-Resources/
+
+*.log
+
+Resources/Weights/
+
+Resources/time_profiler
+
+*.yaml
+
+Resources/ids
+
+Resources/token_psw\.txt
