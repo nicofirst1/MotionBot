@@ -10,6 +10,7 @@
 ## Links
 - [yolo python wrapper](https://github.com/madhawav/YOLO3-4-Py)
 - [darknet page](https://pjreddie.com/darknet/)
+- [darknet repo](https://github.com/pjreddie/darknet)
 
 # Issues
 
@@ -21,3 +22,13 @@ This problem can be solved by changing the path of coco.names file in [coco.data
 `names = data/coco.names`\
 to\
  `names= ./src/yolo/data/coco.names`
+
+
+## Issue2
+OSError: libdarknet.so: cannot open shared object file: No such file or directory
+
+### Solution 
+In [darknet.py](../src/darknet/python/darknet.py), line 48, change the \
+`lib = CDLL("libdarknet.so", RTLD_GLOBAL)`
+to\
+`lib = CDLL("your/path/to/darknet/libdarknet.so", RTLD_GLOBAL)`
