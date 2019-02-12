@@ -5,7 +5,7 @@ import logging
 import urllib.request
 import os, sys
 
-from Cam import MainClass
+from Thread_classes.MainClass import MainClass
 from utils import add_id, elegible_user, read_token_psw
 
 TOKEN, psw = read_token_psw()
@@ -299,8 +299,9 @@ def predict_face(bot, update):
     urllib.request.urlretrieve(file_url, file_path)
 
     #get the text to send
-    img=cam.predict_face(file_path)
-
+    #fixme
+    #img=cam.predict_face(file_path)
+    img=None
     if img is None:
         update.message.reply_text("Sorry...no faces found", parse_mode="HTML")
         return
