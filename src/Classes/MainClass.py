@@ -3,6 +3,7 @@ import os
 from time import sleep
 import cv2
 
+from Classes.Darknet import Darknet
 from src.Classes.Face_recognizer import FaceRecognizer
 from src.Classes.CamMovement import CamMovement
 from src.Classes.CamShotter import CamShotter
@@ -50,7 +51,10 @@ class MainClass:
         self.face_recognizer = FaceRecognizer(self.disp)
         self.face_recognizer.start()
 
-        self.motion = CamMovement(self.shotter, self.telegram_handler, self.face_recognizer)
+        self.darknet=Darknet()
+        self.darknet.start()
+
+        self.motion = CamMovement(self.shotter, self.telegram_handler, self.face_recognizer,self.darknet)
         self.motion.start()
         logger.debug("Cam_class started")
 

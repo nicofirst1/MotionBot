@@ -10,6 +10,7 @@ class Path:
 
     RESOURCES_DIR = join(curdir, "Resources")
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
+    DARKNET_DIR=join(curdir,"src/yolo")
 
     def __init__(self):
         self.initialize_dirs()
@@ -43,4 +44,7 @@ class Path:
                 except Exception as e:
                     print(e)
 
+    @staticmethod
+    def join(path1,path2):
+        return join(path1,path2)
 

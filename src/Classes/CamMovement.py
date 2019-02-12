@@ -9,6 +9,7 @@ from time import sleep
 import cv2
 
 # from memory_profiler import profile
+from Classes.Darknet import Darknet
 
 logger = logging.getLogger('cam_movement')
 
@@ -19,7 +20,6 @@ class CamMovement(Thread):
     Attributes:
 
         shotter : the cam_shotter object
-        frame: the queue used by the shotter class
 
         telegram_handler : the telegram handler class
 
@@ -58,28 +58,22 @@ class CamMovement(Thread):
 
     """
 
-    def __init__(self, shotter, telegram, face_recognizer):
+    def __init__(self, shotter, telegram, face_recognizer,darknet):
         # init the thread
         Thread.__init__(self)
         self.stop_event = threading.Event()
 
+        #classes
         self.shotter = shotter
-        self.frame = shotter.queue
-
         self.telegram_handler = telegram
-
         self.face_recognizer = face_recognizer
+        self.darknet=darknet
 
         self.delay = 0.1
         self.min_area = 2000
         self.ground_frame = 0
         self.blur = (10, 10)
 
-        self.frontal_face_cascade = cv2.CascadeClassifier(
-            '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_frontalface.xml')
-        self.profile_face_cascade = cv2.CascadeClassifier(
-            '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_profileface.xml')
-        self.face_size = 50
 
         self.max_seconds_retries = 10
 
@@ -92,7 +86,8 @@ class CamMovement(Thread):
         self.motion_flag = True
         self.debug_flag = False
         self.face_reco_falg = False
-        self.green_squares = False
+        self.green_squares_flag = False
+        self.darknet_flag=True
 
         self.resetting_ground = False
 
@@ -178,20 +173,22 @@ class CamMovement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
-            # if the user wants the face in the movement
-            if self.face_photo_flag:
-                # take the face
-                # fixme
-                # face = self.face_from_video(to_write)
-                face = None
-                # if there are no faces found
-                if face is None:
-                    self.telegram_handler.send_message(msg="Face not found")
+            if self.darknet_flag:
+                self.darknet.detect(to_write)
 
-                else:
-                    for elem in face:
-                        self.telegram_handler.send_image(elem[2],
-                                                         msg="Found " + elem[0] + " with conficence = " + str(elem[1]))
+            # # if the user wants the face in the movement
+            # if self.face_photo_flag:
+            #     # take the face
+            #     # fixme
+            #     face = None
+            #     # if there are no faces found
+            #     if face is None:
+            #         self.telegram_handler.send_message(msg="Face not found")
+            #
+            #     else:
+            #         for elem in face:
+            #             self.telegram_handler.send_image(elem[2],
+            #                                              msg="Found " + elem[0] + " with conficence = " + str(elem[1]))
 
             # send the original video too
             if not self.resetting_ground:
@@ -371,7 +368,7 @@ class CamMovement(Thread):
                         cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
 
             # draw movement
-            if self.green_squares:
+            if self.green_squares_flag:
                 cnts = self.compute_img_difference(self.ground_frame, gray)
 
                 # draw contours
@@ -503,84 +500,8 @@ class CamMovement(Thread):
 
         return (area1 < area2, centers1 > centers2), (center_point1, center_point2)
 
-    # =========================FACE DETECION=======================================
 
-    # @time_profiler()
-    def face_from_video(self, frames):
-        """Detect faces from list of frames"""
 
-        print("Starting face detection...")
-
-        crop_frames = []
-        faces = 0
-
-        # for every frame in the video
-        for frame in frames:
-
-            # detect if there is a face
-            face = self.detect_face(frame)
-            self.faces_cnts.append(face)
-
-            # if there is a face
-            if face is not None:
-                faces += 1
-                # get the corners of the faces
-                # if user want the face video too crop the image where face is detected
-                if self.face_photo_flag:
-                    for (x, y, w, h) in face:
-                        blur_var = cv2.Laplacian(frame[y:y + h, x:x + w], cv2.CV_64F).var()
-                        # print(blur_var)
-                        # if the blur index of the image is grather than the threshold
-                        if blur_var >= self.max_blurrines:
-                            crop_frames.append(frame[y:y + h, x:x + w])
-                            # self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Blurr ok : "+str(blur_var))
-
-                        else:
-                            # self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Too blurry : "+str(blur_var))
-                            pass
-
-        print(str(faces) + " frames with faces detected")
-        print("... face detector end")
-
-        # if there are some images with faces only
-        if len(crop_frames) > 0:
-
-            # if the users want to recognize faces
-            if self.face_reco_falg:
-                # try to move te images to the Unknown folder
-                if not self.face_recognizer.add_image_write(crop_frames):
-                    print("Error during the insertion of face images into dir")
-                    logger.error("Error during the insertion of face images into dir")
-
-            # get the final face image denoising the others
-            faces_img = self.face_recognizer.predict_multi(crop_frames)
-
-        else:
-            faces_img = []
-
-        return faces_img
-
-    def detect_face(self, img, scale_factor=1.4, min_neight=3):
-        """Detect faces using the cascades"""
-        # setting the parameters
-        scale_factor = scale_factor
-        min_neight = min_neight
-        min_size = (self.face_size, self.face_size)
-        # converting to gray
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # try to detect the front face
-        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,
-                                                           minSize=min_size)
-        if len(faces) > 0:
-            # print("face detcted!")
-            return faces
-        # else:
-        #     # if there are no frontface, detect the profile ones
-        #     faces = self.profile_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight)
-        #     if len(faces) > 0:
-        #         return faces
-
-        return None
 
     # =========================TELEGRAM BOT=======================================
 

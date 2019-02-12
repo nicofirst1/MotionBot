@@ -123,8 +123,6 @@ increase the size of the model with approximately 10M every 70 images saved.
 
 **IMPORTANT**
 
-If you see the **debugging** commit do not pull the repo yet, the most secure updates are the **APLHA/BETA** releases. 
-Other commits comments may introduce new features and bugs too.
 
 If you are having any kind of problems related to the following steps check out the *Journal.md* under the *Issues* section. 
 
@@ -138,6 +136,9 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 * (Optional) Install profiler fuction `pip install -U memory_profiler`
 
+
+### Darknet Setup
+Follow the instructions in the [yolo wrapper](https://github.com/madhawav/YOLO3-4-Py) 
 
 ### Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=* - the password can be any random string and will be used for authentication against the bot.

@@ -8,7 +8,7 @@ from src.handlers import start, annulla, get_camshot, stream, disp, updater, \
     help_bot, predict_face
 
 #Implementing logger
-loggers=["main","cam_shotter","cam_movement","telegram_handler","main_class"]
+loggers=["cam_shotter","cam_movement","telegram_handler","dark_net","main_class"]
 
 for log in loggers:
     logger=initialize_logger(log)
