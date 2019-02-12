@@ -1,5 +1,5 @@
 import logging
-from Paths import Path as pt
+from Path import Path as pt
 
 
 def initialize_logger(base_name):

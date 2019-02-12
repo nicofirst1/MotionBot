@@ -9,7 +9,7 @@ from telegram.ext import ConversationHandler, Updater
 
 from src.Classes.MainClass import MainClass
 from src.Utils.utils import add_id, elegible_user, read_token_psw
-from Paths import Path as pt
+from Path import Path as pt
 
 
 TOKEN, psw = read_token_psw()
