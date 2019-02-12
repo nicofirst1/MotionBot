@@ -1,300 +1,18 @@
+import datetime
+import logging
+import sys
 import threading
 import traceback
 from threading import Thread
-import os
-import cv2
 from time import sleep
-import datetime
-import logging
 
-import sys
-#from memory_profiler import profile
-import numpy as np
+import cv2
 
-from Face_recognizer import FaceRecognizer
 from utils import time_profiler
 
-logger = logging.getLogger('motionlog')
+# from memory_profiler import profile
 
-
-class MainClass:
-    """This class is the one handling the thread initialization and the coordination between them.
-    It also handles the telegram command to event execution
-
-    Attributes:
-        updater: the bot updater
-        disp: the bot dispatcher
-        bot : the telegram bot
-
-        telegram_handler: the class that is in control of notifying the users about changes
-
-        frames : a list of frames from which get the camera frames
-        shotter : the class that takes frames from the camera
-
-        face_recognizer : the class that handles the face recognition part
-
-        motion: the class that handles the moving detection part
-
-
-        """
-
-    def __init__(self, updater):
-
-        self.updater = updater
-        self.disp = updater.dispatcher
-        self.bot = self.disp.bot
-
-        self.telegram_handler = TelegramHandler(self.bot)
-        self.telegram_handler.start()
-
-        self.frames = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.shotter = CamShotter(self.frames)
-        self.shotter.start()
-
-        self.face_recognizer = FaceRecognizer(self.disp)
-        self.face_recognizer.start()
-
-        self.motion = CamMovement(self.shotter, self.telegram_handler, self.face_recognizer)
-        self.motion.start()
-        logger.debug("Cam_class started")
-
-    def capture_image(self, image_name):
-        """Capture a frame from the camera
-        """
-        # print("taking image")
-        img = self.frames[-2]
-
-        if isinstance(img, int):
-            print("empty queue")
-            return False
-        # try to save the image
-        return cv2.imwrite(image_name, img)
-
-    def stop(self):
-        """Stop the execution of the threads and exit"""
-        self.motion.stop()
-        self.motion.join()
-
-        self.face_recognizer.stop()
-        self.face_recognizer.join()
-
-        self.shotter.stop()
-        self.shotter.join()
-
-        logger.info("Stopping Cam class")
-        return
-
-    def capture_video(self, video_name, seconds,user_id):
-        """Get a video from the camera"""
-        # set camera resolution, fps and codec
-        frame_width = 640
-        frame_height = 480
-        fps = 20
-        # print("initializing writer")
-
-        out = cv2.VideoWriter(video_name, 0x00000021, fps, (frame_width, frame_height))
-
-        # print("writer initialized")
-
-        # start capturing frames
-        self.shotter.capture(True)
-        # sleep
-        sleep(seconds)
-        # get catured frames
-        to_write = self.shotter.capture(False)
-        # write frame to file and release
-        for elem in to_write:
-            out.write(elem)
-        out.release()
-
-        self.telegram_handler.send_video(video_name, user_id,str(seconds) + " seconds record")
-
-
-    def predict_face(self, img_path):
-        """
-            Predic the face in a photo and draw on it
-        :param img_path: the path of the image to be predicted
-        :return: string
-        """
-
-        #read the image and remove it from disk
-        img=cv2.imread(img_path)
-        os.remove(img_path)
-
-        gray=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        #find faces
-        faces=self.motion.detect_face(gray,scale_factor=1.1,min_neight=5)
-
-        print(faces)
-
-
-        if faces is None:
-            return faces
-
-
-        #for every face predict the person and confidence
-        for (x, y, w, h) in faces:
-            name, confidence=self.face_recognizer.predict(img[y:y + h, x:x + w])
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-            if confidence<=self.face_recognizer.auto_train_dist:
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img,"For sure!" , (x , y + h+15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-            elif confidence<=self.face_recognizer.distance_thres:
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img,"Maybe..." , (x , y + h+15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-            else :
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img, "Just guessing", (x, y + h + 15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-        return img
-
-
-
-
-
-class CamShotter(Thread):
-    """Class to take frames from camera, it is the only one who has access to the VideoCapture ojbect
-
-    Attributes:
-        stop_event : the event used to stop the class
-        cam_idx : the camera index, usually 0
-        CAM : the videoCapture object to take frames from the camera
-        queue : a list of frames shared between the classes
-        capture_bool : a flag value to start/stop/capturing all frames from the camera
-        capture_queue : the list that will be holding all the frames
-        lock : a lock object to lock the capture_queue
-        camera_connected : a flag to notify the others thread that the camera is connected and they can start taking
-        frames from the queue
-
-    """
-
-    def __init__(self, queue):
-
-        # init the thread
-        Thread.__init__(self)
-
-        self.stop_event = threading.Event()
-
-        # get camera and queue
-        self.cam_idx = 0
-        self.CAM = cv2.VideoCapture(self.cam_idx)
-        self.queue = queue
-        self.capture_bool = False
-        self.capture_queue = []
-        self.lock = threading.Lock()
-        self.camera_connected = False
-
-        logger.debug("Cam_shotter started")
-
-    def run(self):
-        """Main thread loop"""
-
-        while True:
-
-            # if the thread has been stopped
-            if self.stopped():
-                # release the cam object
-                self.CAM.release()
-                sleep(1)
-                # delete the queue
-                del self.queue[:]
-                # log and return
-                logger.info("Stopping Cam shotter")
-                return
-
-            # read frame form camera
-            ret, img = self.CAM.read()
-
-            # if frame has been read correctly add it to the end of the list
-            if ret:
-                # if it is the first time that the class reads an image
-                if not self.camera_connected:
-                    print("camera connected")
-                    logger.debug("Camera connected")
-                    self.camera_connected = True
-                    # sleep to wait for auto-focus/brightness
-                    sleep(3)
-
-                #grayscale the future last frame
-                try:
-                    gray=self.queue[1]
-                    self.queue[1]=cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
-                except cv2.error as e:
-                    #error_log = "Cv Error: " + str(e)
-                    #print(error_log)
-                    pass
-
-
-                # pop first element
-                self.queue.pop(0)
-
-
-                # append image at last
-                self.queue.append(img)
-                if self.capture_bool:
-                    self.capture_queue.append(img)
-
-
-                # print("saved")
-            else:
-                # try to reopen the camera
-                # print("not saved")
-                self.reopen_cam()
-
-            # sleep(0.01)
-
-    def capture(self, capture):
-        """Start/stop the frame capturing"""
-
-        try:
-            # if you want to capture the video
-            if capture:
-                # acquire the lock, empty the list and set the flag to true
-                self.lock.acquire()
-                self.capture_queue = []
-                self.capture_bool = True
-            else:
-                # otherwise set the flag to false and release the lock
-                self.capture_bool = False
-                self.lock.release()
-                return self.capture_queue
-        except:
-            self.lock.release()
-
-    def reopen_cam(self):
-        """Function to reopen the camera"""
-        # release the camera
-        self.CAM.release()
-        sleep(2)
-        # capture stream
-        self.CAM = cv2.VideoCapture(self.cam_idx)
-        sleep(2)
-        # chech if camera is opened
-        self.check_open_cam()
-
-    def close_cam(self):
-        """Function to release teh camera stream"""
-        # print("close cam")
-        self.CAM.release()
-
-    def check_open_cam(self):
-        """Function to open the camera stream"""
-        # print("checking cam")
-        if not self.CAM.isOpened():
-            # print("cam was closed")
-            self.CAM.open(0)
-
-    def stop(self):
-        """Stop the thread"""
-        self.stop_event.set()
-
-    def stopped(self):
-        """Check if thread has been stopped"""
-        return self.stop_event.is_set()
+logger = logging.getLogger('cam_movement')
 
 
 class CamMovement(Thread):
@@ -363,7 +81,7 @@ class CamMovement(Thread):
             '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_frontalface.xml')
         self.profile_face_cascade = cv2.CascadeClassifier(
             '/home/pi/InstallationPackages/opencv-3.1.0/data/lbpcascades/lbpcascade_profileface.xml')
-        self.face_size=50
+        self.face_size = 50
 
         self.max_seconds_retries = 10
 
@@ -372,18 +90,18 @@ class CamMovement(Thread):
         self.fps = 20
 
         self.video_flag = True
-        self.face_photo_flag = True
+        self.face_photo_flag = False
         self.motion_flag = True
         self.debug_flag = False
-        self.face_reco_falg = True
-        self.green_squares=False
+        self.face_reco_falg = False
+        self.green_squares = False
 
         self.resetting_ground = False
 
-        self.faces_cnts=[]
-        self.max_blurrines=100
-        self.min_bk_threshold=75
-        self.dilate_window_size=(17,13)
+        self.faces_cnts = []
+        self.max_blurrines = 100
+        self.min_bk_threshold = 75
+        self.dilate_window_size = (17, 13)
 
         logger.debug("Cam_movement started")
 
@@ -409,7 +127,9 @@ class CamMovement(Thread):
                 # on any exception log it and continue
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                logger.error(''.join('!! ' + line for line in lines))  # Log it or whatever here
+                to_log = ''.join('!! ' + line for line in lines)
+                logger.error(to_log)  # Log it or whatever here
+                print(to_log)
 
             if self.stopped():
                 # if the thread has been stopped log and exit
@@ -463,15 +183,17 @@ class CamMovement(Thread):
             # if the user wants the face in the movement
             if self.face_photo_flag:
                 # take the face
-                face = self.face_from_video(to_write)
+                # fixme
+                # face = self.face_from_video(to_write)
+                face = None
                 # if there are no faces found
                 if face is None:
                     self.telegram_handler.send_message(msg="Face not found")
 
                 else:
                     for elem in face:
-                        self.telegram_handler.send_image(elem[2], msg="Found "+elem[0]+" with conficence = "+str(elem[1]))
-
+                        self.telegram_handler.send_image(elem[2],
+                                                         msg="Found " + elem[0] + " with conficence = " + str(elem[1]))
 
             # send the original video too
             if not self.resetting_ground:
@@ -493,7 +215,7 @@ class CamMovement(Thread):
         score = 0
 
         # setting initial frame
-        #gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
+        # gray = cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY)
         # gray = cv2.GaussianBlur(gray, (21, 21), 0)
         gray = cv2.blur(initial_frame, self.blur, 0)
 
@@ -503,7 +225,7 @@ class CamMovement(Thread):
             # take another frame
             prov = self.frame[0]
 
-            #print(prov.shape)
+            # print(prov.shape)
 
             # check if images are different
             score = self.are_different(gray, prov)
@@ -536,7 +258,7 @@ class CamMovement(Thread):
 
             # take the already grayscaled frame
             prov = self.frame[0]
-            #print(prov.shape)
+            # print(prov.shape)
 
             # check if images are different
             score = self.are_different(initial_frame, prov)
@@ -574,7 +296,7 @@ class CamMovement(Thread):
         The ground image is supposed to be already preprocessed"""
 
         # blur and convert to grayscale
-        #gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        # gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
         gray = cv2.blur(img2, self.blur, 0)
 
         # compute the absolute difference between the current frame and
@@ -595,10 +317,10 @@ class CamMovement(Thread):
 
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
-        kernel= cv2.getStructuringElement(cv2.MORPH_RECT, self.dilate_window_size)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, self.dilate_window_size)
         thresh = cv2.dilate(thresh_original, kernel, iterations=1)
         # get the contours of the changes
-        (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        (cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # if the debug flag is true send all the images
         if self.debug_flag:
@@ -620,15 +342,17 @@ class CamMovement(Thread):
         line_tickness = 2
 
         # create the file
-        out = cv2.VideoWriter(self.video_name, 0x00000021, self.fps, self.resolution)
-        out.open(self.video_name, 0x00000021, self.fps, self.resolution)
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+
+        out = cv2.VideoWriter(self.video_name, fourcc, self.fps, self.resolution)
+        out.open(self.video_name, fourcc, self.fps, self.resolution)
 
         prov_cnts = 0
         idx = 0
-        face_idx=0
+        face_idx = 0
         to_write = "Unkown - Unkown"
-        print("Total frames to save : "+str(len(frames)))
-        print("Total frames contours : "+str(len(self.faces_cnts)))
+        print("Total frames to save : " + str(len(frames)))
+        print("Total frames contours : " + str(len(self.faces_cnts)))
         for frame in frames:
 
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -636,8 +360,10 @@ class CamMovement(Thread):
             if self.face_photo_flag:
 
                 # take the corresponding contours for the frame
-                face = self.faces_cnts[face_idx]
-                face_idx+=1
+                # fixme
+                face = None
+                # face = self.faces_cnts[face_idx]
+                face_idx += 1
 
                 # if there is a face
                 if face is not None:
@@ -704,8 +430,8 @@ class CamMovement(Thread):
             # write frames on file
             out.write(frame)
 
-        #empty the face contours list
-        self.faces_cnts=[]
+        # empty the face contours list
+        self.faces_cnts = []
 
         # free file
         out.release()
@@ -779,7 +505,7 @@ class CamMovement(Thread):
 
     # =========================FACE DETECION=======================================
 
-    #@time_profiler()
+    # @time_profiler()
     def face_from_video(self, frames):
         """Detect faces from list of frames"""
 
@@ -802,15 +528,15 @@ class CamMovement(Thread):
                 # if user want the face video too crop the image where face is detected
                 if self.face_photo_flag:
                     for (x, y, w, h) in face:
-                        blur_var=cv2.Laplacian(frame[y:y + h, x:x + w], cv2.CV_64F).var()
-                        #print(blur_var)
-                        #if the blur index of the image is grather than the threshold
-                        if blur_var>=self.max_blurrines:
+                        blur_var = cv2.Laplacian(frame[y:y + h, x:x + w], cv2.CV_64F).var()
+                        # print(blur_var)
+                        # if the blur index of the image is grather than the threshold
+                        if blur_var >= self.max_blurrines:
                             crop_frames.append(frame[y:y + h, x:x + w])
-                            #self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Blurr ok : "+str(blur_var))
+                            # self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Blurr ok : "+str(blur_var))
 
                         else:
-                            #self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Too blurry : "+str(blur_var))
+                            # self.telegram_handler.send_image(frame[y:y + h, x:x + w],msg="Too blurry : "+str(blur_var))
                             pass
 
         print(str(faces) + " frames with faces detected")
@@ -827,23 +553,24 @@ class CamMovement(Thread):
                     logger.error("Error during the insertion of face images into dir")
 
             # get the final face image denoising the others
-            faces_img=self.face_recognizer.predict_multi(crop_frames)
+            faces_img = self.face_recognizer.predict_multi(crop_frames)
 
         else:
             faces_img = []
 
         return faces_img
 
-    def detect_face(self, img,scale_factor=1.4,min_neight=3):
+    def detect_face(self, img, scale_factor=1.4, min_neight=3):
         """Detect faces using the cascades"""
         # setting the parameters
         scale_factor = scale_factor
         min_neight = min_neight
-        min_size=(self.face_size,self.face_size)
+        min_size = (self.face_size, self.face_size)
         # converting to gray
-        #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # try to detect the front face
-        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,minSize=min_size)
+        faces = self.frontal_face_cascade.detectMultiScale(img, scaleFactor=scale_factor, minNeighbors=min_neight,
+                                                           minSize=min_size)
         if len(faces) > 0:
             # print("face detcted!")
             return faces
@@ -854,7 +581,6 @@ class CamMovement(Thread):
         #         return faces
 
         return None
-
 
     # =========================TELEGRAM BOT=======================================
 
@@ -909,10 +635,10 @@ class CamMovement(Thread):
 
                 print("in while")
                 # check for the presence of a face in the frame
-                if self.detect_face(prov):
-                    # if face is detected send photo and exit while
-                    self.telegram_handler.send_image(prov, msg="Face detected!")
-                    break
+                # if self.detect_face(prov):
+                #     # if face is detected send photo and exit while
+                #     self.telegram_handler.send_image(prov, msg="Face detected!")
+                #     break
 
                 # take another frame
                 prov = self.frame[-1]
@@ -928,7 +654,6 @@ class CamMovement(Thread):
             if not foud_face:
                 self.telegram_handler.send_image(end_frame, msg="Face not detected")
             sleep(3)
-
 
     @staticmethod
     def denoise_img(image_list):
@@ -962,141 +687,13 @@ class CamMovement(Thread):
             imgToDenoiseIndex = middle
             temporalWindowSize = len(image_list)
             hColor = 3
-            searchWindowSize=17
-            hForColorComponents=1
+            searchWindowSize = 17
+            hForColorComponents = 1
             # print(temporalWindowSize, imgToDenoiseIndex)
 
             denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor,searchWindowSize=searchWindowSize,
+                                                            hColor=hColor, searchWindowSize=searchWindowSize,
                                                             hForColorComponents=hForColorComponents)
         print("denosed")
 
         return denoised
-
-
-class TelegramHandler(Thread):
-    """Class to handle image/message/video sending throught telegram bot"""
-
-    def __init__(self, bot):
-        # init the thread
-        Thread.__init__(self)
-
-        self.bot = bot
-        self.default_id = 24978334
-        self.ids = self.get_ids(self.default_id)
-
-        #print(self.ids)
-
-        logger.info("Telegram handler started")
-
-    @staticmethod
-    def get_ids(fallback_id):
-        """Get all the ids from the file"""
-        # get ids form file
-        print("getting ids from file")
-        ids_path = "Resources/ids"
-
-        # if there are some ids in the file get them
-        if "ids" in os.listdir("Resources/"):
-            with open(ids_path, "r+") as file:
-                lines = file.readlines()
-
-            # every line has the id as the first element of a split(,)
-            ids = []
-            for user_id in lines:
-                if int(user_id.split(",")[1]):
-                    ids.append(int(user_id.split(",")[0]))
-            return ids
-
-        else:
-            # return the default id
-            return [fallback_id]
-
-    def send_image(self, img, specific_id=0, msg=""):
-        """Send an image to the ids """
-
-        image_name = "image_to_send.png"
-
-        ret = cv2.imwrite(image_name, img)
-
-        if not ret and specific_id:
-            self.send_message("There has been an error while writing the image", specific_id=specific_id)
-            return
-        elif not ret:
-            if not ret and specific_id:
-                self.send_message("There has been an error while writing the image")
-                return
-
-        else:
-            with open(image_name, "rb") as file:
-                if not specific_id:
-                    for user_id in self.ids:
-                        if msg:
-                            self.bot.sendPhoto(user_id, file, caption=msg)
-                        else:
-                            self.bot.sendPhoto(user_id, file)
-                else:
-                    if msg:
-                        self.bot.sendPhoto(specific_id, file, caption=msg)
-                    else:
-                        self.bot.sendPhoto(specific_id, file)
-
-        try:
-            os.remove(image_name)
-        except FileNotFoundError:
-            pass
-
-
-        logger.info("Image sent")
-
-    def send_message(self, msg, specific_id=0, parse_mode=""):
-        """Send a message to the ids"""
-
-        if not specific_id:
-            for user_id in self.ids:
-                self.bot.sendMessage(user_id, msg, parse_mode=parse_mode)
-        else:
-            self.bot.sendMessage(specific_id, msg, parse_mode=parse_mode)
-
-    def send_video(self, video_name, specific_id=0, msg=""):
-        """Send a video to the ids"""
-
-        try:
-            with open(video_name, "rb") as file:
-                if not specific_id:
-                    for user_id in self.ids:
-                        if msg:
-                            self.bot.sendVideo(user_id, file, caption=msg)
-                        else:
-                            self.bot.sendVideo(user_id, file)
-                else:
-                    if msg:
-                        self.bot.sendVideo(specific_id, file, caption=msg)
-                    else:
-                        self.bot.sendVideo(specific_id, file)
-
-            os.remove(video_name)
-
-        except FileNotFoundError:
-            self.send_message("The video could not be found ", specific_id=specific_id)
-
-        logger.info("Video sent")
-
-    def send_file(self, file_name, specific_id=0, msg=""):
-        """Send a file to the ids"""
-
-        if file_name in os.listdir("."):
-            with open(file_name, "rb") as file:
-                if not specific_id:
-                    for user_id in self.ids:
-                        if msg:
-                            self.bot.sendDocument(user_id, file, caption=msg)
-                        else:
-                            self.bot.sendDocument(user_id, file)
-                else:
-                    if msg:
-                        self.bot.sendDocument(specific_id, file, caption=msg)
-                    else:
-                        self.bot.sendDocument(specific_id, file)
-        else:
-            self.send_message("No log file detected!", specific_id=specific_id)

@@ -1,2 +1,0 @@
-token=YOUR_TOKEN
-psw=YOUR_PASSWORD
