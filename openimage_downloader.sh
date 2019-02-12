@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
-cd src/yolo/weights
+cwd=$(pwd)
+
+cd Resources/Weights
 echo "downloading weights..."
 wget https://pjreddie.com/media/files/yolov3-openimages.weights
+wget https://pjreddie.com/media/files/yolov3.weights
 
-cd ../cfg
+cd cwd
+cd
+
 
 echo "downloading cfgs..."
 
