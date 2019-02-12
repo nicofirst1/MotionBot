@@ -88,6 +88,7 @@ class CamMovement(Thread):
         self.face_reco_falg = False
         self.green_squares_flag = False
         self.darknet_flag=True
+        self.darknet_squares_flag=False
 
         self.resetting_ground = False
 
@@ -174,7 +175,12 @@ class CamMovement(Thread):
             to_write = self.shotter.capture(False)
 
             if self.darknet_flag:
-                self.darknet.detect_video(to_write)
+                segmentation=self.darknet.detect_video(to_write)
+
+                if self.darknet_squares_flag:
+                    to_write=self.darknet.draw_bounds_list(segmentation)
+
+
 
 
             # # if the user wants the face in the movement
