@@ -9,7 +9,7 @@
 
 ## Links
 - [yolo python wrapper](https://github.com/madhawav/YOLO3-4-Py)
-
+- [darknet page](https://pjreddie.com/darknet/)
 
 # Issues
 
