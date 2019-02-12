@@ -30,6 +30,7 @@ FLAG_KEYBOARD = InlineKeyboardMarkup([
      InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
      InlineKeyboardButton("Debug", callback_data="/flag debug")],
     [InlineKeyboardButton("Darknet", callback_data="/flag darknet"),
+     InlineKeyboardButton("Darknet Squares", callback_data="/flag darknet_squares"),
      InlineKeyboardButton("Done", callback_data="/flag done")],
 
 ])
@@ -42,6 +43,7 @@ Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 ---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 ---- <b>Face Reco(gnizer)</b> : If set to <i>ON</i> the program will try to guess the person face
 ---- <b>Darknet</b> : If set to <i>ON</i> the program will use darknet for object segmentation
+---- <b>Darknet Squares</b> : If set to <i>ON</i> squares will be drawn on top of the segmented objects
 -- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 
 To set a flag just click on the corrispondent button.
@@ -71,6 +73,7 @@ def flag_setting_callback(bot, update):
             cam.motion.faces_video_flag = False
             cam.motion.face_reco_falg = False
             cam.motion.darknet_flag = False
+            cam.motion.darknet_squares_flag = False
             cam.motion.green_squares = False
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
@@ -87,8 +90,14 @@ def flag_setting_callback(bot, update):
     elif param == "face_reco":
         cam.motion.face_reco_falg = not cam.motion.face_reco_falg
 
+    elif param == "darknet_squares":
+        cam.motion.darknet_squares_flag = not cam.motion.darknet_squares_flag
+
+
     elif param == "darknet":
         cam.motion.darknet_flag = not cam.motion.darknet_flag
+        if not cam.motion.darknet_flag:
+            cam.motion.darknet_squares_flag=False
 
 
     elif param == "done":
@@ -342,6 +351,7 @@ def complete_flags():
     face_p = cam.motion.face_photo_flag
     face_r = cam.motion.face_reco_falg
     darknet = cam.motion.darknet_flag
+    darknet_squares = cam.motion.darknet_squares_flag
     debug = cam.motion.debug_flag
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
@@ -383,6 +393,14 @@ def complete_flags():
     complete_falg_str += "\n-- <b>Darknet</b>"
 
     if darknet:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+
+    complete_falg_str += "\n-- <b>Darknet Squares</b>"
+
+    if darknet_squares:
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"

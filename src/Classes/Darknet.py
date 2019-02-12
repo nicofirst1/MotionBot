@@ -83,9 +83,10 @@ class Darknet(Thread):
     def draw_bounds_list(self, img_list):
 
         frames = []
-        for frame, bb in img_list:
-            cat, _, bounds = bb
-            self.draw_bounds(frame, bounds, cat)
+        for frame, bbs in img_list:
+            for bb in bbs:
+                cat, _, bounds = bb
+                self.draw_bounds(frame, bounds, cat)
             frames.append(frame)
 
         return frames
