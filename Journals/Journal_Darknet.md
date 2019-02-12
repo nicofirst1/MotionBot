@@ -21,7 +21,7 @@
 This problem can be solved by changing the path of coco.names file in [coco.data](yolo/cfg/coco.data) file from\
 `names = data/coco.names`\
 to\
- `names= ./src/yolo/data/coco.names`
+ `names= ./src/darknet/data/coco.names`
 
 
 ## Issue2
@@ -60,3 +60,12 @@ def nparray_to_image(img):
 `im = nparray_to_image(image)`
 
 - finally modigy the [image.c](../src/darknet/src/image.c) and [image.h](../src/darknet/src/image.h) as written [here](https://github.com/pjreddie/darknet/issues/289#issuecomment-342448358)  
+
+## Issue4
+* No file named data/coco.names*
+
+### Solution
+change the path of coco.names file in [coco.data](src/darknet/cfg/coco.data) file from\
+`names = data/coco.names`\
+to\
+ `names= ./src/darknet/data/coco.names`
