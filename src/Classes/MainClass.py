@@ -51,7 +51,8 @@ class MainClass:
         self.face_recognizer = FaceRecognizer(self.disp)
         self.face_recognizer.start()
 
-        self.darknet=Darknet()
+        use_coco=False
+        self.darknet=Darknet(use_coco)
         self.darknet.start()
 
         self.motion = CamMovement(self.shotter, self.telegram_handler, self.face_recognizer,self.darknet)

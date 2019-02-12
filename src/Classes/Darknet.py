@@ -13,6 +13,10 @@ class Darknet(Thread):
     def __init__(self, use_coco):
         super().__init__()
 
+        self.min_score=0.7
+        self.color=(255,0,0)
+
+
         if use_coco:
             cfg=pt.join(pt.DARKNET_DIR,"cfg/yolov3.cfg")
             weights=pt.join(pt.WEIGHTS_DIR,"yolov3.weights")
@@ -52,7 +56,7 @@ class Darknet(Thread):
 
         try:
             # get bounding boxes
-            bbs = detect(self.net,self.meta,img)
+            bbs = detect(self.net,self.meta,img,thresh=self.min_score)
         except Exception as e:
             logger.error(e)
             print(e)
