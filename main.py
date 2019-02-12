@@ -1,19 +1,17 @@
-from telegram.ext import (
-    ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler)
-import logging
+
+
+from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
+
+from Utils.logger import initialize_logger
 from handlers import start, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw, delete_log, \
     help_bot, predict_face
 
 #Implementing logger
+loggers=["main","cam_shotter","cam_movement","telegram_handler","main_class"]
 
-logger = logging.getLogger('motionlog')
-hdlr = logging.FileHandler('Resources/motion.log')
-formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.DEBUG)
-logger.propagate = False
+for log in loggers:
+    logger=initialize_logger(log)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,15 @@
 # coding=utf-8
+import logging
+import os
+import sys
+import urllib.request
+
+import telegram
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
-import logging
-import urllib.request
-import os, sys
 
 from Thread_classes.MainClass import MainClass
-from utils import add_id, elegible_user, read_token_psw
+from Utils.utils import add_id, elegible_user, read_token_psw
 
 TOKEN, psw = read_token_psw()
 print("TOKEN : " + TOKEN + "\nPassword : " + psw)
@@ -19,12 +22,12 @@ cam = MainClass(updater)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
-        InlineKeyboardButton("Video", callback_data="/flag face_video"),
-        InlineKeyboardButton("Movement Square", callback_data="/flag square")],
+     InlineKeyboardButton("Video", callback_data="/flag face_video"),
+     InlineKeyboardButton("Movement Square", callback_data="/flag square")],
 
     [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo"),
-        InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
-        InlineKeyboardButton("Debug", callback_data="/flag debug")],
+     InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
+     InlineKeyboardButton("Debug", callback_data="/flag debug")],
     [InlineKeyboardButton("Done", callback_data="/flag done")],
 
 ])
@@ -68,7 +71,7 @@ def flag_setting_callback(bot, update):
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
 
-    elif param=="square":
+    elif param == "square":
         cam.motion.green_squares = not cam.motion.green_squares
 
     elif param == "face_photo":
@@ -144,7 +147,7 @@ def reset_ground(bot, update):
 @elegible_user
 def get_camshot(bot, update):
     """Telegram command to get a camshot from the camera"""
-    image = "image_"+str(update.message.from_user.id)+".png"
+    image = "image_" + str(update.message.from_user.id) + ".png"
     ret = cam.capture_image(image)
     logger.info("photo command called")
 
@@ -179,15 +182,14 @@ def stream(bot, update, args):
             update.message.reply_text("The maximum seconds is " + str(max_seconds) + "...setting deafult 5s")
             SECONDS = 5
 
-    video_name = "video_"+str(update.message.from_user.id)+".mp4"
+    video_name = "video_" + str(update.message.from_user.id) + ".mp4"
 
     update.message.reply_text("Wait " + str(SECONDS) + " seconds...")
 
-    cam.capture_video(video_name, SECONDS,update.message.from_user.id)
+    cam.capture_video(video_name, SECONDS, update.message.from_user.id)
 
     logger.info("Sending a " + str(SECONDS) + " seconds video")
     print("Capture complete")
-
 
 
 @elegible_user
@@ -206,11 +208,17 @@ def send_log(bot, update):
     """Telegram command to send the logger file"""
     logger.info("send log command called")
 
-    if ("motion.log" in os.listdir("Resources/")):
-        with open("Resources/motion.log", "rb") as file:
-            bot.sendDocument(update.message.chat_id, file)
+    sent=False
 
-    else:
+    for log in os.listdir("Resources/Loggers/"):
+        if ".log" in log:
+            with open(f"Resources/Loggers/{log}", "rb") as file:
+                try:
+                    bot.sendDocument(update.message.chat_id, file)
+                    sent=True
+                except telegram.error.BadRequest:
+                    pass
+    if not sent:
         update.message.reply_text("No log file detected!")
 
 
@@ -227,8 +235,9 @@ def delete_log(bot, update):
     else:
         update.message.reply_text("No log file detected!")
 
-    with open("Resources/motion.log","w+") as file:
+    with open("Resources/motion.log", "w+") as file:
         file.write(" ")
+
 
 @elegible_user
 def send_ground(bot, update):
@@ -236,15 +245,14 @@ def send_ground(bot, update):
 
     print("Sending ground...")
 
-    cam.motion.send_ground(update.message.from_user.id,"Current background image")
+    cam.motion.send_ground(update.message.from_user.id, "Current background image")
 
     print("...Done")
 
 
 @elegible_user
 def help_bot(bot, update):
-
-    help_str="""
+    help_str = """
 Welcome to this bot!
 You can use it to with a camera to create your own surveillance system.
 The avaiable commands are the following:
@@ -280,7 +288,8 @@ The more faces the recognizer find out the more precise it will be
 
 Thank you for choosing this bot, I hope you like it.
 """
-    update.message.reply_text(help_str,parse_mode="HTML")
+    update.message.reply_text(help_str, parse_mode="HTML")
+
 
 @elegible_user
 def predict_face(bot, update):
@@ -291,24 +300,22 @@ def predict_face(bot, update):
     :return:
     """
 
-    file_path="downloaded.jpg"
-    #get the photo file
+    file_path = "downloaded.jpg"
+    # get the photo file
     fileID = update.message.photo[-1].file_id
     file_url = bot.get_file(fileID).file_path
 
     urllib.request.urlretrieve(file_url, file_path)
 
-    #get the text to send
-    #fixme
-    #img=cam.predict_face(file_path)
-    img=None
+    # get the text to send
+    # fixme
+    # img=cam.predict_face(file_path)
+    img = None
     if img is None:
         update.message.reply_text("Sorry...no faces found", parse_mode="HTML")
         return
 
-    cam.telegram_handler.send_image(img,update.message.from_user.id)
-
-
+    cam.telegram_handler.send_image(img, update.message.from_user.id)
 
 
 # ===============Utils===================
@@ -323,11 +330,10 @@ def complete_flags():
     # get falg values
     motion_detection = cam.motion.motion_flag
     face_v = cam.motion.video_flag
-    movement_sq=cam.motion.green_squares
+    movement_sq = cam.motion.green_squares
     face_p = cam.motion.face_photo_flag
-    face_r=cam.motion.face_reco_falg
+    face_r = cam.motion.face_reco_falg
     debug = cam.motion.debug_flag
-
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
 
@@ -364,7 +370,6 @@ def complete_flags():
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
-
 
     complete_falg_str += "\n-- <b>Debug</b>"
 

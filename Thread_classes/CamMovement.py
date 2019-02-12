@@ -8,7 +8,7 @@ from time import sleep
 
 import cv2
 
-from utils import time_profiler
+from Utils.utils import time_profiler
 
 # from memory_profiler import profile
 
