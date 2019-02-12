@@ -70,8 +70,8 @@ class CamMovement(Thread):
         self.darknet=darknet
 
         self.delay = 0.1
-        self.min_area = 2000
-        self.ground_frame = 0
+        self.min_area = 2200
+        self.ground_frame = np.zeros(1)
         self.blur = (10, 10)
 
 
@@ -540,98 +540,3 @@ class CamMovement(Thread):
         """Send the ground image to the users"""
         self.telegram_handler.send_image(self.ground_frame, specific_id=specific_id, msg=msg)
 
-    # =========================DEPRECATED=======================================
-
-    def detect_motion_photo(self):
-        initial_frame = self.shotter.get_gray_frame(-1)
-
-        sleep(self.delay)
-        end_frame = self.shotter.get_gray_frame(-1)
-
-        # calculate diversity
-        score = self.are_different(initial_frame, end_frame)
-        # if the notification is enable and there is a difference between the two frames
-        if self.motion_flag and score:
-
-            # send message
-            self.motion_notifier(score)
-
-            # take a new (more recent) frame
-            prov = self.shotter.get_gray_frame(-1)
-
-            # take the time
-            start = datetime.datetime.now()
-            end = datetime.datetime.now()
-
-            foud_face = False
-            self.shotter.capture(True)
-
-            print("INITIAL SCORE : " + str(score))
-
-            # while the current frame and the initial one are different (aka some movement detected)
-            while self.are_different(initial_frame, prov):
-
-                print("in while")
-                # check for the presence of a face in the frame
-                # if self.detect_face(prov):
-                #     # if face is detected send photo and exit while
-                #     self.telegram_handler.send_image(prov, msg="Face detected!")
-                #     break
-
-                # take another frame
-                prov = self.shotter.get_gray_frame(-1)
-
-                # if time is exceeded exit while
-                if (end - start).seconds > self.max_seconds_retries:
-                    print("max seconds exceeded")
-                    break
-
-                # update current time in while loop
-                end = datetime.datetime.now()
-
-            if not foud_face:
-                self.telegram_handler.send_image(end_frame, msg="Face not detected")
-            sleep(3)
-
-    @staticmethod
-    def denoise_img(image_list):
-        """Denoise one or multiple images"""
-
-        print("denoising")
-
-        if len(image_list) == 1:
-            denoised = cv2.fastNlMeansDenoisingColored(image_list[0], None, 10, 10, 7, 21)
-
-        else:
-
-            # make the list odd
-            if (len(image_list)) % 2 == 0:
-                image_list.pop()
-            # get the middle element
-            middle = int(float(len(image_list)) / 2 - 0.5)
-
-            width = sys.maxsize
-            heigth = sys.maxsize
-
-            # getting smallest images size
-            for img in image_list:
-                size = tuple(img.shape[1::-1])
-                if size[0] < width: width = size[0]
-                if size[1] < heigth: heigth = size[1]
-
-            # resizing all images to the smallest one
-            image_list = [cv2.resize(elem, (width, heigth)) for elem in image_list]
-
-            imgToDenoiseIndex = middle
-            temporalWindowSize = len(image_list)
-            hColor = 3
-            searchWindowSize = 17
-            hForColorComponents = 1
-            # print(temporalWindowSize, imgToDenoiseIndex)
-
-            denoised = cv2.fastNlMeansDenoisingColoredMulti(image_list, imgToDenoiseIndex, temporalWindowSize,
-                                                            hColor=hColor, searchWindowSize=searchWindowSize,
-                                                            hForColorComponents=hForColorComponents)
-        print("denosed")
-
-        return denoised
