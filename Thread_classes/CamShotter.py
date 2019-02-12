@@ -78,8 +78,8 @@ class CamShotter(Thread):
                     gray = self.queue[1]
                     self.queue[1] = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
                 except cv2.error as e:
-                    # error_log = "Cv Error: " + str(e)
-                    # print(error_log)
+                    error_log = "Cv Error: " + str(e)
+                    logger.info(error_log)
                     pass
 
                 # pop first element
