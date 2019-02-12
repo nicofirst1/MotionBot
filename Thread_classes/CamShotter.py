@@ -74,13 +74,7 @@ class CamShotter(Thread):
                     sleep(3)
 
                 # grayscale the future last frame
-                try:
-                    gray = self.queue[1]
-                    self.queue[1] = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
-                except cv2.error as e:
-                    error_log = "Cv Error: " + str(e)
-                    logger.info(error_log)
-                    pass
+                #self.gray_scale_last()
 
                 # pop first element
                 self.queue.pop(0)
@@ -98,6 +92,32 @@ class CamShotter(Thread):
 
             # sleep(0.01)
 
+    def get_gray_frame(self,idx):
+        frame = self.queue[idx]
+
+        try:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        except cv2.error as e:
+            error_log = "Cv Error: " + str(e)
+            logger.info(error_log)
+
+        return frame
+
+
+    def gray_scale_last(self):
+        """
+        Convert last frame to grayscale
+        :return:
+        """
+        # grayscale the future last frame
+        try:
+            gray = self.queue[1]
+            self.queue[1] = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
+        except cv2.error as e:
+            error_log = "Cv Error: " + str(e)
+            logger.info(error_log)
+            pass
+
     def capture(self, capture):
         """Start/stop the frame capturing"""
 
@@ -106,7 +126,7 @@ class CamShotter(Thread):
             if capture:
                 # acquire the lock, empty the list and set the flag to true
                 self.lock.acquire()
-                self.capture_queue = []
+                self.capture_queue = self.queue.copy()
                 self.capture_bool = True
             else:
                 # otherwise set the flag to false and release the lock

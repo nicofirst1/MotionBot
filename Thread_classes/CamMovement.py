@@ -112,9 +112,9 @@ class CamMovement(Thread):
             sleep(0.5)
 
         # wait for the frame queue to be full
-        initial_frame = self.frame[-1]
+        initial_frame = self.shotter.get_gray_frame(-1)
         while isinstance(initial_frame, int):
-            initial_frame = self.frame[-1]
+            initial_frame = self.shotter.get_gray_frame(-1)
 
         # get the background image and save it
         self.reset_ground("Background image")
@@ -128,7 +128,7 @@ class CamMovement(Thread):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
                 to_log = ''.join('!! ' + line for line in lines)
-                logger.error(to_log)  # Log it or whatever here
+                logger.error(to_log)  # Log it
                 print(to_log)
 
             if self.stopped():
@@ -156,12 +156,16 @@ class CamMovement(Thread):
 
         # get end frame after delay seconds
         sleep(self.delay)
-        end_frame = self.frame[0]
+        end_frame = self.shotter.get_gray_frame(0)
+
 
         # calculate diversity
         score = self.are_different(self.ground_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames and the ground is not resetting
         if self.motion_flag and score and not self.resetting_ground:
+            # start saving the frames
+            self.shotter.capture(True)
+
 
             logger.info("Movement detected")
             # notify user
@@ -169,10 +173,10 @@ class CamMovement(Thread):
 
             # do not capture video nor photo, just notification
             if not self.video_flag:
+                self.shotter.capture(False)
                 return
 
-            # start saving the frames
-            self.shotter.capture(True)
+
 
             # while the current frame and the initial one are different (aka some movement detected)
             self.loop_difference(score, self.ground_frame, self.max_seconds_retries)
@@ -223,7 +227,7 @@ class CamMovement(Thread):
         while not score:
 
             # take another frame
-            prov = self.frame[0]
+            prov = self.shotter.get_gray_frame(0)
 
             # print(prov.shape)
 
@@ -257,7 +261,7 @@ class CamMovement(Thread):
         while score and not self.resetting_ground:
 
             # take the already grayscaled frame
-            prov = self.frame[0]
+            prov = self.shotter.get_gray_frame(0)
             # print(prov.shape)
 
             # check if images are different
@@ -333,7 +337,7 @@ class CamMovement(Thread):
         return cnts
 
     # =========================UTILS=======================================
-    @time_profiler()
+    #@time_profiler()
     def draw_on_frames(self, frames, date=True):
         """Function to draw on frames"""
 
@@ -444,13 +448,15 @@ class CamMovement(Thread):
         self.resetting_ground = True
 
         # convert to gray and blur
-        gray = cv2.cvtColor(self.frame[-1], cv2.COLOR_BGR2GRAY)
+        gray=self.shotter.get_gray_frame(-1)
         gray = cv2.blur(gray, self.blur, 0)
         # set the frame and notify
         self.ground_frame = gray
         self.telegram_handler.send_image(self.ground_frame, msg=msg)
 
         self.resetting_ground = False
+
+        logger.info("Ground image reset")
         print("Done")
 
     @staticmethod
@@ -606,9 +612,10 @@ class CamMovement(Thread):
     # =========================DEPRECATED=======================================
 
     def detect_motion_photo(self):
-        initial_frame = self.frame[-1]
+        initial_frame = self.shotter.get_gray_frame(-1)
+
         sleep(self.delay)
-        end_frame = self.frame[-1]
+        end_frame = self.shotter.get_gray_frame(-1)
 
         # calculate diversity
         score = self.are_different(initial_frame, end_frame)
@@ -619,7 +626,7 @@ class CamMovement(Thread):
             self.motion_notifier(score)
 
             # take a new (more recent) frame
-            prov = self.frame[-1]
+            prov = self.shotter.get_gray_frame(-1)
 
             # take the time
             start = datetime.datetime.now()
@@ -641,7 +648,7 @@ class CamMovement(Thread):
                 #     break
 
                 # take another frame
-                prov = self.frame[-1]
+                prov = self.shotter.get_gray_frame(-1)
 
                 # if time is exceeded exit while
                 if (end - start).seconds > self.max_seconds_retries:
