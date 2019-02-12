@@ -15,3 +15,6 @@ Resources/time_profiler
 Resources/ids
 
 Resources/token_psw\.txt
+
+src/darknet/
+src/darknet
