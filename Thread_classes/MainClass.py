@@ -88,8 +88,9 @@ class MainClass:
         frame_height = 480
         fps = 20
         # print("initializing writer")
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 
-        out = cv2.VideoWriter(video_name, 0x00000021, fps, (frame_width, frame_height))
+        out = cv2.VideoWriter(video_name, fourcc, fps, (frame_width, frame_height))
 
         # print("writer initialized")
 
