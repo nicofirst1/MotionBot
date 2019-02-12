@@ -7,6 +7,9 @@
 - To scan your network for the raspberry pi ip use:\
 `nmap -sn 192.168.1.0/24`
 
+## Links
+- [yolo python wrapper](https://github.com/madhawav/YOLO3-4-Py)
+
 
 # Issues
 
