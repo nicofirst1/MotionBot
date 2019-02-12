@@ -10,7 +10,8 @@ class Path:
 
     RESOURCES_DIR = join(curdir, "Resources")
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
-    DARKNET_DIR=join(curdir,"src/yolo")
+    WEIGHTS_DIR=join(RESOURCES_DIR,"Weights")
+    DARKNET_DIR=join(curdir,"src/darknet")
 
     def __init__(self):
         self.initialize_dirs()

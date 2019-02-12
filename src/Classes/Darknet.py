@@ -1,28 +1,98 @@
 import logging
 from threading import Thread
-from Paths import Path as pt
+from Path import Path as pt
 import cv2
-from yolo.pydarknet import Detector, Image
+
+from darknet.python.darknet import load_net, load_meta, detect
 
 logger = logging.getLogger('darknet')
 
 
 class Darknet(Thread):
 
-    def __init__(self):
+    def __init__(self, use_coco):
         super().__init__()
-        self.net = Detector(bytes(pt.join(pt.DARKNET_DIR,"cfg/yolov3.cfg"), encoding="utf-8"),
-                            bytes(pt.join(pt.DARKNET_DIR,"weights/yolov3.weights"), encoding="utf-8"), 0,
-                            bytes(pt.join(pt.DARKNET_DIR,"cfg/coco.data"), encoding="utf-8"))
 
-    def detect(self, img):
-        dark_img = Image(img)
-        results = self.net.detect(dark_img)
+        if use_coco:
+            cfg=pt.join(pt.DARKNET_DIR,"cfg/yolov3.cfg")
+            weights=pt.join(pt.WEIGHTS_DIR,"yolov3.weights")
+            data=pt.join(pt.DARKNET_DIR,"cfg/coco.data")
 
-        for cat, score, bounds in results:
-            x, y, w, h = bounds
-            cv2.rectangle(img, (int(x - w / 2), int(y - h / 2)), (int(x + w / 2), int(y + h / 2)), (255, 0, 0),
-                          thickness=2)
-            cv2.putText(img, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+        else:
+            cfg = pt.join(pt.DARKNET_DIR, "cfg/yolov3-openimages.cfg")
+            weights = pt.join(pt.WEIGHTS_DIR, "yolov3-openimages.weights")
+            data = pt.join(pt.DARKNET_DIR, "cfg/openimages.data")
+
+        cfg=cfg.encode('utf-8')
+        weights=weights.encode('utf-8')
+        data=data.encode('utf-8')
+
+        self.net = load_net(cfg, weights, 0)
+        self.meta = load_meta(data)
+
+
+    def detect_video(self, img_list):
+        """
+        Perform detection on list of frames
+        :param img_list: list of numpy frames
+        :return: a list of lists [i,j]: the element[i][j] is the j-th object detected in the i-th frame
+        """
+        res=[]
+        for img in img_list:
+            res.append(self.detect_img(img))
+
+        return res
+
+    def detect_img(self, img):
+        """
+        Detect an image using darknet
+        :param img: the image as an np array
+        :return: list of detected objects
+        """
+
+        try:
+            # get bounding boxes
+            bbs = detect(self.net,self.meta,img)
+        except Exception as e:
+            logger.error(e)
+            print(e)
+            return []
+
+        results=[]
+        # for every bounding box
+        for idx in range(len(bbs)):
+            # extract info
+            cat, score, bounds=bbs[idx]
+            # check score
+            if score>= self.min_score:
+                # if score is ok then append
+                results.append(bbs[idx])
+                self.draw_bounds(img,bounds,cat)
+
+
+
+
+
 
         return results
+
+
+    def draw_bounds(self, img, bounds,category, thickness=2):
+        """
+        Draw bounding boxes onto image
+        :param img: the image
+        :param bounds: the bounding boxes
+        :param category: the cat of the image
+        :param color: (tuple of three ints) the color of the bounding boxes
+        :param thickness: (int) the thickness of the bb
+        :return:
+        """
+        x, y, w, h = bounds
+        cv2.rectangle(img, (int(x - w / 2), int(y - h / 2)), (int(x + w / 2), int(y + h / 2)), self.color,
+                      thickness=thickness)
+
+        cv2.putText(img, str(category.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+
+
+
+
