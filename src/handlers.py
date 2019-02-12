@@ -29,7 +29,8 @@ FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo"),
      InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
      InlineKeyboardButton("Debug", callback_data="/flag debug")],
-    [InlineKeyboardButton("Done", callback_data="/flag done")],
+    [InlineKeyboardButton("Darknet", callback_data="/flag darknet"),
+     InlineKeyboardButton("Done", callback_data="/flag done")],
 
 ])
 
@@ -40,6 +41,7 @@ Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 ---- <b>Movement square</b> : If set to <i>ON</i> the video will present green squares where the movement has been detected, (set it to off for faster computation)
 ---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 ---- <b>Face Reco(gnizer)</b> : If set to <i>ON</i> the program will try to guess the person face
+---- <b>Darknet</b> : If set to <i>ON</i> the program will use darknet for object segmentation
 -- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 
 To set a flag just click on the corrispondent button.
@@ -68,6 +70,7 @@ def flag_setting_callback(bot, update):
             cam.motion.video_flag = False
             cam.motion.faces_video_flag = False
             cam.motion.face_reco_falg = False
+            cam.motion.darknet_flag = False
             cam.motion.green_squares = False
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
@@ -83,6 +86,10 @@ def flag_setting_callback(bot, update):
 
     elif param == "face_reco":
         cam.motion.face_reco_falg = not cam.motion.face_reco_falg
+
+    elif param == "darknet":
+        cam.motion.darknet_flag = not cam.motion.darknet_flag
+
 
     elif param == "done":
         bot.delete_message(
@@ -331,9 +338,10 @@ def complete_flags():
     # get falg values
     motion_detection = cam.motion.motion_flag
     face_v = cam.motion.video_flag
-    movement_sq = cam.motion.green_squares
+    movement_sq = cam.motion.green_squares_flag
     face_p = cam.motion.face_photo_flag
     face_r = cam.motion.face_reco_falg
+    darknet = cam.motion.darknet_flag
     debug = cam.motion.debug_flag
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
@@ -368,6 +376,13 @@ def complete_flags():
     complete_falg_str += "\n-- <b>Face Reco</b>"
 
     if face_r:
+        complete_falg_str += " ✅"
+    else:
+        complete_falg_str += " ❌"
+
+    complete_falg_str += "\n-- <b>Darknet</b>"
+
+    if darknet:
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
