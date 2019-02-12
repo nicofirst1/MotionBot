@@ -156,14 +156,12 @@ class CamMovement(Thread):
         sleep(self.delay)
         end_frame = self.shotter.get_gray_frame(0)
 
-
         # calculate diversity
         score = self.are_different(self.ground_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames and the ground is not resetting
         if self.motion_flag and score and not self.resetting_ground:
             # start saving the frames
             self.shotter.capture(True)
-
 
             logger.info("Movement detected")
             # notify user
@@ -173,8 +171,6 @@ class CamMovement(Thread):
             if not self.video_flag:
                 self.shotter.capture(False)
                 return
-
-
 
             # while the current frame and the initial one are different (aka some movement detected)
             self.loop_difference(score, self.ground_frame, self.max_seconds_retries)
@@ -335,7 +331,7 @@ class CamMovement(Thread):
         return cnts
 
     # =========================UTILS=======================================
-    #@time_profiler()
+    # @time_profiler()
     def draw_on_frames(self, frames, date=True):
         """Function to draw on frames"""
 
@@ -446,7 +442,7 @@ class CamMovement(Thread):
         self.resetting_ground = True
 
         # convert to gray and blur
-        gray=self.shotter.get_gray_frame(-1)
+        gray = self.shotter.get_gray_frame(-1)
         gray = cv2.blur(gray, self.blur, 0)
         # set the frame and notify
         self.ground_frame = gray
