@@ -1,13 +1,12 @@
 import logging
 import os
 from time import sleep
-
 import cv2
 
-from Thread_classes.Face_recognizer import FaceRecognizer
-from Thread_classes.CamMovement import CamMovement
-from Thread_classes.CamShotter import CamShotter
-from Thread_classes.TelegramHandler import TelegramHandler
+from src.Classes.Face_recognizer import FaceRecognizer
+from src.Classes.CamMovement import CamMovement
+from src.Classes.CamShotter import CamShotter
+from src.Classes.TelegramHandler import TelegramHandler
 
 # from memory_profiler import profile
 

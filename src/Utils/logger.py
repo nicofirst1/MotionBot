@@ -1,4 +1,5 @@
 import logging
+from Paths import Path as pt
 
 
 def initialize_logger(base_name):
@@ -8,7 +9,7 @@ def initialize_logger(base_name):
     :return: logger
     """
     logger = logging.getLogger(f"{base_name}")
-    hdlr = logging.FileHandler(f'Resources/Loggers/{base_name}.log')
+    hdlr = logging.FileHandler(f'{pt.LOGGER_DIR}/{base_name}.log')
     formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)

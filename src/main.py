@@ -2,8 +2,8 @@
 
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 
-from Utils.logger import initialize_logger
-from handlers import start, annulla, get_camshot, stream, disp, updater, \
+from src.Utils.logger import initialize_logger
+from src.handlers import start, annulla, get_camshot, stream, disp, updater, \
     flag_setting_main, flag_setting_callback, reset_ground, stop_execution, send_log, send_ground, get_psw, delete_log, \
     help_bot, predict_face
 

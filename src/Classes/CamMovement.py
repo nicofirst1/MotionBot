@@ -8,8 +8,6 @@ from time import sleep
 
 import cv2
 
-from Utils.utils import time_profiler
-
 # from memory_profiler import profile
 
 logger = logging.getLogger('cam_movement')

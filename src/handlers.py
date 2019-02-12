@@ -3,13 +3,14 @@ import logging
 import os
 import sys
 import urllib.request
-
 import telegram
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 
-from Thread_classes.MainClass import MainClass
-from Utils.utils import add_id, elegible_user, read_token_psw
+from src.Classes.MainClass import MainClass
+from src.Utils.utils import add_id, elegible_user, read_token_psw
+from Paths import Path as pt
+
 
 TOKEN, psw = read_token_psw()
 print("TOKEN : " + TOKEN + "\nPassword : " + psw)
@@ -210,9 +211,9 @@ def send_log(bot, update):
 
     sent=False
 
-    for log in os.listdir("Resources/Loggers/"):
+    for log in os.listdir(pt.LOGGER_DIR):
         if ".log" in log:
-            with open(f"Resources/Loggers/{log}", "rb") as file:
+            with open(f"{pt.LOGGER_DIR}/{log}", "rb") as file:
                 try:
                     bot.sendDocument(update.message.chat_id, file)
                     sent=True
@@ -226,9 +227,9 @@ def send_log(bot, update):
 def delete_log(bot, update):
     """Telegram command to send the logger file"""
     logger.info("delete log command called")
-
-    if ("motion.log" in os.listdir("Resources/")):
-        os.remove("Resources/motion.log")
+    #fixme: change to deletet all logs
+    if ("motion.log" in os.listdir(pt.RESOURCES_DIR)):
+        os.remove(f"{pt.RESOURCES_DIR}/motion.log")
         update.message.reply_text("Log deleted")
 
 
