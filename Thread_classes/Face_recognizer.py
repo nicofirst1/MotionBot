@@ -12,7 +12,6 @@ import sys
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
 
-from cv2.face import *
 
 
 class FaceRecognizer(Thread):
@@ -376,17 +375,17 @@ class FaceRecognizer(Thread):
         # print("images preprocessed")
 
         # create the collector to get the label and the confidence
-        collector = MinDistancePredictCollector()
+        collector = cv2.face.StandardCollector_create()
         # predict face
         try:
-            self.recognizer.predict(gray, collector, 0)
+            self.recognizer.predict_collect(gray, collector, 0)
         except cv2.error:
             # the prediction may not work when the model has not been trained before
             return -1, sys.maxsize
 
         # get label and confidence
-        label = collector.getLabel()
-        confidence = collector.getDist()
+        label = collector.getMinLabel()
+        confidence = collector.getMinDist()
 
         # get name of respective label returned by face recognizer
         label_text = self.name_from_label(label)
@@ -461,15 +460,15 @@ class FaceRecognizer(Thread):
     def load_recognizer(self):
         """Return the recognizer object, create it if not found"""
 
-        recognizer = cv2.face.createLBPHFaceRecognizer()
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
 
         # check for recognizer.yaml existence
         if not os.path.exists(self.recognizer_path):
             # if recognizer has been not saved create it and save it
-            recognizer.save(self.recognizer_path)
+            recognizer.write(self.recognizer_path)
 
         else:
-            recognizer.load(self.recognizer_path)
+            recognizer.read(self.recognizer_path)
 
         return recognizer
 

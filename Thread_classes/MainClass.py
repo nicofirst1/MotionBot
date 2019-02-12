@@ -4,7 +4,7 @@ from time import sleep
 
 import cv2
 
-from Face_recognizer import FaceRecognizer
+from Thread_classes.Face_recognizer import FaceRecognizer
 from Thread_classes.CamMovement import CamMovement
 from Thread_classes.CamShotter import CamShotter
 from Thread_classes.TelegramHandler import TelegramHandler
