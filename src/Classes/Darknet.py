@@ -13,7 +13,7 @@ class Darknet(Thread):
     def __init__(self, use_coco):
         super().__init__()
 
-        self.min_score=0.7
+        self.min_score=0.6
         self.color=(255,0,0)
 
 
