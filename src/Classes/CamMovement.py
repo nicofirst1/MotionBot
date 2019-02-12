@@ -174,7 +174,8 @@ class CamMovement(Thread):
             to_write = self.shotter.capture(False)
 
             if self.darknet_flag:
-                self.darknet.detect(to_write)
+                self.darknet.detect_video(to_write)
+
 
             # # if the user wants the face in the movement
             # if self.face_photo_flag:
