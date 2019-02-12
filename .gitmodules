@@ -1,3 +1,0 @@
-[submodule "src/yolo"]
-	path = src/yolo
-	url = https://github.com/madhawav/YOLO3-4-Py.git
