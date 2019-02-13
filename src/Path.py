@@ -3,10 +3,11 @@ from os import curdir
 import os
 from os.path import join
 
-
 class Path:
 
-
+    curdir=os.getcwd()
+    curdir=curdir.split("MotionBot")[0]
+    curdir=join(curdir,"MotionBot")
     RESOURCES_DIR = join(curdir, "Resources")
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
     WEIGHTS_DIR=join(RESOURCES_DIR,"Weights")
