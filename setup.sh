@@ -12,7 +12,7 @@ if [ ! -f yolov3-openimages.weights ]; then
     wget https://pjreddie.com/media/files/yolov3-openimages.weights
 
 fi
-if [ ! -f yolov3-openimages.weights ]; then
+if [ ! -f yolov3.weights ]; then
     echo "downloading coco weights..."
     wget https://pjreddie.com/media/files/yolov3.weights
 
