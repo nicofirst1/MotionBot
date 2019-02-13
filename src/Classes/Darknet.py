@@ -90,3 +90,47 @@ class Darknet(Thread):
             frames.append(frame)
 
         return frames
+
+
+
+    @staticmethod
+    def extract_faces(segmentation):
+        """
+        Extract faces from list of segmentation
+        :param segmentation: (list of tuples) of the form (image, list of objects)
+        :return:
+        """
+
+        def get_face_bb(bbs):
+            """
+            Return the bbs of a face if any
+            :param bbs: list
+            :return:
+            """
+            for bb in bbs:
+                if "face" in str(bb[0]):
+                    return bb[2]
+
+            return []
+
+        faces=[]
+
+        # for every tuple img/objects
+        for img, bbs in segmentation:
+
+            # get the face in the image if any
+            face=get_face_bb(bbs)
+            if len(face)==0: continue
+
+            # get the bounding boxes
+            x, y, w, h = [int(elem) for elem in face]
+            # crop the image
+            img = img[y:y + h, x:x + w]
+            # append it to the list
+            faces.append(img)
+
+        return faces
+
+
+
+
