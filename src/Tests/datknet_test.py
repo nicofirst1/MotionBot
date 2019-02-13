@@ -68,7 +68,7 @@ class PhotoBoothApp:
                     cat,_,bound=bb
                     self.darknet.draw_bounds(self.frame,bound,cat)
 
-                #self.frame = imutils.resize(self.frame, width=300)
+                self.frame = imutils.resize(self.frame, width=300)
 
                 # OpenCV represents images in BGR order; however PIL
                 # represents images in RGB order, so we need to swap
