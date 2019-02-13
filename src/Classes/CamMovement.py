@@ -81,23 +81,18 @@ class CamMovement(Thread):
         self.resolution = (640, 480)  # width,height
         self.fps = 20
 
+        flags = Falgs()
 
-        flags=Falgs()
+        flags.add_flag("motion", True, [])
+        flags.add_flag("debug", False, [])
+        flags.add_flag('video', True, ['motion'])
+        flags.add_flag('green squares', False, ['motion', 'video'])
+        flags.add_flag('darknet', True, ['motion', 'video'])
+        flags.add_flag('darknet squares', False, ['motion', 'darknet', 'video'])
+        flags.add_flag('face photo', True, ['motion', 'darknet', 'video'])
+        flags.add_flag('face reco', False, ['motion', 'darknet', 'face photo', 'video'])
 
-        flags.add_flag("motion",True,[])
-        flags.add_flag("debug",False,[])
-        flags.add_flag('video',True,['motion'])
-        flags.add_flag('green squares',False,['motion','video'])
-        flags.add_flag('darknet',True,['motion','video'])
-        flags.add_flag('darknet squares',False,['motion','darknet','video'])
-        flags.add_flag('face photo',True,['motion','darknet','video'])
-        flags.add_flag('face reco',False,['motion','darknet','face photo','video'])
-        
-        
-
-        self.flags=flags
-
-
+        self.flags = flags
 
         self.resetting_ground = False
 
@@ -194,13 +189,14 @@ class CamMovement(Thread):
                     # take the face
                     # todo: use recognizer
                     faces = self.darknet.extract_faces(segmentation)
+                    self.face_recognizer.add_image_write(faces)
                     # if there are no faces found
-                    if len(faces)==0:
+                    if len(faces) == 0:
                         self.telegram_handler.send_message(msg="Face not found")
 
                     else:
                         self.telegram_handler.send_image(faces[0],
-                                                             msg="Found this guy")
+                                                         msg="Found this guy")
 
             # send the original video too
             if not self.resetting_ground:
@@ -351,7 +347,6 @@ class CamMovement(Thread):
 
                 cv2.putText(frame, correct_date.strftime("%A %d %B %Y %H:%M:%S"),
                             (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 1)
-
 
         # create the file
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -549,7 +544,7 @@ class CamMovement(Thread):
             to_send += "<b>Darknet</b>, "
 
         if self.flags.get_value('green squares'):
-            to_send+="<b>Green squares</b>, "
+            to_send += "<b>Green squares</b>, "
 
         to_send += "are  <b>ON</b>...it may take a minute or two"
 
