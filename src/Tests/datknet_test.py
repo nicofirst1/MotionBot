@@ -1,17 +1,18 @@
 # import the necessary packages
 from __future__ import print_function
+
+import datetime
+import os
+import threading
+import time
+import tkinter as tki
+
+import cv2
+import imutils
 from PIL import Image
 from PIL import ImageTk
-import tkinter as tki
-import threading
-import datetime
-import imutils
-import cv2
-import os
 # import the necessary packages
 from imutils.video import VideoStream
-import argparse
-import time
 
 from Classes.Darknet import Darknet
 
@@ -26,9 +27,8 @@ class PhotoBoothApp:
         self.frame = None
         self.thread = None
         self.stopEvent = None
-        self.darknet=Darknet(True)
+        self.darknet = Darknet(True)
         self.darknet.start()
-
 
         # initialize the root window and image panel
         self.root = tki.Tk()
@@ -62,11 +62,11 @@ class PhotoBoothApp:
                 # have a maximum width of 300 pixels
                 self.frame = self.vs.read()
 
-                _, bbs =self.darknet.detect_img(self.frame)
+                _, bbs = self.darknet.detect_img(self.frame)
 
                 for bb in bbs:
-                    cat,_,bound=bb
-                    self.darknet.draw_bounds(self.frame,bound,cat)
+                    cat, _, bound = bb
+                    self.darknet.draw_bounds(self.frame, bound, cat)
 
                 self.frame = imutils.resize(self.frame, width=300)
 
@@ -111,10 +111,7 @@ class PhotoBoothApp:
         self.root.quit()
 
 
-
 if __name__ == '__main__':
-
-
     # construct the argument parse and parse the arguments
 
     # initialize the video stream and allow the camera sensor to warmup
