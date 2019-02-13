@@ -74,12 +74,12 @@ def flag_setting_callback(bot, update):
             cam.motion.face_reco_falg = False
             cam.motion.darknet_flag = False
             cam.motion.darknet_squares_flag = False
-            cam.motion.green_squares = False
+            cam.motion.green_squares_flag = False
     elif param == "face_video":
         cam.motion.video_flag = not cam.motion.video_flag
 
     elif param == "square":
-        cam.motion.green_squares = not cam.motion.green_squares
+        cam.motion.green_squares_flag = not cam.motion.green_squares_flag
 
     elif param == "face_photo":
         cam.motion.face_photo_flag = not cam.motion.face_photo_flag

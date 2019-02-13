@@ -7,9 +7,9 @@ from threading import Thread
 from time import sleep
 
 import cv2
+import numpy as np
 
 # from memory_profiler import profile
-from Classes.Darknet import Darknet
 
 logger = logging.getLogger('cam_movement')
 
@@ -58,22 +58,21 @@ class CamMovement(Thread):
 
     """
 
-    def __init__(self, shotter, telegram, face_recognizer,darknet):
+    def __init__(self, shotter, telegram, face_recognizer, darknet):
         # init the thread
         Thread.__init__(self)
         self.stop_event = threading.Event()
 
-        #classes
+        # classes
         self.shotter = shotter
         self.telegram_handler = telegram
         self.face_recognizer = face_recognizer
-        self.darknet=darknet
+        self.darknet = darknet
 
         self.delay = 0.1
         self.min_area = 2200
         self.ground_frame = np.zeros(1)
         self.blur = (10, 10)
-
 
         self.max_seconds_retries = 10
 
@@ -87,8 +86,8 @@ class CamMovement(Thread):
         self.debug_flag = False
         self.face_reco_falg = False
         self.green_squares_flag = False
-        self.darknet_flag=True
-        self.darknet_squares_flag=False
+        self.darknet_flag = True
+        self.darknet_squares_flag = False
 
         self.resetting_ground = False
 
@@ -175,13 +174,10 @@ class CamMovement(Thread):
             to_write = self.shotter.capture(False)
 
             if self.darknet_flag:
-                segmentation=self.darknet.detect_video(to_write)
+                segmentation = self.darknet.detect_video(to_write)
 
                 if self.darknet_squares_flag:
-                    to_write=self.darknet.draw_bounds_list(segmentation)
-
-
-
+                    to_write = self.darknet.draw_bounds_list(segmentation)
 
             # # if the user wants the face in the movement
             # if self.face_photo_flag:
@@ -339,9 +335,14 @@ class CamMovement(Thread):
     def draw_on_frames(self, frames, date=True):
         """Function to draw on frames"""
 
-        face_color = (0, 0, 255)  # red
-        motion_color = (0, 255, 0)  # green
-        line_tickness = 2
+        def draw_date(frames):
+            for frame in frames:
+                # write time
+                correct_date = datetime.datetime.now() + datetime.timedelta(hours=1)
+
+                cv2.putText(frame, correct_date.strftime("%A %d %B %Y %H:%M:%S"),
+                            (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 1)
+
 
         # create the file
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -349,85 +350,35 @@ class CamMovement(Thread):
         out = cv2.VideoWriter(self.video_name, fourcc, self.fps, self.resolution)
         out.open(self.video_name, fourcc, self.fps, self.resolution)
 
-        prov_cnts = 0
-        idx = 0
-        face_idx = 0
-        to_write = "Unkown - Unkown"
         print("Total frames to save : " + str(len(frames)))
         print("Total frames contours : " + str(len(self.faces_cnts)))
+
+        # draw movement
+        if self.green_squares_flag:
+            self.draw_green_squares(frames)
+
+        # add a date to the frame
+        if date:
+            draw_date(frames)
+
         for frame in frames:
-
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            if self.face_photo_flag:
-
-                # take the corresponding contours for the frame
-                # fixme
-                face = None
-                # face = self.faces_cnts[face_idx]
-                face_idx += 1
-
-                # if there is a face
-                if face is not None:
-                    # get the corners of the faces
-                    for (x, y, w, h) in face:
-                        # draw a rectangle around the corners
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
-
-            # draw movement
-            if self.green_squares_flag:
-                cnts = self.compute_img_difference(self.ground_frame, gray)
-
-                # draw contours
-                for c in cnts:
-                    # if the contour is too small, ignore it
-                    # print("Area : "+str(cv2.contourArea(c)))
-                    if cv2.contourArea(c) < self.min_area:
-                        pass
-
-                    else:
-                        # compute the bounding box for the contour, draw it on the frame,
-                        # and update the text
-                        (x, y, w, h) = cv2.boundingRect(c)
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), motion_color, line_tickness)
-
-                # add black rectangle at the bottom
-                cv2.rectangle(frame, (0, frame.shape[0]), (frame.shape[1], frame.shape[0] - 30), (0, 0, 0), -1)
-
-                # write the movement direction
-                if not idx % 2:
-                    prov_cnts = cnts
-                elif len(prov_cnts) > 0 and len(cnts) > 0:
-                    movement, _ = self.movement_direction(prov_cnts, cnts)
-                    to_write = ""
-                    if movement[0]:
-                        to_write += "Incoming - "
-
-                    else:
-                        to_write += "Outgoing - "
-
-                    if movement[1]:
-                        to_write += "Left"
-
-                    else:
-                        to_write += "Right"
-
-                    # cv2.circle(frame, center_points[0], 1, (255, 255, 0), 10,2)
-                    # cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
-
-                cv2.putText(frame, to_write,
-                            (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255),
-                            1)
-
-                idx += 1
-
-            # add a date to the frame
-            if date:
-                # write time
-                correct_date = datetime.datetime.now() + datetime.timedelta(hours=1)
-
-                cv2.putText(frame, correct_date.strftime("%A %d %B %Y %H:%M:%S"),
-                            (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 1)
+            # if self.face_photo_flag:
+            #
+            #     # take the corresponding contours for the frame
+            #     # fixme
+            #     face = None
+            #     # face = self.faces_cnts[face_idx]
+            #     face_idx += 1
+            #
+            #     # if there is a face
+            #     if face is not None:
+            #         # get the corners of the faces
+            #         for (x, y, w, h) in face:
+            #             # draw a rectangle around the corners
+            #             cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
+            #
+            #
+            #
 
             # write frames on file
             out.write(frame)
@@ -437,6 +388,67 @@ class CamMovement(Thread):
 
         # free file
         out.release()
+
+    def draw_green_squares(self, frames):
+        """
+        Draw squares on movements
+        :param frames:a list of frames
+        :return:
+        """
+
+        motion_color = (0, 255, 0)  # green
+        line_tickness = 2
+        idx = 0
+        prov_cnts = 0
+        to_write = "Unkown - Unkown"
+
+        for frame in frames:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            cnts = self.compute_img_difference(self.ground_frame, gray)
+
+            # draw contours
+            for c in cnts:
+                # if the contour is too small, ignore it
+                # print("Area : "+str(cv2.contourArea(c)))
+                if cv2.contourArea(c) < self.min_area:
+                    pass
+
+                else:
+                    # compute the bounding box for the contour, draw it on the frame,
+                    # and update the text
+                    (x, y, w, h) = cv2.boundingRect(c)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), motion_color, line_tickness)
+
+            # add black rectangle at the bottom
+            cv2.rectangle(frame, (0, frame.shape[0]), (frame.shape[1], frame.shape[0] - 30), (0, 0, 0), -1)
+
+            # write the movement direction
+            if not idx % 2:
+                prov_cnts = cnts
+            elif len(prov_cnts) > 0 and len(cnts) > 0:
+                movement, _ = self.movement_direction(prov_cnts, cnts)
+                to_write = ""
+                if movement[0]:
+                    to_write += "Incoming - "
+
+                else:
+                    to_write += "Outgoing - "
+
+                if movement[1]:
+                    to_write += "Left"
+
+                else:
+                    to_write += "Right"
+
+                # cv2.circle(frame, center_points[0], 1, (255, 255, 0), 10,2)
+                # cv2.circle(frame, center_points[1], 1, (255, 255, 255), 10,2)
+
+            cv2.putText(frame, to_write,
+                        (frame.shape[1] - 250, frame.shape[0] - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 255, 255),
+                        1)
+
+            idx += 1
 
     def reset_ground(self, msg):
         """Reset the ground truth image"""
@@ -507,9 +519,6 @@ class CamMovement(Thread):
 
         return (area1 < area2, centers1 > centers2), (center_point1, center_point2)
 
-
-
-
     # =========================TELEGRAM BOT=======================================
 
     def motion_notifier(self, score, degub=False):
@@ -519,24 +528,21 @@ class CamMovement(Thread):
             to_send += "Score is " + str(score) + "\n"
 
         if self.face_photo_flag:
-            to_send+="<b>Face Photo</b>, "
+            to_send += "<b>Face Photo</b>, "
 
         if self.face_reco_falg:
-            to_send+="<b>Face Reco</b>, "
+            to_send += "<b>Face Reco</b>, "
 
         if self.video_flag:
-            to_send+="<b>Video</b>, "
+            to_send += "<b>Video</b>, "
 
         if self.darknet_flag:
-            to_send+="<b>Darknet</b>, "
+            to_send += "<b>Darknet</b>, "
 
-        to_send+="are  <b>ON</b>...it may take a minute or two"
-
-
+        to_send += "are  <b>ON</b>...it may take a minute or two"
 
         self.telegram_handler.send_message(to_send, parse_mode="HTML")
 
     def send_ground(self, specific_id, msg):
         """Send the ground image to the users"""
         self.telegram_handler.send_image(self.ground_frame, specific_id=specific_id, msg=msg)
-
