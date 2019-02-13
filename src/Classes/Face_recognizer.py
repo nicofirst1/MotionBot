@@ -1,17 +1,19 @@
 import glob
+import operator
+import os
 import random
+import sys
 import threading
+from itertools import groupby
 from threading import Thread
+
 import cv2
 import numpy as np
-import os
-from itertools import groupby
-import operator
-
-import sys
+from PIL import Image
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
 
+from Path import Path as pt
 
 
 class FaceRecognizer(Thread):
@@ -42,13 +44,9 @@ class FaceRecognizer(Thread):
 
         Thread.__init__(self)
 
-        self.faces_dir = "Faces/"
-        self.unknown = self.faces_dir + "Unknown/"
-        self.recognizer_path = "Resources/recognizer.yaml"
         self.stop_event = threading.Event()
 
         # ======RECOGNIZER VARIABLES======
-        self.recognizer = self.load_recognizer()
         self.image_size = (200, 200)
         self.distance_thres = 95
         self.auto_train_dist = 80
@@ -93,7 +91,7 @@ class FaceRecognizer(Thread):
             # if the thread has been stopped
             if self.stopped():
                 # save the recognizer
-                self.recognizer.save(self.recognizer_path)
+                self.recognizer.save(pt.recognizer)
                 return
 
     def stop(self):
@@ -154,7 +152,7 @@ class FaceRecognizer(Thread):
         user_id = update._effective_user.id
 
         # check if the name is in the faces dir
-        dir_name = [elem for elem in os.listdir(self.faces_dir) if s_name in elem]
+        dir_name = [elem for elem in os.listdir(pt.FACES_DIR) if s_name in elem]
         if len(dir_name) == 0:
             self.back_to_start(bot, update, "Sorry no face found with name " + s_name)
             return
@@ -162,7 +160,7 @@ class FaceRecognizer(Thread):
         # take the dir name
         dir_name = dir_name[0] + "/"
         # for every image in the dir
-        for image in glob.glob(self.faces_dir + dir_name + '*.png'):
+        for image in glob.glob(pt.join(pt.FACES_DIR, pt.join(dir_name, '*.png'))):
             # open the image and send it
             with open(image, "rb") as file:
                 bot.sendPhoto(user_id, file)
@@ -177,7 +175,7 @@ class FaceRecognizer(Thread):
         :param update: the update recieved
         :return:"""
 
-        to_choose = glob.glob(self.unknown + '*.png')
+        to_choose = glob.glob(pt.join(pt.UNK_DIR, '*.png'))
 
         if len(to_choose) == 0:
             self.back_to_start(bot, update, "Sorry, no photos found")
@@ -215,10 +213,10 @@ class FaceRecognizer(Thread):
         dir_name = param[2]
 
         # get the length of the images in the directory
-        dir_name = self.faces_dir + self.get_name_dir(dir_name) + "/"
+        dir_name = pt.join(pt.FACES_DIR, self.get_name_dir(dir_name))
         idx = len([name for name in os.listdir(dir_name)])
         # generate new image name
-        new_image_name = dir_name + "image_" + str(idx) + ".png"
+        new_image_name = pt.join(dir_name, f"image_{idx}.png")
 
         # delete the photo message
         self.end_callback(bot, update, calling=False)
@@ -283,7 +281,7 @@ class FaceRecognizer(Thread):
             update.message.reply_text("I told you to be carefull!")
             return ConversationHandler.END
 
-        if glob.glob(self.faces_dir + "*_" + face_name):
+        if glob.glob(pt.join(pt.FACES_DIR, "*_" + face_name)):
             update.message.reply_text("You cannot use the same name for two faces")
             return ConversationHandler.END
 
@@ -343,12 +341,8 @@ class FaceRecognizer(Thread):
         if len(faces) == 0 or len(labels) == 0:
             print("No data to train with")
             return
-        # train
-        self.recognizer.update(faces, np.array(labels))
-        # self.recognizer.train(faces, np.array(labels))
 
-        # saving the recognizer object
-        self.recognizer.save(self.recognizer_path)
+        # fixme: train and save
 
         print("....Model trained and saved")
 
@@ -438,7 +432,7 @@ class FaceRecognizer(Thread):
         print("Autotraining on new images...")
 
         # get all the images in the unknown direcotry
-        images = glob.glob(self.unknown + "*.png")
+        images = glob.glob(pt.join(pt.UNK_DIR, "*.png"))
 
         idx = 0
         for image_path in images:
@@ -457,26 +451,11 @@ class FaceRecognizer(Thread):
 
     # ===================UTILS=========================
 
-    def load_recognizer(self):
-        """Return the recognizer object, create it if not found"""
-
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
-
-        # check for recognizer.yaml existence
-        if not os.path.exists(self.recognizer_path):
-            # if recognizer has been not saved create it and save it
-            recognizer.write(self.recognizer_path)
-
-        else:
-            recognizer.read(self.recognizer_path)
-
-        return recognizer
-
     def name_from_label(self, label):
         """Function to get the person name by the label"""
 
         # take all the direcories
-        dirs = glob.glob(self.faces_dir + "s_" + str(label) + "_*")
+        dirs = glob.glob(pt.join(pt.FACES_DIR, f"s_{label}_*"))
 
         # if there are none return false
         if len(dirs) == 0:
@@ -495,8 +474,9 @@ class FaceRecognizer(Thread):
 
         # ------STEP-1--------
         # get the directories (one directory for each subject) in data folder
-        dirs = glob.glob(self.faces_dir + "s_*")
-
+        dirs = glob.glob(pt.join(pt.FACES_DIR, "s_*"))
+        # dirs = glob.glob(pt.FACES_DIR )
+        # dirs = ['../../Faces/Unknown']
         # list to hold all subject faces
         faces = []
         # list to hold labels for all subjects
@@ -509,7 +489,7 @@ class FaceRecognizer(Thread):
             label = int(dir_name.split("/")[-1].split("_")[1])
 
             # for every image in the direcotry append image,label
-            for image_path in glob.glob(dir_name + "/*.png"):
+            for image_path in glob.glob(pt.join(dir_name, "*.png")):
                 # read the image
                 image = cv2.imread(image_path)
                 # convert to gray scale
@@ -560,13 +540,14 @@ class FaceRecognizer(Thread):
 
     def add_image_write(self, image_list, subject_name=""):
 
-        # currently used only for the unknown direcotry
+        # currently used only for the unknown directory
         subject_name = "Unknown"
+        path = pt.join(pt.FACES_DIR, subject_name)
 
         print("Adding face images to unknown folder...")
 
-        # look for the direcotry and create it if not present
-        if not glob.glob(self.faces_dir + subject_name):
+        # look for the directory and create it if not present
+        if not glob.glob(path):
             return False
             # self.add_folder(subject_name)
 
@@ -576,13 +557,12 @@ class FaceRecognizer(Thread):
         if not dir:
             return False
         else:
-            dir = self.faces_dir + dir + "/"
-
+            dir = pt.join(pt.FACES_DIR, dir + "/")
         # get the length of the images in the directory
         idx = len([name for name in os.listdir(dir) if os.path.isfile(name)])
 
         for image in image_list:
-            image_name = dir + "image_" + str(idx) + ".png"
+            image_name = pt.join(dir, f"image_{idx}.png")
             cv2.resize(image, self.image_size)
             cv2.imwrite(image_name, image)
             idx += 1
@@ -591,6 +571,9 @@ class FaceRecognizer(Thread):
 
         # self.auto_train()
 
+        # remove similar images
+        threading.Thread(target=self.filter_all_images).start()
+
         return True
 
     def move_image(self, image, subject_name):
@@ -598,9 +581,8 @@ class FaceRecognizer(Thread):
         # look for the direcotry and create it if not present
         print(subject_name)
         subject_name = subject_name.strip()
-        if not subject_name in os.listdir(self.faces_dir):
+        if not any(subject_name in x for x in os.listdir(pt.FACES_DIR)):
             self.add_folder(subject_name)
-            return
 
         # get the directory name
         dir = self.get_name_dir(subject_name)
@@ -608,50 +590,137 @@ class FaceRecognizer(Thread):
         if not dir:
             return False
         else:
-            dir = self.faces_dir + dir + "/"
+            dir = pt.join(pt.FACES_DIR, dir)
 
         # get the length of the images in the directory
         idx = len([name for name in os.listdir(dir) if os.path.isfile(name)])
 
-        image_name = dir + "image_" + str(idx) + ".png"
+        image_name = pt.join(dir, f"image_{idx}.png")
 
         os.rename(image, image_name)
 
         return True
 
-    def add_folder(self, name):
+    def filter_all_images(self):
+        """
+        Remove all the images in the database which are similar to each other
+        :return:
+        """
+
+        # get a list of paths for every image in Faces
+        img_paths = []
+        for path, subdirs, files in os.walk("../../Faces"):
+            for name in files:
+                if "png" in name:
+                    img_paths.append(os.path.join(path, name))
+
+        # read them all using opencv
+        images = [cv2.imread(elem) for elem in img_paths]
+        # get the indices to be removed
+        to_remove = self.filter_similar_images(images)
+        # get the paths corresponding to the indics
+        to_remove = operator.itemgetter(*to_remove)(img_paths)
+        # remove them
+        for elem in to_remove:
+            os.remove(elem)
+
+    # ===================STATIC=========================
+
+    @staticmethod
+    def add_folder(name):
         """Create a folder for the new person"""
 
-        if not name in os.listdir(self.faces_dir):
+        if not name in os.listdir(pt.FACES_DIR):
             # get how many folder there are in the faces dir
-            idx = len(glob.glob(self.faces_dir + 's_*'))
+            idx = len(glob.glob(pt.join(pt.FACES_DIR, 's_*')))
             # generate the name
             name = "s_" + str(idx) + "_" + name
             # create the directory
-            os.makedirs(self.faces_dir + name)
+            os.makedirs(pt.join(pt.FACES_DIR, name))
 
-    def get_name_dir(self, subject_name):
+    @staticmethod
+    def get_name_dir(subject_name):
 
-        for dir in os.listdir(self.faces_dir):
+        for dir in os.listdir(pt.FACES_DIR):
             if subject_name in dir:
                 return dir
 
         return False
 
-    def get_dir_subjects(self):
+    @staticmethod
+    def get_dir_subjects():
         """Function to get all the names saved in the faces direcotry"""
 
         s_names = []
 
-        import glob
-        for name in glob.glob(self.faces_dir + 's_*'):
+        for name in glob.glob(pt.join(pt.FACES_DIR, 's_*')):
             s_names.append(name.split("_")[2])
 
         return s_names
 
+    @staticmethod
+    def filter_similar_images(images, similar_thresh=0.94):
+        """
+        Filter from lis of images the ones which have a high similarity
+        :param images: a list of np arrays
+        :return: list of indices of the images to be removed
+        """
+
+        def rmse(imageA, imageB):
+            """
+            Run similarity measure between two iamges
+            :param imageA:
+            :param imageB:
+            :return:
+            """
+
+            # get total measure
+            dim_a = np.sum(imageA.shape)
+            dim_b = np.sum(imageB.shape)
+
+            # convert to PIL image
+            imageA = Image.fromarray(np.uint8(imageA))
+            imageB = Image.fromarray(np.uint8(imageB))
+
+            # resize to same shape
+            if dim_a < dim_b:
+                imageB = imageB.resize(imageA.size, Image.ANTIALIAS)
+            else:
+                imageA = imageA.resize(imageB.size, Image.ANTIALIAS)
+
+            # reconvert to numpy array
+            imageA = np.asarray(imageA)
+            imageB = np.asarray(imageB)
+
+            # performa similarity measure
+
+            a, b, _ = imageA.shape
+            rmse = np.sqrt(np.sum((imageB - imageA) ** 2) / float(a * b))
+            max_val = max(np.max(imageA), np.max(imageB))
+            min_val = min(np.min(imageA), np.min(imageB))
+            return 1 - (rmse / (max_val - min_val))
+
+        # remove images with zero dimension
+        images = [img for img in images if not 0 in img.shape]
+        to_pop = []
+
+        for idx in range(len(images) - 1):
+            for jdx in range(idx + 1, len(images)):
+                # measure similarity
+                similarity = rmse(images[idx], images[jdx])
+                # if it is more than thresh
+                if similarity >= similar_thresh:
+                    to_pop.append(jdx)
+
+        to_pop = list(set(to_pop))
+
+        return to_pop
+
+
 # uncomment and add token to debug face recognition
-# updater = Updater("")
-# disp = updater.dispatcher
-# # #
-# face=Face_recognizer(disp)
+updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
+disp = updater.dispatcher
+# #
+face = FaceRecognizer(disp)
 # face.start()
+face.filter_all_images()

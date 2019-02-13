@@ -5,14 +5,19 @@ from os.path import join
 
 
 class Path:
-    FACES_DIR = join(curdir, "Faces")
 
 
     RESOURCES_DIR = join(curdir, "Resources")
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
     WEIGHTS_DIR=join(RESOURCES_DIR,"Weights")
-    DARKNET_DIR=join(curdir,"src/darknet")
     CUSTOM_DARK_DIR=join(RESOURCES_DIR,"Custom_darknet")
+    recognizer=join(RESOURCES_DIR,"recognizer.yaml")
+
+    DARKNET_DIR=join(curdir,"src/darknet")
+
+
+    FACES_DIR=join(curdir,"Faces")
+    UNK_DIR=join(FACES_DIR,"Unknown")
 
     def __init__(self):
         self.initialize_dirs()
