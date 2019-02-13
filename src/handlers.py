@@ -23,7 +23,7 @@ cam = MainClass(updater)
 
 FLAG_KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("Motion Detection", callback_data="/flag motion"),
-     InlineKeyboardButton("Video", callback_data="/flag face_video"),
+     InlineKeyboardButton("Video", callback_data="/flag video"),
      InlineKeyboardButton("Movement Square", callback_data="/flag square")],
 
     [InlineKeyboardButton("Face Photo", callback_data="/flag face_photo"),
@@ -67,37 +67,35 @@ def flag_setting_callback(bot, update):
     # print("Flag callback")
 
     if param == "motion":
-        cam.motion.motion_flag = not cam.motion.motion_flag
-        if not cam.motion.motion_flag:
-            cam.motion.video_flag = False
-            cam.motion.faces_video_flag = False
-            cam.motion.face_reco_falg = False
-            cam.motion.darknet_flag = False
-            cam.motion.darknet_squares_flag = False
-            cam.motion.green_squares_flag = False
-    elif param == "face_video":
-        cam.motion.video_flag = not cam.motion.video_flag
+        cam.motion.flags.flip_value('motion')
+
+    elif param == "video":
+        cam.motion.flags.flip_value('video')
+
 
     elif param == "square":
-        cam.motion.green_squares_flag = not cam.motion.green_squares_flag
+        cam.motion.flags.flip_value('green squares')
+
 
     elif param == "face_photo":
-        cam.motion.face_photo_flag = not cam.motion.face_photo_flag
+        cam.motion.flags.flip_value('face photo')
 
     elif param == "debug":
-        cam.motion.debug_flag = not cam.motion.debug_flag
+        cam.motion.flags.flip_value('debug')
+
 
     elif param == "face_reco":
-        cam.motion.face_reco_falg = not cam.motion.face_reco_falg
+        cam.motion.flags.flip_value('face reco')
+
 
     elif param == "darknet_squares":
-        cam.motion.darknet_squares_flag = not cam.motion.darknet_squares_flag
+        cam.motion.flags.flip_value('darknet squares')
+
 
 
     elif param == "darknet":
-        cam.motion.darknet_flag = not cam.motion.darknet_flag
-        if not cam.motion.darknet_flag:
-            cam.motion.darknet_squares_flag=False
+        cam.motion.flags.flip_value('darknet')
+
 
 
     elif param == "done":
@@ -346,55 +344,46 @@ def complete_flags():
 
     complete_falg_str = FLAG_SEND
 
-    # get falg values
-    motion_detection = cam.motion.motion_flag
-    face_v = cam.motion.video_flag
-    movement_sq = cam.motion.green_squares_flag
-    face_p = cam.motion.face_photo_flag
-    face_r = cam.motion.face_reco_falg
-    darknet = cam.motion.darknet_flag
-    darknet_squares = cam.motion.darknet_squares_flag
-    debug = cam.motion.debug_flag
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"
 
     # complete message
-    if motion_detection:
+    if cam.motion.flags.get_value('motion'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Video</b>"
 
-    if face_v:
+    if cam.motion.flags.get_value('video'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Movement square</b>"
 
-    if movement_sq:
+    if cam.motion.flags.get_value('green squares'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Face Photo</b>"
 
-    if face_p:
+    if cam.motion.flags.get_value('face photo'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Face Reco</b>"
 
-    if face_r:
+    if cam.motion.flags.get_value('face reco'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Darknet</b>"
 
-    if darknet:
+    if cam.motion.flags.get_value('darknet'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
@@ -402,14 +391,14 @@ def complete_flags():
 
     complete_falg_str += "\n-- <b>Darknet Squares</b>"
 
-    if darknet_squares:
+    if cam.motion.flags.get_value('darknet squares'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Debug</b>"
 
-    if debug:
+    if cam.motion.flags.get_value('debug'):
         complete_falg_str += " ✅"
     else:
         complete_falg_str += " ❌"

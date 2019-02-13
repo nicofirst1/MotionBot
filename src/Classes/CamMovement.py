@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 
 # from memory_profiler import profile
+from Classes.Flags import Falgs
 
 logger = logging.getLogger('cam_movement')
 
@@ -45,11 +46,11 @@ class CamMovement(Thread):
             CALL) and will give the video a slower movement.
 
 
-        motion_flag : flag used to check if the user want to recieve a notification (can be set by telegram)
-        video_flag :  flag used to check if the user want to recieve a video of the movement (can be set by telegram)
-        face_photo_flag : flag used to check if the user want to recieve a photo of the faces in the video (can be set by telegram)
-        debug_flag : flag used to check if the user want to recieve the debug images (can be set by telegram , it slows down the program)
-        face_reco_falg : flag used to check if the user want to recieve the predicted face with the photo (can be set by telegram)
+        flags.get_flag('motion') : flag used to check if the user want to recieve a notification (can be set by telegram)
+        flags.get_flag('video') :  flag used to check if the user want to recieve a video of the movement (can be set by telegram)
+        flags.get_flag('face photo') : flag used to check if the user want to recieve a photo of the faces in the video (can be set by telegram)
+        flags.get_flag('debug') : flag used to check if the user want to recieve the debug images (can be set by telegram , it slows down the program)
+        flags.get_flag('face reco') : flag used to check if the user want to recieve the predicted face with the photo (can be set by telegram)
 
         faces_cnts : list of contours for detected faces
         max_blurrines : the maximum threshold for blurriness detection, discard face images with blur>max_blurrines
@@ -80,14 +81,23 @@ class CamMovement(Thread):
         self.resolution = (640, 480)  # width,height
         self.fps = 20
 
-        self.video_flag = True
-        self.face_photo_flag = False
-        self.motion_flag = True
-        self.debug_flag = False
-        self.face_reco_falg = False
-        self.green_squares_flag = False
-        self.darknet_flag = True
-        self.darknet_squares_flag = False
+
+        flags=Falgs()
+
+        flags.add_flag("motion",True,[])
+        flags.add_flag("debug",False,[])
+        flags.add_flag('video',True,['motion'])
+        flags.add_flag('green squares',False,['motion','video'])
+        flags.add_flag('darknet',True,['motion','video'])
+        flags.add_flag('darknet squares',False,['motion','darknet','video'])
+        flags.add_flag('face photo',True,['motion','darknet','video'])
+        flags.add_flag('face reco',False,['motion','darknet','face photo','video'])
+        
+        
+
+        self.flags=flags
+
+
 
         self.resetting_ground = False
 
@@ -154,7 +164,7 @@ class CamMovement(Thread):
         # calculate diversity
         score = self.are_different(self.ground_frame, end_frame)
         # if the notification is enable and there is a difference between the two frames and the ground is not resetting
-        if self.motion_flag and score and not self.resetting_ground:
+        if self.flags.get_value('motion') and score and not self.resetting_ground:
             # start saving the frames
             self.shotter.capture(True)
 
@@ -163,7 +173,7 @@ class CamMovement(Thread):
             self.motion_notifier(score)
 
             # do not capture video nor photo, just notification
-            if not self.video_flag:
+            if not self.flags.get_value('video'):
                 self.shotter.capture(False)
                 return
 
@@ -173,25 +183,24 @@ class CamMovement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
-            if self.darknet_flag:
+            if self.flags.get_value('darknet'):
                 segmentation = self.darknet.detect_video(to_write)
 
-                if self.darknet_squares_flag:
+                if self.flags.get_value('darknet squares'):
                     to_write = self.darknet.draw_bounds_list(segmentation)
 
-            # # if the user wants the face in the movement
-            # if self.face_photo_flag:
-            #     # take the face
-            #     # fixme
-            #     face = None
-            #     # if there are no faces found
-            #     if face is None:
-            #         self.telegram_handler.send_message(msg="Face not found")
-            #
-            #     else:
-            #         for elem in face:
-            #             self.telegram_handler.send_image(elem[2],
-            #                                              msg="Found " + elem[0] + " with conficence = " + str(elem[1]))
+                # if the user wants the face in the movement
+                if self.flags.get_value('face photo'):
+                    # take the face
+                    # todo: use recognizer
+                    faces = self.darknet.extract_faces(segmentation)
+                    # if there are no faces found
+                    if len(faces)==0:
+                        self.telegram_handler.send_message(msg="Face not found")
+
+                    else:
+                        self.telegram_handler.send_image(faces[0],
+                                                             msg="Found this guy")
 
             # send the original video too
             if not self.resetting_ground:
@@ -321,7 +330,7 @@ class CamMovement(Thread):
         (cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # if the debug flag is true send all the images
-        if self.debug_flag:
+        if self.flags.get_value('debug'):
             self.telegram_handler.send_image(frameDelta)
             self.telegram_handler.send_image(thresh_original, msg="Threshold Original")
             self.telegram_handler.send_image(thresh, msg="Threshold Dilated")
@@ -354,7 +363,7 @@ class CamMovement(Thread):
         print("Total frames contours : " + str(len(self.faces_cnts)))
 
         # draw movement
-        if self.green_squares_flag:
+        if self.flags.get_value('green squares'):
             self.draw_green_squares(frames)
 
         # add a date to the frame
@@ -362,7 +371,7 @@ class CamMovement(Thread):
             draw_date(frames)
 
         for frame in frames:
-            # if self.face_photo_flag:
+            # if self.flags.get_flag('face photo'):
             #
             #     # take the corresponding contours for the frame
             #     # fixme
@@ -527,17 +536,20 @@ class CamMovement(Thread):
         if degub:
             to_send += "Score is " + str(score) + "\n"
 
-        if self.face_photo_flag:
+        if self.flags.get_value('face photo'):
             to_send += "<b>Face Photo</b>, "
 
-        if self.face_reco_falg:
+        if self.flags.get_value('face reco'):
             to_send += "<b>Face Reco</b>, "
 
-        if self.video_flag:
+        if self.flags.get_value('video'):
             to_send += "<b>Video</b>, "
 
-        if self.darknet_flag:
+        if self.flags.get_value('darknet'):
             to_send += "<b>Darknet</b>, "
+
+        if self.flags.get_value('green squares'):
+            to_send+="<b>Green squares</b>, "
 
         to_send += "are  <b>ON</b>...it may take a minute or two"
 
