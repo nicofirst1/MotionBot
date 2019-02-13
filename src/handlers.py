@@ -243,17 +243,19 @@ def send_log(bot, update):
 def delete_log(bot, update):
     """Telegram command to send the logger file"""
     logger.info("delete log command called")
-    #fixme: change to deletet all logs
-    if ("motion.log" in os.listdir(pt.RESOURCES_DIR)):
-        os.remove(f"{pt.RESOURCES_DIR}/motion.log")
-        update.message.reply_text("Log deleted")
 
 
-    else:
+    delete=False
+
+    for log in os.listdir(pt.LOGGER_DIR):
+        if ".log" in log:
+            os.remove(f"{pt.LOGGER_DIR}/{log}")
+            delete=True
+
+    if delete:
         update.message.reply_text("No log file detected!")
 
-    with open("Resources/motion.log", "w+") as file:
-        file.write(" ")
+
 
 
 @elegible_user
