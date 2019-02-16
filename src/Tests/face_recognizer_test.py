@@ -27,7 +27,9 @@ class PhotoBoothApp:
         self.vs = vs
         self.outputPath = outputPath
         self.frame = None
+        self.person=None
         self.face=None
+
         self.thread = None
         self.stopEvent = None
         self.darknet=darknet
@@ -36,7 +38,8 @@ class PhotoBoothApp:
 
         # initialize the root window and image panel
         self.root = tki.Tk()
-        self.panel = None
+        self.panel_darknet = None
+        self.panel_person = None
         self.panel_face = None
         # create a button, that when pressed, will take the current
         # frame and save it to file
@@ -61,13 +64,15 @@ class PhotoBoothApp:
         segmentation= self.darknet.detect_img(self.frame)
         segmentation=[segmentation]
         self.frame=self.darknet.draw_bounds_list(segmentation)[0]
-        self.face=self.darknet.extract_faces(segmentation)
+        self.person=self.darknet.extract_faces(segmentation)
 
-        if not len(self.face):
-            self.face=self.frame
+        if not len(self.person):
+            self.person=self.frame
 
         else:
-            self.face=self.face[0]
+            self.person=self.person[0]
+            self.face=self.face_reco.find_face(self.person)
+
 
 
 
@@ -105,15 +110,24 @@ class PhotoBoothApp:
 
                 frame=self.convert_image(self.frame)
                 try:
+                    person=self.convert_image(self.person)
+                except Exception:
+                    person=frame
+
+                try:
                     face=self.convert_image(self.face)
                 except Exception:
                     face=frame
 
                 # if the panel is not None, we need to initialize it
-                if self.panel is None:
-                    self.panel = tki.Label(image=frame)
-                    self.panel.image = frame
-                    self.panel.pack(side="left", padx=10, pady=10)
+                if self.panel_darknet is None:
+                    self.panel_darknet = tki.Label(image=frame)
+                    self.panel_darknet.image = frame
+                    self.panel_darknet.pack(side="left", padx=10, pady=10)
+
+                    self.panel_person = tki.Label(image=person)
+                    self.panel_person.image = person
+                    self.panel_person.pack(side="right", padx=10, pady=10)
 
                     self.panel_face = tki.Label(image=face)
                     self.panel_face.image = face
@@ -122,8 +136,11 @@ class PhotoBoothApp:
 
                 # otherwise, simply update the panel
                 else:
-                    self.panel.configure(image=frame)
-                    self.panel.image = frame
+                    self.panel_darknet.configure(image=frame)
+                    self.panel_darknet.image = frame
+
+                    self.panel_person.configure(image=person)
+                    self.panel_person.image = person
 
                     self.panel_face.configure(image=face)
                     self.panel_face.image = face
