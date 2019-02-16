@@ -108,7 +108,7 @@ class Darknet(Thread):
             :return:
             """
             for bb in bbs:
-                if "face" in str(bb[0]):
+                if "person" in str(bb[0]):
                     return bb[2]
 
             return []

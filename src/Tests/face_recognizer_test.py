@@ -1,8 +1,7 @@
 # import the necessary packages
 from __future__ import print_function
 
-import datetime
-import os
+import copy
 import threading
 import time
 import tkinter as tki
@@ -20,33 +19,29 @@ from Classes.Face_recognizer import FaceRecognizer
 
 
 class PhotoBoothApp:
-    def __init__(self, vs, outputPath,darknet,face_reco):
+    def __init__(self, vs, outputPath, darknet, face_reco):
         # store the video stream object and output path, then initialize
         # the most recently read frame, thread for reading frames, and
         # the thread stop event
         self.vs = vs
         self.outputPath = outputPath
-        self.frame = None
-        self.person=None
-        self.face=None
 
         self.thread = None
         self.stopEvent = None
-        self.darknet=darknet
-        self.face_reco=face_reco
-
+        self.darknet = darknet
+        self.face_reco = face_reco
 
         # initialize the root window and image panel
         self.root = tki.Tk()
-        self.panel_darknet = None
-        self.panel_person = None
-        self.panel_face = None
+
+        self.panels = {
+            'original': None,
+            'darknet': None,
+            'person': None,
+            'face': None
+        }
+
         # create a button, that when pressed, will take the current
-        # frame and save it to file
-        btn = tki.Button(self.root, text="Snapshot!",
-                         command=self.takeSnapshot)
-        btn.pack(side="bottom", fill="both", expand="yes", padx=10,
-                 pady=10)
 
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
@@ -58,39 +53,64 @@ class PhotoBoothApp:
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
 
+    def process_frame(self, original):
 
-    def process_frame(self):
+        frames = {
+            'original': original,
+            'darknet': None,
+            'person': None,
+            'face': None
+        }
 
-        segmentation= self.darknet.detect_img(self.frame)
-        segmentation=[segmentation]
-        self.frame=self.darknet.draw_bounds_list(segmentation)[0]
-        self.person=self.darknet.extract_faces(segmentation)
+        segmentation = self.darknet.detect_img(original.copy())
+        segmentation = [segmentation]
 
-        if not len(self.person):
-            self.person=self.frame
+        frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
+        person = self.darknet.extract_faces(segmentation)
 
-        else:
-            self.person=self.person[0]
-            self.face=self.face_reco.find_face(self.person)
+        if len(person):
+            frames['person'] = person[0]
+            frames['face'] = self.face_reco.find_faces(frames['person'])
 
+        return frames
 
+    def convert_image(self, frames_dict):
 
+        def convert_single(image):
 
+            image = imutils.resize(image, width=300)
 
-    def convert_image(self, image):
+            # OpenCV represents images in BGR order; however PIL
+            # represents images in RGB order, so we need to swap
+            # the channels, then convert to PIL and ImageTk format
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = Image.fromarray(image)
+            image = ImageTk.PhotoImage(image)
 
-        image = imutils.resize(image, width=300)
+            return image
 
-        # OpenCV represents images in BGR order; however PIL
-        # represents images in RGB order, so we need to swap
-        # the channels, then convert to PIL and ImageTk format
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = Image.fromarray(image)
-        image = ImageTk.PhotoImage(image)
+        for key, val in frames_dict.items():
+            if val is not None:
+                try:
+                    frames_dict[key] = convert_single(val)
+                except:
+                    frames_dict[key] = None
+        return frames_dict
 
-        return image
+    def update_panels(self, frames):
 
+        for key in frames.keys():
 
+            if not self.panels[key]:
+                self.panels[key] = tki.Label(image=frames[key], text=f"{key}" + "\n" * 30, compound=tki.CENTER)
+                self.panels[key].image = frames[key]
+                self.panels[key].pack(side="left", padx=10, pady=10, )
+
+            else:
+                self.panels[key].configure(image=frames[key])
+                self.panels[key].image = frames[key]
+
+        time.sleep(0.01)
 
     def videoLoop(self):
         # DISCLAIMER:
@@ -102,82 +122,33 @@ class PhotoBoothApp:
             while not self.stopEvent.is_set():
                 # grab the frame from the video stream and resize it to
                 # have a maximum width of 300 pixels
-                self.frame = self.vs.read()
+                original = self.vs.read()
 
-                self.process_frame()
-
-
-
-                frame=self.convert_image(self.frame)
-                try:
-                    person=self.convert_image(self.person)
-                except Exception:
-                    person=frame
-
-                try:
-                    face=self.convert_image(self.face)
-                except Exception:
-                    face=frame
-
-                # if the panel is not None, we need to initialize it
-                if self.panel_darknet is None:
-                    self.panel_darknet = tki.Label(image=frame)
-                    self.panel_darknet.image = frame
-                    self.panel_darknet.pack(side="left", padx=10, pady=10)
-
-                    self.panel_person = tki.Label(image=person)
-                    self.panel_person.image = person
-                    self.panel_person.pack(side="right", padx=10, pady=10)
-
-                    self.panel_face = tki.Label(image=face)
-                    self.panel_face.image = face
-                    self.panel_face.pack(side="right", padx=10, pady=10)
+                frames = self.process_frame(original)
+                frames = self.convert_image(frames)
+                self.update_panels(frames)
 
 
-                # otherwise, simply update the panel
-                else:
-                    self.panel_darknet.configure(image=frame)
-                    self.panel_darknet.image = frame
-
-                    self.panel_person.configure(image=person)
-                    self.panel_person.image = person
-
-                    self.panel_face.configure(image=face)
-                    self.panel_face.image = face
-
-                    time.sleep(0.01)
 
         except RuntimeError as e:
             print("[INFO] caught a RuntimeError")
-
-    def takeSnapshot(self):
-        # grab the current timestamp and use it to construct the
-        # output path
-        ts = datetime.datetime.now()
-        filename = "{}.jpg".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
-        p = os.path.sep.join((self.outputPath, filename))
-
-        # save the file
-        cv2.imwrite(p, self.frame.copy())
-        print("[INFO] saved {}".format(filename))
 
     def onClose(self):
         # set the stop event, cleanup the camera, and allow the rest of
         # the quit process to continue
         print("[INFO] closing...")
+        self.face_reco.filter_all_images()
+
         self.stopEvent.set()
         self.vs.stop()
-        self.root.quit()
 
+        self.root.quit()
 
 
 if __name__ == '__main__':
     # construct the argument parse and parse the arguments
 
     # initialize the video stream and allow the camera sensor to warmup
-    print("[INFO] warming up camera...")
-    vs = VideoStream(src=0).start()
-    time.sleep(2.0)
 
     # start the app
     updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
@@ -188,6 +159,9 @@ if __name__ == '__main__':
 
     face_reco = FaceRecognizer(disp)
 
+    print("[INFO] warming up camera...")
+    vs = VideoStream(src=0).start()
+    time.sleep(2.0)
 
-    pba = PhotoBoothApp(vs, ".",darknet,face_reco)
+    pba = PhotoBoothApp(vs, ".", darknet, face_reco)
     pba.root.mainloop()

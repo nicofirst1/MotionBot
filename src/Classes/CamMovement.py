@@ -88,8 +88,8 @@ class CamMovement(Thread):
         flags.add_flag('video', True, ['motion'])
         flags.add_flag('green squares', False, ['motion', 'video'])
         flags.add_flag('darknet', True, ['motion', 'video'])
-        flags.add_flag('darknet squares', False, ['motion', 'darknet', 'video'])
-        flags.add_flag('face photo', True, ['motion', 'darknet', 'video'])
+        flags.add_flag('darknet squares',True, ['motion', 'darknet', 'video'])
+        flags.add_flag('face photo', False, ['motion', 'darknet', 'video'])
         flags.add_flag('face reco', False, ['motion', 'darknet', 'face photo', 'video'])
 
         self.flags = flags
@@ -336,6 +336,7 @@ class CamMovement(Thread):
         return cnts
 
     # =========================UTILS=======================================
+
     # @time_profiler()
     def draw_on_frames(self, frames, date=True):
         """Function to draw on frames"""

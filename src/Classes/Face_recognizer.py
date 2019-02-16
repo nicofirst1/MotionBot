@@ -8,10 +8,11 @@ from itertools import groupby
 from threading import Thread
 
 import cv2
+import face_recognition
 import numpy as np
 from PIL import Image
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
+from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 
 from Path import Path as pt
 
@@ -449,6 +450,23 @@ class FaceRecognizer(Thread):
 
         print("...Autotraining complete")
 
+    def find_faces(self, image):
+
+
+        face_images=[]
+
+        face_locations = face_recognition.face_locations(image)
+        for location in face_locations:
+
+            top, right, bottom, left = location
+            face = image[top:bottom, left:right]
+
+            face_images.append(face)
+
+        if len(face_images):
+            self.add_image_write(face_images)
+            return face_images[0]
+
     # ===================UTILS=========================
 
     def name_from_label(self, label):
@@ -555,11 +573,12 @@ class FaceRecognizer(Thread):
         dir = self.get_name_dir(subject_name)
 
         if not dir:
+            print("No direcotry")
             return False
         else:
             dir = pt.join(pt.FACES_DIR, dir + "/")
         # get the length of the images in the directory
-        idx = len([name for name in os.listdir(dir) if os.path.isfile(name)])
+        idx = len([name for name in os.listdir(dir) if "png" in name])
 
         for image in image_list:
             image_name = pt.join(dir, f"image_{idx}.png")
@@ -572,7 +591,7 @@ class FaceRecognizer(Thread):
         # self.auto_train()
 
         # remove similar images
-        threading.Thread(target=self.filter_all_images).start()
+        # threading.Thread(target=self.filter_all_images).start()
 
         return True
 
@@ -607,22 +626,31 @@ class FaceRecognizer(Thread):
         :return:
         """
 
+
+        print("Filtering images...")
+
         # get a list of paths for every image in Faces
         img_paths = []
-        for path, subdirs, files in os.walk("../../Faces"):
+        for path, subdirs, files in os.walk(pt.FACES_DIR):
             for name in files:
                 if "png" in name:
                     img_paths.append(os.path.join(path, name))
+
+
+        print(f"Found {len(img_paths)} images")
 
         # read them all using opencv
         images = [cv2.imread(elem) for elem in img_paths]
         # get the indices to be removed
         to_remove = self.filter_similar_images(images)
-        # get the paths corresponding to the indics
+        # get the paths corresponding to the indices
         to_remove = operator.itemgetter(*to_remove)(img_paths)
+        if not isinstance(to_remove,list):to_remove=[to_remove]
         # remove them
         for elem in to_remove:
             os.remove(elem)
+
+        print(f"Removed {len(to_remove)} images")
 
     # ===================STATIC=========================
 
@@ -717,10 +745,10 @@ class FaceRecognizer(Thread):
         return to_pop
 
 
-# uncomment and add token to debug face recognition
-updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
-disp = updater.dispatcher
-# #
-face = FaceRecognizer(disp)
-# face.start()
-face.filter_all_images()
+# # uncomment and add token to debug face recognition
+# updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
+# disp = updater.dispatcher
+# # #
+# face = FaceRecognizer(disp)
+# # face.start()
+# face.filter_all_images()
