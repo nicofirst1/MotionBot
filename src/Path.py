@@ -8,13 +8,17 @@ class Path:
     curdir=os.getcwd()
     curdir=curdir.split("MotionBot")[0]
     curdir=join(curdir,"MotionBot")
+
     RESOURCES_DIR = join(curdir, "Resources")
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
     WEIGHTS_DIR=join(RESOURCES_DIR,"Weights")
     CUSTOM_DARK_DIR=join(RESOURCES_DIR,"Custom_darknet")
     recognizer=join(RESOURCES_DIR,"recognizer.yaml")
 
+    model=join(RESOURCES_DIR,"model.pkl")
+
     DARKNET_DIR=join(curdir,"src/darknet")
+
 
 
     FACES_DIR=join(curdir,"Faces")
