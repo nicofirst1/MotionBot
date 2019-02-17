@@ -186,17 +186,29 @@ class CamMovement(Thread):
 
             # if the user wants the face in the movement
             if self.flags.get_value('face photo'):
-                # take the face
-                prediction=self.face_recognizer.predict_multi(to_write,save=True)
-                faces=self.face_recognizer.filter_prediction_subjects(zip(prediction, to_write))
-                # if there are no faces found
-                if not len(faces):
-                    self.telegram_handler.send_message(msg="Face not found")
 
-                else:
-                    for face in faces:
-                        self.telegram_handler.send_image(face[1],
-                                                         msg=f"Found this guy, I think it is {face[0]}")
+                def use_recognizer():
+                    prediction = self.face_recognizer.predict_multi(to_write, save=True)
+                    faces = self.face_recognizer.filter_prediction_subjects(zip(prediction, to_write))
+                    # if there are no faces found
+                    if not len(faces):
+                        self.telegram_handler.send_message(msg="Face not found")
+
+                    else:
+                        for face in faces:
+                            self.telegram_handler.send_image(face[1],
+                                                             msg=f"Found this guy, I think it is {face[0]}")
+
+                    if self.flags.get_value("face reco"):
+                        for pred, frame in zip(prediction, to_write):
+                            if pred is None:continue
+                            self.face_recognizer.show_prediction_labels_on_image(frame,pred)
+
+                # take the face
+                try:
+                    use_recognizer()
+                except FileNotFoundError:
+                    self.telegram_handler.send_message(msg="To use face recognition feature you must first /classify some faces")
 
             # send the original video too
             if not self.resetting_ground:
@@ -367,23 +379,7 @@ class CamMovement(Thread):
             draw_date(frames)
 
         for frame in frames:
-            # if self.flags.get_flag('face photo'):
-            #
-            #     # take the corresponding contours for the frame
-            #     # fixme
-            #     face = None
-            #     # face = self.faces_cnts[face_idx]
-            #     face_idx += 1
-            #
-            #     # if there is a face
-            #     if face is not None:
-            #         # get the corners of the faces
-            #         for (x, y, w, h) in face:
-            #             # draw a rectangle around the corners
-            #             cv2.rectangle(frame, (x, y), (x + w, y + h), face_color, line_tickness)
-            #
-            #
-            #
+
 
             # write frames on file
             out.write(frame)
