@@ -90,13 +90,14 @@ class PhotoBoothApp:
 
         if len(person):
             frames['person'] = person[0]
-            frames['face'] = self.face_reco.find_faces(frames['person'], save=self.face_reco_flag.get())
 
-            if frames['face'] is not None:
-                reco = copy.deepcopy(original)
-                prediction = self.face_reco.predict(reco)
-                self.face_reco.show_prediction_labels_on_image(reco, prediction)
-                frames['reco'] = reco
+        frames['face'] = self.face_reco.find_faces(original.copy(), save=self.face_reco_flag.get())
+
+        if frames['face'] is not None:
+            reco = copy.deepcopy(original)
+            prediction = self.face_reco.predict(reco)
+            self.face_reco.show_prediction_labels_on_image(reco, prediction)
+            frames['reco'] = reco
 
         return frames
 
@@ -166,6 +167,11 @@ class PhotoBoothApp:
 
         self.stopEvent.set()
         self.vs.stop()
+
+        for key in self.panels.keys():
+
+            self.panels[key].configure(image=None)
+            self.panels[key].image = None
 
         self.root.quit()
 
