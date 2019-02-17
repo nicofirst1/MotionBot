@@ -390,6 +390,8 @@ class FaceRecognizer(Thread):
                 X.append(face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes)[0])
                 y.append(class_dir.split("_")[-1])
 
+        if not len(X): return
+
         # Determine how many neighbors to use for weighting in the KNN classifier
         if n_neighbors is None:
             n_neighbors = int(round(math.sqrt(len(X))))
@@ -423,7 +425,7 @@ class FaceRecognizer(Thread):
 
         # if no recognizer raise error
         if self.recognizer is None:
-            raise Exception("Recognizer not loaded, cannot make prediction")
+            raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
 
         # Load image file and find face locations
         face_locations = face_recognition.face_locations(img)
@@ -542,8 +544,16 @@ class FaceRecognizer(Thread):
         :return:
         """
 
-        for name, (top, right, bottom, left) in predictions:
+
+        for pred in predictions:
             # Draw a box around the face using the Pillow module
+
+            (top, right, bottom, left) =pred['bbs']
+
+            name=pred['pred']
+            conf=round(100*pred['conf'],1)
+
+
             pt1 = (left, top)
             pt2 = (right, bottom)
 
@@ -551,7 +561,11 @@ class FaceRecognizer(Thread):
                           thickness=2)
 
             cv2.putText(img, str(name), (int(left), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
-                        (255, 255, 0))
+                        (0, 255, 0))
+
+
+            cv2.putText(img, f"conf:{conf}", (int(right), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
+                        (0, 255, 0))
 
     def generate_inline_keyboard(self, callback_data, *args):
         """Generate an inline keyboard containing the names of the known faces plus any inlinebutton passed with args"""
@@ -689,7 +703,7 @@ class FaceRecognizer(Thread):
             os.remove(elem)
 
         for sub in subdirs:
-            face.rename_images_index(os.path.join(pt.FACES_DIR, sub))
+            self.rename_images_index(os.path.join(pt.FACES_DIR, sub))
 
         print(f"Removed {len(to_remove)} images")
 
