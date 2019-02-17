@@ -3,6 +3,9 @@ from datetime import datetime
 from functools import wraps
 import cProfile, pstats, io
 import datetime
+from Path import Path as pt
+
+
 MAX_RETRIES = 8
 
 COMMANDS="""
@@ -19,7 +22,7 @@ classify - classify the person face
 help - send the help text
 """
 
-TIME_PROFILER_FILE="Resources/time_profiler"
+TIME_PROFILER_FILE=pt.time_profiler
 
 #clear the time profiler
 with open(TIME_PROFILER_FILE,"w+") as file:
@@ -45,18 +48,17 @@ def add_id(user_id,enabled):
 
 
 def write_ids(ids):
-    ids_path="Resources/ids"
 
-    with open(ids_path,"w+") as file:
+    with open(pt.ids,"w+") as file:
         for elem in ids:
             file.write(str(elem[0])+","+str(elem[1]))
 
 
 def read_ids():
-    ids_path="Resources/ids"
 
 
-    with open(ids_path, "r+") as file:
+
+    with open(pt.ids, "r+") as file:
         ids = file.readlines()
 
     ids=[(elem.split(",")[0],elem.split(",")[1].strip("\n")) for elem in ids]
@@ -102,10 +104,9 @@ def elegible_user(func):
 
 def read_token_psw():
     """Function to read token and password from file"""
-    file_name="Resources/token_psw.txt"
 
     #read file
-    with open(file_name, "rb") as file:
+    with open(pt.token_psw, "rb") as file:
         lines=file.readlines()
 
     #take token and password

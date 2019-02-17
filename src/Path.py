@@ -16,6 +16,9 @@ class Path:
     recognizer=join(RESOURCES_DIR,"recognizer.yaml")
 
     model=join(RESOURCES_DIR,"model.pkl")
+    time_profiler=join(RESOURCES_DIR,"time_profiler")
+    token_psw=join(RESOURCES_DIR,"token_psw.txt")
+    ids=join(RESOURCES_DIR,"ids")
 
     DARKNET_DIR=join(curdir,"src/darknet")
 

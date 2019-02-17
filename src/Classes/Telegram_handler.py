@@ -1,7 +1,7 @@
 import logging
 import os
 from threading import Thread
-
+from Path import Path as pt
 import cv2
 
 # from memory_profiler import profile
@@ -29,11 +29,10 @@ class TelegramHandler(Thread):
         """Get all the ids from the file"""
         # get ids form file
         print("getting ids from file")
-        ids_path = "Resources/ids"
 
         # if there are some ids in the file get them
-        if "ids" in os.listdir("Resources/"):
-            with open(ids_path, "r+") as file:
+        if "ids" in os.listdir(pt.RESOURCES_DIR):
+            with open(pt.ids, "r+") as file:
                 lines = file.readlines()
 
             # every line has the id as the first element of a split(,)
