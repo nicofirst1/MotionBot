@@ -7,7 +7,7 @@ import telegram
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, Updater
 
-from src.Classes.MainClass import MainClass
+from src.Classes.Main_class import MainClass
 from src.Utils.utils import add_id, elegible_user, read_token_psw
 from Path import Path as pt
 

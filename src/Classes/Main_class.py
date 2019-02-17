@@ -5,9 +5,9 @@ import cv2
 
 from Classes.Darknet import Darknet
 from src.Classes.Face_recognizer import FaceRecognizer
-from src.Classes.CamMovement import CamMovement
-from src.Classes.CamShotter import CamShotter
-from src.Classes.TelegramHandler import TelegramHandler
+from src.Classes.Cam_movement import CamMovement
+from src.Classes.Cam_shotter import CamShotter
+from src.Classes.Telegram_handler import TelegramHandler
 
 # from memory_profiler import profile
 
