@@ -39,14 +39,13 @@ class PhotoBoothApp:
             'darknet': None,
             'person': None,
             'face': None,
-            'reco':None
+            'reco': None
         }
 
         # create a checkbutton, that when pressed, will take the current
 
-        bott_panels = tki.Label( compound=tki.CENTER)
-        bott_panels.pack(side="bottom",fill="both", padx=10, pady=10, expand="yes")
-
+        bott_panels = tki.Label(compound=tki.CENTER)
+        bott_panels.pack(side="bottom", fill="both", padx=10, pady=10, expand="yes")
 
         self.face_reco_flag = tki.IntVar()
 
@@ -59,6 +58,10 @@ class PhotoBoothApp:
                          command=self.face_reco.train_model)
         btn.pack(side="right", fill="both", expand="yes", padx=10,
                  pady=10)
+        btn = tki.Button(bott_panels, text="Clean Faces",
+                         command=self.face_reco.filter_all_images)
+        btn.pack(side="right", fill="both", expand="yes", padx=10,
+                 pady=10)
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -69,8 +72,6 @@ class PhotoBoothApp:
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
 
-
-
     def process_frame(self, original):
 
         frames = {
@@ -78,7 +79,7 @@ class PhotoBoothApp:
             'darknet': None,
             'person': None,
             'face': None,
-            'reco':None
+            'reco': None
         }
 
         segmentation = self.darknet.detect_img(original.copy())
@@ -92,12 +93,10 @@ class PhotoBoothApp:
             frames['face'] = self.face_reco.find_faces(frames['person'], save=self.face_reco_flag.get())
 
             if frames['face'] is not None:
-
-                reco=copy.deepcopy(original)
-                prediction=self.face_reco.predict(reco)
-                self.face_reco.show_prediction_labels_on_image(reco,prediction)
-                frames['reco']=reco
-
+                reco = copy.deepcopy(original)
+                prediction = self.face_reco.predict(reco)
+                self.face_reco.show_prediction_labels_on_image(reco, prediction)
+                frames['reco'] = reco
 
         return frames
 
@@ -164,7 +163,6 @@ class PhotoBoothApp:
         # set the stop event, cleanup the camera, and allow the rest of
         # the quit process to continue
         print("[INFO] closing...")
-        self.face_reco.filter_all_images()
 
         self.stopEvent.set()
         self.vs.stop()
