@@ -121,7 +121,7 @@ class Darknet(Thread):
             # get the face in the image if any
             face=get_face_bb(bbs)
             if len(face)==0: continue
-            #cv2.imwrite('messigray.png',img)
+
             # get the bounding boxes
             x, y, w, h = [int(elem) for elem in face]
             # crop the image

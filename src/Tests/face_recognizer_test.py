@@ -38,7 +38,8 @@ class PhotoBoothApp:
             'original': None,
             'darknet': None,
             'person': None,
-            'face': None
+            'face': None,
+            'reco':None
         }
 
         # create a checkbutton, that when pressed, will take the current
@@ -76,7 +77,8 @@ class PhotoBoothApp:
             'original': original,
             'darknet': None,
             'person': None,
-            'face': None
+            'face': None,
+            'reco':None
         }
 
         segmentation = self.darknet.detect_img(original.copy())
@@ -88,6 +90,14 @@ class PhotoBoothApp:
         if len(person):
             frames['person'] = person[0]
             frames['face'] = self.face_reco.find_faces(frames['person'], save=self.face_reco_flag.get())
+
+            if frames['face'] is not None:
+
+                reco=copy.deepcopy(original)
+                prediction=self.face_reco.predict(reco)
+                self.face_reco.show_prediction_labels_on_image(reco,prediction)
+                frames['reco']=reco
+
 
         return frames
 
