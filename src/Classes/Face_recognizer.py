@@ -3,9 +3,7 @@ import math
 import operator
 import os
 import random
-import sys
 import threading
-from itertools import groupby
 from threading import Thread
 
 import cv2
@@ -15,7 +13,7 @@ from PIL import Image
 from face_recognition.face_recognition_cli import image_files_in_folder
 from sklearn import neighbors
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
 
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
@@ -56,6 +54,7 @@ class FaceRecognizer(Thread):
         self.distance_thres = 95
         self.auto_train_dist = 80
         self.recognizer = load_pkl(pt.model)
+        self.face_thrs = 0.75
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -92,6 +91,8 @@ class FaceRecognizer(Thread):
         """Run the thread, first train the model then just be alive"""
 
         # updater.start_polling()
+
+        self.filter_all_images()
 
         while True:
             # if the thread has been stopped
@@ -189,7 +190,7 @@ class FaceRecognizer(Thread):
             :return: the new path to the image
             """
 
-            new_path=pt.join(pt.RESOURCES_DIR,"to_send.png")
+            new_path = pt.join(pt.RESOURCES_DIR, "to_send.png")
 
             img = Image.open(image_file)
 
@@ -229,10 +230,9 @@ class FaceRecognizer(Thread):
         to_send = "You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
                   "" + str(len(to_choose)) + " photos to be classified"
 
-        image=resize_image(image,840)
+        image = resize_image(image, 840)
 
         with open(image, "rb") as file:
-
             bot.sendPhoto(user_id, file,
                           caption=to_send,
                           reply_markup=inline)
@@ -247,7 +247,7 @@ class FaceRecognizer(Thread):
 
         # the param has the format:  image_name dir_name
         param = update.callback_query.data.split()
-        image_name = pt.join(pt.UNK_DIR,param[1])
+        image_name = pt.join(pt.UNK_DIR, param[1])
         dir_name = param[2]
 
         # get the length of the images in the directory
@@ -398,16 +398,16 @@ class FaceRecognizer(Thread):
 
         # Create and train the KNN classifier
         knn_clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=knn_algo, weights='distance')
-        #fixme : Expected 2D array, got 1D array instead:
+        # fixme : Expected 2D array, got 1D array instead:
         knn_clf.fit(X, y)
 
         # se recovnizer to current one
-        self.recognizer=knn_clf
+        self.recognizer = knn_clf
 
         # Save the trained KNN classifier
         dump_pkl(knn_clf, pt.model)
 
-    def predict(self, img, distance_threshold=0.75):
+    def predict(self, img):
         """
         Recognizes faces in given image using a trained KNN classifier
         :param img: an image to be recognized
@@ -430,96 +430,53 @@ class FaceRecognizer(Thread):
 
         # If no faces are found in the image, return an empty result.
         if len(face_locations) == 0:
-            return []
+            return None
 
         # Find encodings for faces in the test iamge
         faces_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations)
 
         # Use the KNN model to find the best matches for the test face
         closest_distances = self.recognizer.kneighbors(faces_encodings, n_neighbors=1)
-        are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(face_locations))]
+        are_matches = [closest_distances[0][i][0] for i in range(len(face_locations))]
 
         # Predict classes and remove classifications that aren't within the threshold
-        return [(pred, loc) if rec else ("unknown", loc) for pred, loc, rec in
+        return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
                 zip(self.recognizer.predict(faces_encodings), face_locations, are_matches)]
 
-    def predict_old(self, img):
-        """
-        Predict the person face in the image
-        :param img: a opencv image (list of lists)
-        :returns:
-            label_text : name of the predicted person
-            confidence : euclidean distance between the image and the prediction
-        """
-
-        # print("Predicting....")
-        if len(img) == 0:
-            print("No image for prediction")
-            return -1, sys.maxsize
-
-        # resize, convert to right unit type and turn image to grayscale
-        if (img.shape[0], img.shape[1]) != self.image_size:
-            img = cv2.resize(img, self.image_size)
-        img = np.array(img, dtype=np.uint8)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        # print("images preprocessed")
-
-        # create the collector to get the label and the confidence
-        collector = cv2.face.StandardCollector_create()
-        # predict face
-        try:
-            self.recognizer.predict_collect(gray, collector, 0)
-        except cv2.error:
-            # the prediction may not work when the model has not been trained before
-            return -1, sys.maxsize
-
-        # get label and confidence
-        label = collector.getMinLabel()
-        confidence = collector.getMinDist()
-
-        # get name of respective label returned by face recognizer
-        label_text = self.name_from_label(label)
-
-        print(label, label_text, confidence)
-
-        # print("...Prediction end")
-        return label_text, confidence
-
-    def predict_multi(self, imgs):
+    def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
         :param imgs: list of images
         :return: list of triples (face_name, confidence,image) for every Different face in the image list
         """
 
-        print("Predict mutli started...")
+        print("Predict multi started...")
 
         # if there are no images return
         if len(imgs) == 0: return None
-
-        to_filter = []
-        to_add = []  # list to store iamges to add to Unknown folder
+        predictions = []
+        cropped = []
 
         for img in imgs:
-            # get the name and the confidence
-            face_name, confidence = self.predict(img)
-            # append infos if confidence is less than threshold
-            if confidence <= self.distance_thres:
-                to_filter.append((face_name, confidence, img))
-            if confidence > self.auto_train_dist: to_add.append(img)
+            # predict single image
+            pred = self.predict(img)
+            predictions.append(pred)
 
-        self.add_image_write(to_add)
+            # skip not predicted frames
+            if pred is None:
+                continue
 
-        filtered = []
-        # group will be all the tirples with the same face_name
-        for key, group in groupby(to_filter, operator.itemgetter(0)):
-            # append to filtered the face with the smallest confidence
-            filtered.append(min(group, key=lambda t: t[1]))
+            for p in pred:
+                # get bbs and crop image
+                (top, right, bottom, left) = p['bbs']
+                cropped_img = img[top:bottom, left:right]
+                cropped.append(cropped_img)
 
-        # print(filtered)
+        # if save append found images in direcotry
+        if save:
+            self.add_image_write(cropped)
 
         print("...Predict multi ended")
-        return filtered
+        return predictions
 
     def auto_train(self):
         """After some images have been added to unkown folder, predict the label and if the confidence
@@ -575,7 +532,7 @@ class FaceRecognizer(Thread):
 
         return None
 
-    # ===================UTILS=========================ù
+    # ===================UTILS=========================
 
     def show_prediction_labels_on_image(self, img, predictions):
         """
@@ -587,8 +544,8 @@ class FaceRecognizer(Thread):
 
         for name, (top, right, bottom, left) in predictions:
             # Draw a box around the face using the Pillow module
-            pt1=(left,top)
-            pt2=(right,bottom)
+            pt1 = (left, top)
+            pt2 = (right, bottom)
 
             cv2.rectangle(img, pt1, pt2, color=(0, 255, 0),
                           thickness=2)
@@ -731,9 +688,77 @@ class FaceRecognizer(Thread):
         for elem in to_remove:
             os.remove(elem)
 
+        for sub in subdirs:
+            face.rename_images_index(os.path.join(pt.FACES_DIR, sub))
+
         print(f"Removed {len(to_remove)} images")
 
     # ===================STATIC=========================
+
+    @staticmethod
+    def rename_images_index(path_to_dir):
+
+        img_paths=[]
+        renames=[]
+        idx=0
+        for path, subdirs, files in os.walk(path_to_dir):
+            for name in files:
+                if "png" in name:
+                    img_paths.append(os.path.join(path, name))
+                    renames.append(os.path.join(path,f"image_{idx}.png"))
+                    idx+=1
+
+        for original, renamed in zip(img_paths,renames):
+            os.renames(original,renamed)
+
+
+
+    @staticmethod
+    def filter_prediction_subjects(predictions):
+        """
+        Filter prediction and returns a list of found faces based on maximum confidence
+        :param predictions: zipped list (predictions, images)
+        :return: list of tuples (predicted name, croppped image)
+        """
+
+        # remove empty list
+        filtered = [elem for elem in predictions if elem[0] is not None]
+
+        # unzip list
+        filtered, images = zip(*filtered)
+
+        best_dict = {}
+        # for every list of prediction in an image
+        for idx in range(len(filtered)):
+
+            # for every prediction in a list
+            for jdx in range(len(filtered[idx])):
+
+                # get the predicted face and the confidence
+                pred = filtered[idx][jdx]['pred']
+                conf = filtered[idx][jdx]['conf']
+
+                try:
+                    # update value if confidence is more
+                    if best_dict[pred][0] < conf:
+                        best_dict[pred] = (conf, idx, jdx)
+                except KeyError:
+                    # append it otherwise
+                    best_dict[pred] = (conf, idx, jdx)
+
+        to_return = []
+        # for every best results
+        for key, val in best_dict.items():
+            # crop image and append it to list
+            idx = val[1]
+            jdx = val[2]
+            top, right, bottom, left = filtered[idx][jdx]['bbs']
+            cropped = images[idx][top:bottom, left:right]
+
+            to_return.append((key, cropped))
+
+        return to_return
+
     @staticmethod
     def prepare_training_data():
         """Get the saved images from the Faces direcotry, treat them and return two lists with the same lenght:
@@ -743,8 +768,6 @@ class FaceRecognizer(Thread):
         # ------STEP-1--------
         # get the directories (one directory for each subject) in data folder
         dirs = glob.glob(pt.join(pt.FACES_DIR, "s_*"))
-        # dirs = glob.glob(pt.FACES_DIR )
-        # dirs = ['../../Faces/Unknown']
         # list to hold all subject faces
         faces = []
         # list to hold labels for all subjects
@@ -883,4 +906,4 @@ class FaceRecognizer(Thread):
 # # #
 # face = FaceRecognizer(disp)
 # # face.start()
-# face.filter_all_images()
+#
