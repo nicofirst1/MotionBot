@@ -325,9 +325,7 @@ def predict_face(bot, update):
     urllib.request.urlretrieve(file_url, file_path)
 
     # get the text to send
-    # fixme
-    # img=cam.predict_face(file_path)
-    img = None
+    img=cam.predict_face(file_path)
     if img is None:
         update.message.reply_text("Sorry...no faces found", parse_mode="HTML")
         return

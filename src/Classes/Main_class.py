@@ -122,31 +122,13 @@ class MainClass:
         img = cv2.imread(img_path)
         os.remove(img_path)
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # find faces
-        faces = self.motion.detect_face(gray, scale_factor=1.1, min_neight=5)
+        prediction=self.face_recognizer.predict(img)
 
-        print(faces)
+        if not len(prediction):
+            return None
 
-        if faces is None:
-            return faces
-
-        # for every face predict the person and confidence
-        for (x, y, w, h) in faces:
-            name, confidence = self.face_recognizer.predict(img[y:y + h, x:x + w])
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-            if confidence <= self.face_recognizer.auto_train_dist:
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img, "For sure!", (x, y + h + 15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-            elif confidence <= self.face_recognizer.distance_thres:
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img, "Maybe...", (x, y + h + 15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-            else:
-                cv2.putText(img, name, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-                cv2.putText(img, "Just guessing", (x, y + h + 15), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+        self.face_recognizer.show_prediction_labels_on_image(img,prediction)
 
         return img
