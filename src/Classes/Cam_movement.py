@@ -83,6 +83,7 @@ class CamMovement(Thread):
 
         flags = Falgs()
 
+        # todo: merge darkent and squares
         flags.add_flag("motion", True, [])
         flags.add_flag("debug", False, [])
         flags.add_flag('video', True, ['motion'])
@@ -201,7 +202,6 @@ class CamMovement(Thread):
 
                     if self.flags.get_value("face reco"):
                         for pred, frame in zip(prediction, to_write):
-                            if pred is None:continue
                             self.face_recognizer.show_prediction_labels_on_image(frame,pred)
 
                 # take the face

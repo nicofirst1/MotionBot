@@ -13,7 +13,7 @@ from PIL import Image
 from face_recognition.face_recognition_cli import image_files_in_folder
 from sklearn import neighbors
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters, Updater
+from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
@@ -400,7 +400,6 @@ class FaceRecognizer(Thread):
 
         # Create and train the KNN classifier
         knn_clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=knn_algo, weights='distance')
-        # fixme : Expected 2D array, got 1D array instead:
         knn_clf.fit(X, y)
 
         # se recovnizer to current one
@@ -544,15 +543,15 @@ class FaceRecognizer(Thread):
         :return:
         """
 
+        if predictions is None: return
 
         for pred in predictions:
             # Draw a box around the face using the Pillow module
 
-            (top, right, bottom, left) =pred['bbs']
+            (top, right, bottom, left) = pred['bbs']
 
-            name=pred['pred']
-            conf=round(100*pred['conf'],1)
-
+            name = pred['pred']
+            conf = round(100 * pred['conf'], 1)
 
             pt1 = (left, top)
             pt2 = (right, bottom)
@@ -563,8 +562,7 @@ class FaceRecognizer(Thread):
             cv2.putText(img, str(name), (int(left), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
                         (0, 255, 0))
 
-
-            cv2.putText(img, f"conf:{conf}", (int(right), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
+            cv2.putText(img, f"conf:{conf}", (int(left), int(bottom) - 10), cv2.FONT_HERSHEY_COMPLEX, 1,
                         (0, 255, 0))
 
     def generate_inline_keyboard(self, callback_data, *args):
@@ -712,20 +710,18 @@ class FaceRecognizer(Thread):
     @staticmethod
     def rename_images_index(path_to_dir):
 
-        img_paths=[]
-        renames=[]
-        idx=0
+        img_paths = []
+        renames = []
+        idx = 0
         for path, subdirs, files in os.walk(path_to_dir):
             for name in files:
                 if "png" in name:
                     img_paths.append(os.path.join(path, name))
-                    renames.append(os.path.join(path,f"image_{idx}.png"))
-                    idx+=1
+                    renames.append(os.path.join(path, f"image_{idx}.png"))
+                    idx += 1
 
-        for original, renamed in zip(img_paths,renames):
-            os.renames(original,renamed)
-
-
+        for original, renamed in zip(img_paths, renames):
+            os.renames(original, renamed)
 
     @staticmethod
     def filter_prediction_subjects(predictions):

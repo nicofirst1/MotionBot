@@ -37,8 +37,6 @@ class PhotoBoothApp:
         self.panels = {
             'original': None,
             'darknet': None,
-            'person': None,
-            'face': None,
             'reco': None
         }
 
@@ -77,8 +75,6 @@ class PhotoBoothApp:
         frames = {
             'original': original,
             'darknet': None,
-            'person': None,
-            'face': None,
             'reco': None
         }
 
@@ -86,14 +82,10 @@ class PhotoBoothApp:
         segmentation = [segmentation]
 
         frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
-        person = self.darknet.extract_faces(segmentation)
 
-        if len(person):
-            frames['person'] = person[0]
+        face = self.face_reco.find_faces(original.copy(), save=self.face_reco_flag.get())
 
-        frames['face'] = self.face_reco.find_faces(original.copy(), save=self.face_reco_flag.get())
-
-        if frames['face'] is not None:
+        if face is not None:
             reco = copy.deepcopy(original)
             prediction = self.face_reco.predict(reco)
             self.face_reco.show_prediction_labels_on_image(reco, prediction)
@@ -137,7 +129,7 @@ class PhotoBoothApp:
                 self.panels[key].configure(image=frames[key])
                 self.panels[key].image = frames[key]
 
-        time.sleep(0.01)
+        #time.sleep(0.01)
 
     def videoLoop(self):
         # DISCLAIMER:
@@ -165,13 +157,12 @@ class PhotoBoothApp:
         # the quit process to continue
         print("[INFO] closing...")
 
-        self.stopEvent.set()
-        self.vs.stop()
-
         for key in self.panels.keys():
-
             self.panels[key].configure(image=None)
             self.panels[key].image = None
+
+        self.stopEvent.set()
+        self.vs.stop()
 
         self.root.quit()
 
