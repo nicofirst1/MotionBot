@@ -13,12 +13,14 @@ class Path:
     LOGGER_DIR = join(RESOURCES_DIR, "Loggers")
     WEIGHTS_DIR=join(RESOURCES_DIR,"Weights")
     CUSTOM_DARK_DIR=join(RESOURCES_DIR,"Custom_darknet")
+    ANALISYS_DIR=join(RESOURCES_DIR,"Analisys")
     recognizer=join(RESOURCES_DIR,"recognizer.yaml")
 
     model=join(RESOURCES_DIR,"model.pkl")
     time_profiler=join(RESOURCES_DIR,"time_profiler")
     token_psw=join(RESOURCES_DIR,"token_psw.txt")
     ids=join(RESOURCES_DIR,"ids")
+    encodings="encodings.pkl"
 
     DARKNET_DIR=join(curdir,"src/darknet")
 

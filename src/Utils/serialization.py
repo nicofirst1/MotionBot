@@ -13,12 +13,9 @@ def dump_pkl(df, file_name):
     with open(file_name,"wb") as file:
         cPickle.dump(df,file,protocol=pickle.HIGHEST_PROTOCOL)
 
-    print(f"{name} dumped")
 
 def load_pkl(file_name):
 
-    name=file_name.split("/")[-1]
-    print(f"Loading {name}... ",end="")
 
     try:
         with open(file_name,"rb") as file_name:
@@ -27,5 +24,4 @@ def load_pkl(file_name):
         print("No file found!")
         return None
 
-    print("File loaded")
     return df

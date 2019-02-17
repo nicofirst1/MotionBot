@@ -87,17 +87,19 @@ class PhotoBoothApp:
 
         if face is not None:
             reco = copy.deepcopy(original)
-            prediction = self.face_reco.predict(reco)
-            self.face_reco.show_prediction_labels_on_image(reco, prediction)
-            frames['reco'] = reco
-
+            try:
+                prediction = self.face_reco.predict(reco)
+                self.face_reco.show_prediction_labels_on_image(reco, prediction)
+                frames['reco'] = reco
+            except FileNotFoundError:
+                pass
         return frames
 
     def convert_image(self, frames_dict):
 
         def convert_single(image):
 
-            image = imutils.resize(image, width=300)
+            image = imutils.resize(image, width=500)
 
             # OpenCV represents images in BGR order; however PIL
             # represents images in RGB order, so we need to swap
@@ -129,7 +131,6 @@ class PhotoBoothApp:
                 self.panels[key].configure(image=frames[key])
                 self.panels[key].image = frames[key]
 
-        #time.sleep(0.01)
 
     def videoLoop(self):
         # DISCLAIMER:
