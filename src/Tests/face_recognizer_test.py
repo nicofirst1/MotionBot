@@ -41,8 +41,23 @@ class PhotoBoothApp:
             'face': None
         }
 
-        # create a button, that when pressed, will take the current
+        # create a checkbutton, that when pressed, will take the current
 
+        bott_panels = tki.Label( compound=tki.CENTER)
+        bott_panels.pack(side="bottom",fill="both", padx=10, pady=10, expand="yes")
+
+
+        self.face_reco_flag = tki.IntVar()
+
+        check = tki.Checkbutton(bott_panels, text="save faces", variable=self.face_reco_flag)
+        check.pack(side="right", fill="both",
+                   expand="yes", padx=10,
+                   pady=10)
+
+        btn = tki.Button(bott_panels, text="Train",
+                         command=self.face_reco.train_model)
+        btn.pack(side="right", fill="both", expand="yes", padx=10,
+                 pady=10)
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -52,6 +67,8 @@ class PhotoBoothApp:
         # set a callback to handle when the window is closed
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
+
+
 
     def process_frame(self, original):
 
@@ -70,7 +87,7 @@ class PhotoBoothApp:
 
         if len(person):
             frames['person'] = person[0]
-            frames['face'] = self.face_reco.find_faces(frames['person'])
+            frames['face'] = self.face_reco.find_faces(frames['person'], save=self.face_reco_flag.get())
 
         return frames
 
