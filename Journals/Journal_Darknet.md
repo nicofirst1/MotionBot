@@ -11,6 +11,7 @@
 - [yolo python wrapper](https://github.com/madhawav/YOLO3-4-Py)
 - [darknet page](https://pjreddie.com/darknet/)
 - [darknet repo](https://github.com/pjreddie/darknet)
+- [face recognition](https://github.com/ageitgey/face_recognition)
 
 # Issues
 
