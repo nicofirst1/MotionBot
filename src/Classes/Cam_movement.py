@@ -87,10 +87,10 @@ class CamMovement(Thread):
         flags.add_flag("debug", False, [])
         flags.add_flag('video', True, ['motion'])
         flags.add_flag('green squares', False, ['motion', 'video'])
-        flags.add_flag('darknet', True, ['motion', 'video'])
-        flags.add_flag('darknet squares',True, ['motion', 'darknet', 'video'])
-        flags.add_flag('face photo', False, ['motion', 'darknet', 'video'])
-        flags.add_flag('face reco', False, ['motion', 'darknet', 'face photo', 'video'])
+        flags.add_flag('darknet', False, ['motion', 'video'])
+        flags.add_flag('darknet squares',False, ['motion', 'darknet', 'video'])
+        flags.add_flag('face photo', True, ['motion', 'video'])
+        flags.add_flag('face reco', True, ['motion', 'face photo', 'video'])
 
         self.flags = flags
 
@@ -184,19 +184,19 @@ class CamMovement(Thread):
                 if self.flags.get_value('darknet squares'):
                     to_write = self.darknet.draw_bounds_list(segmentation)
 
-                # if the user wants the face in the movement
-                if self.flags.get_value('face photo'):
-                    # take the face
-                    # todo: use recognizer
-                    faces = self.darknet.extract_faces(segmentation)
-                    self.face_recognizer.add_image_write(faces)
-                    # if there are no faces found
-                    if len(faces) == 0:
-                        self.telegram_handler.send_message(msg="Face not found")
+            # if the user wants the face in the movement
+            if self.flags.get_value('face photo'):
+                # take the face
+                prediction=self.face_recognizer.predict_multi(to_write,save=True)
+                faces=self.face_recognizer.filter_prediction_subjects(zip(prediction, to_write))
+                # if there are no faces found
+                if not len(faces):
+                    self.telegram_handler.send_message(msg="Face not found")
 
-                    else:
-                        self.telegram_handler.send_image(faces[0],
-                                                         msg="Found this guy")
+                else:
+                    for face in faces:
+                        self.telegram_handler.send_image(face[1],
+                                                         msg=f"Found this guy, I think it is {face[0]}")
 
             # send the original video too
             if not self.resetting_ground:
