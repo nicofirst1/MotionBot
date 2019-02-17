@@ -374,7 +374,7 @@ class FaceRecognizer(Thread):
 
         # Loop through each person in the training set
         for class_dir in os.listdir(pt.FACES_DIR):
-            if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)):
+            if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)) or "Unknown" in class_dir:
                 continue
 
             # Loop through each training image for the current person
