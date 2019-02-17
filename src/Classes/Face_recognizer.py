@@ -181,24 +181,27 @@ class FaceRecognizer(Thread):
         :param update: the update recieved
         :return:"""
 
-        # todo: resize image before sending
         def resize_image(image_file, desired_size):
+            """
+            Resize an image to a desired dimension
+            :param image_file: the image to be resized
+            :param desired_size: the desired dimension
+            :return: the new path to the image
+            """
+
+            new_path=pt.join(pt.RESOURCES_DIR,"to_send.png")
+
             img = Image.open(image_file)
 
             old_size = img.size  # old_size[0] is in (width, height) format
 
             ratio = float(desired_size) / max(old_size)
             new_size = tuple([int(x * ratio) for x in old_size])
-            # use thumbnail() or resize() method to resize the input image
 
-            # thumbnail is a in-place operation
+            img.resize(new_size, Image.ANTIALIAS)
+            img.save(new_path)
 
-            # im.thumbnail(new_size, Image.ANTIALIAS)
-
-            im = img.resize(new_size, Image.ANTIALIAS)
-            # create a new image and paste the resized on it
-
-            return im.fp
+            return new_path
 
         to_choose = glob.glob(pt.join(pt.UNK_DIR, '*.png'))
 
@@ -225,10 +228,16 @@ class FaceRecognizer(Thread):
         )
         to_send = "You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
                   "" + str(len(to_choose)) + " photos to be classified"
+
+        image=resize_image(image,840)
+
         with open(image, "rb") as file:
+
             bot.sendPhoto(user_id, file,
                           caption=to_send,
                           reply_markup=inline)
+
+        os.remove(image)
 
     def move_known_face(self, bot, update):
         """Function to move a known face from Unknown dir to face_dir
@@ -238,7 +247,7 @@ class FaceRecognizer(Thread):
 
         # the param has the format:  image_name dir_name
         param = update.callback_query.data.split()
-        image_name = param[1]
+        image_name = pt.join(pt.UNK_DIR,param[1])
         dir_name = param[2]
 
         # get the length of the images in the directory
@@ -389,6 +398,7 @@ class FaceRecognizer(Thread):
 
         # Create and train the KNN classifier
         knn_clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=knn_algo, weights='distance')
+        #fixme : Expected 2D array, got 1D array instead:
         knn_clf.fit(X, y)
 
         # se recovnizer to current one
@@ -709,8 +719,12 @@ class FaceRecognizer(Thread):
         images = [cv2.imread(elem) for elem in img_paths]
         # get the indices to be removed
         to_remove = self.filter_similar_images(images)
+
+        if not len(to_remove):
+            print("No image to remove")
+            return
+
         # get the paths corresponding to the indices
-        # fixme: when to_remove is empty list
         to_remove = operator.itemgetter(*to_remove)(img_paths)
         if not isinstance(to_remove, tuple): to_remove = [to_remove]
         # remove them
