@@ -49,7 +49,9 @@ is the one coming from
 [this repo](https://github.com/ageitgey/face_recognition). It is used
 both for face detection as well as a base for face recognition system.\
 
-The 
+The recognition works by using the embeddings from the network and some
+algorithms using [sklearn](https://scikit-learn.org/stable/)
+classificators.
 
 
 ### <a name="classification_alg"></a> Classification algorithms
@@ -72,9 +74,7 @@ Using PCA on the a dataset made of two individuals with 124 and 144 embeddings r
 ![Plot 1](./images/2d_plot.png)  | ![Video example](./images/3d_plot.png)
 
 Moreover the variance per componetns can be plotted too, which will be
-useful for the KNN algorithm <img
-src="./Resources/Readme/variance_components.png" alt="Variance"
-width="400" height="400"/>
+useful for the KNN algorithm ![variance](images/variance_components.png) 
 
 
 ### SVM
