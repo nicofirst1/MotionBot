@@ -479,13 +479,16 @@ class FaceRecognizer(Thread):
 
         # Determine how many neighbors to use for weighting in the KNN classifier
 
-        analize(self.X, self.y)
+        #analize(self.X, self.y)
 
-        if self.clf_flag:
-
+        if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
-        else:
+
+        elif self.clf_flag == 1:
             clf = build_classifier_knn(self.X, self.y)
+
+        else:
+            clf = None
 
         # save classifier to current one
         self.classifier = clf
@@ -505,14 +508,6 @@ class FaceRecognizer(Thread):
             For faces of unrecognized persons, the name 'unknown' will be returned.
         """
 
-        # Load a trained KNN model if not already loaded
-        if self.classifier is None:
-            self.classifier = load_pkl(pt.model)
-
-        # if no recognizer raise error
-        if self.classifier is None:
-            raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
-
         # Load image file and find face locations
         face_locations = face_recognition.face_locations(img)
 
@@ -529,6 +524,14 @@ class FaceRecognizer(Thread):
             :return:
             """
 
+            # Load a trained KNN model if not already loaded
+            if self.classifier is None:
+                self.classifier = load_pkl(pt.model)
+
+                # if no recognizer raise error
+                if self.classifier is None:
+                    raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
+
             # Use the KNN model to find the best matches for the test face
             closest_distances = self.classifier.kneighbors(faces_encodings, n_neighbors=3)
             are_matches = [closest_distances[0][i][0] for i in range(len(face_locations))]
@@ -542,6 +545,15 @@ class FaceRecognizer(Thread):
             Use svm to perform the prediction
             :return:
             """
+
+            # Load a trained KNN model if not already loaded
+            if self.classifier is None:
+                self.classifier = load_pkl(pt.model)
+
+                # if no recognizer raise error
+                if self.classifier is None:
+                    raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
+
             predictions = self.classifier.predict(faces_encodings)
             are_matches = ["-" for elem in predictions]
 
@@ -549,7 +561,7 @@ class FaceRecognizer(Thread):
             return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
                     zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
 
-        def predict_distance():
+        def predict_distance(algorithm):
             """
             Use custom algortihm to perform the prediction
             :return:
@@ -559,7 +571,7 @@ class FaceRecognizer(Thread):
 
             for idx in range(len(faces_encodings)):
                 distances = face_recognition.face_distance(self.X, faces_encodings[idx])
-                pred, measure = distances_algorithm(distances, self.y)
+                pred, measure = distances_algorithm(distances, self.y, algorithm=algorithm)
 
                 res_dict = {
                     'pred': pred,
@@ -579,8 +591,11 @@ class FaceRecognizer(Thread):
 
             return predict_knn()
 
+        elif self.clf_flag == 2:
+            return predict_distance("topN")
+
         else:
-            return predict_distance()
+            return predict_distance("lowestSum")
 
     def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
@@ -827,6 +842,15 @@ class FaceRecognizer(Thread):
 
         stream(f"Removed {len(to_remove)} images")
 
+    def switch_classificator(self, value):
+
+        self.clf_flag = value
+
+
+        if value == 0 or value == 1:
+            self.train_model()
+
+
 
 # ===================STATIC=========================
 
@@ -952,6 +976,8 @@ def filter_prediction_subjects(predictions):
 
     # remove empty list
     filtered = [elem for elem in predictions if elem[0] is not None]
+
+    if not len(filtered): return []
 
     # unzip list
     filtered, images = zip(*filtered)
