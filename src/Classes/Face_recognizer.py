@@ -524,6 +524,10 @@ class FaceRecognizer(Thread):
         faces_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations)
 
         def predict_knn():
+            """
+            Use knn to perform the prediction
+            :return:
+            """
 
             # Use the KNN model to find the best matches for the test face
             closest_distances = self.classifier.kneighbors(faces_encodings, n_neighbors=3)
@@ -534,6 +538,10 @@ class FaceRecognizer(Thread):
                     zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
 
         def predict_svm():
+            """
+            Use svm to perform the prediction
+            :return:
+            """
             predictions = self.classifier.predict(faces_encodings)
             are_matches = ["-" for elem in predictions]
 
@@ -542,6 +550,10 @@ class FaceRecognizer(Thread):
                     zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
 
         def predict_distance():
+            """
+            Use custom algortihm to perform the prediction 
+            :return:
+            """
 
             results = []
 
