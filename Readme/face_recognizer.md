@@ -69,7 +69,7 @@ in the [face recognition repo](https://github.com/ageitgey/face_recognition) , a
 are more information about how the embeddings extraction works).\
 Using PCA on the a dataset made of two individuals with 124 and 144 embeddings respectively yelds the following plots:
 
-2d plot           |  3d plot
+2D plot           |  3D plot
 :-------------------------:|:-------------------------:
 ![Plot 1](./images/2d_plot.png)  | ![Video example](./images/3d_plot.png)
 
