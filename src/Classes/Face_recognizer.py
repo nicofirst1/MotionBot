@@ -5,6 +5,7 @@ import os
 import random
 import threading
 import time
+from collections import Counter
 from threading import Thread
 
 import cv2
@@ -61,7 +62,8 @@ class FaceRecognizer(Thread):
         self.classifier = load_pkl(pt.model)
         self.face_thrs = 0.75
         self.faces_idx = 0
-        self.clf_flag = 1  # 1 if svm, 0 if knn
+        self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
+        self.X, self.y = build_dataset()
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -282,7 +284,6 @@ class FaceRecognizer(Thread):
         :param update: the update recieved
         :return:"""
 
-        # fixme
         image = update.callback_query.data.split()[1]
         image = pt.join(pt.UNK_DIR, image)
         self.end_callback(bot, update, calling=False)
@@ -369,7 +370,6 @@ class FaceRecognizer(Thread):
 
         # look for new images in the Unknown direcotory and delete recognized ones
         if calling:
-            # fixme
             msg = update.callback_query.message.reply_text("Updating recognizer...", parse_mode="HTML")
 
             self.train_model()
@@ -406,7 +406,7 @@ class FaceRecognizer(Thread):
 
     # ===================RECOGNIZER=========================
 
-    def train_model(self, n_neighbors=None, verbose=True):
+    def train_model(self):
         """
         Trains a k-nearest neighbors classifier for face recognition.
 
@@ -459,47 +459,11 @@ class FaceRecognizer(Thread):
 
             plt.savefig(pt.join(pt.ANALISYS_DIR, "faces"))
 
-        def build_dataset():
-            X = []
-            y = []
-
-            # Loop through each person in the training set
-            for class_dir in os.listdir(pt.FACES_DIR):
-                if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)) or "Unknown" in class_dir:
-                    continue
-
-                # save directory
-                subject_dir = os.path.join(pt.FACES_DIR, class_dir)
-
-                # load encodings
-                encodings = load_pkl(pt.join(subject_dir, pt.encodings))
-                if encodings is None: encodings = []
-
-                # Loop through each training image for the current person
-                for img_path in image_files_in_folder(subject_dir):
-                    image = face_recognition.load_image_file(img_path)
-                    os.remove(img_path)
-
-                    # take the bounding boxes an the image size
-                    face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
-                    face_bounding_boxes = [face_bounding_boxes]
-
-                    # Add face encoding for current image to the training set
-                    encodings.append(
-                        face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,
-                                                        num_jitters=10)[0])
-                    # y.append(class_dir.split("_")[-1])
-
-                # save encodings
-                dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
-                print(f"Encodings for {subject_dir} are {len(encodings)}")
-                # update model
-                X += encodings
-                y += len(encodings) * [class_dir.split("_")[-1]]
-
-            return X, y
-
         def build_classifier_knn(X, y):
+
+            n_neighbors = int(round(math.sqrt(len(X)))) * 2
+            print("Chose n_neighbors automatically:", n_neighbors)
+
             clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute", weights='uniform')
             clf.fit(X, y)
             return clf
@@ -509,23 +473,19 @@ class FaceRecognizer(Thread):
             clf.fit(X, y)
             return clf
 
-        X, y = build_dataset()
+        self.X, self.y = build_dataset()
 
-        if not len(X): return
+        if not len(self.X): return
 
         # Determine how many neighbors to use for weighting in the KNN classifier
-        if n_neighbors is None:
-            n_neighbors = int(round(math.sqrt(len(X)))) * 2
-            if verbose:
-                print("Chose n_neighbors automatically:", n_neighbors)
 
-        analize(X, y)
+        analize(self.X, self.y)
 
         if self.clf_flag:
 
-            clf = build_classifier_svm(X, y)
+            clf = build_classifier_svm(self.X, self.y)
         else:
-            clf = build_classifier_knn(X, y)
+            clf = build_classifier_knn(self.X, self.y)
 
         # save classifier to current one
         self.classifier = clf
@@ -581,14 +541,35 @@ class FaceRecognizer(Thread):
             return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
                     zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
 
-        if self.clf_flag:
+        def predict_distance():
+
+            results = []
+
+            for idx in range(len(faces_encodings)):
+                distances = face_recognition.face_distance(self.X, faces_encodings[idx])
+                pred, measure = distances_algorithm(distances, self.y)
+
+                res_dict = {
+                    'pred': pred,
+                    'bbs': face_locations[idx],
+                    'conf': measure
+
+                }
+                results.append(res_dict)
+
+            return results
+
+
+        if self.clf_flag==0:
 
             return predict_svm()
 
-        else:
-            
+        elif self.clf_flag==1:
+
             return predict_knn()
 
+        else:
+            return predict_distance()
 
     def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
@@ -838,19 +819,119 @@ class FaceRecognizer(Thread):
 
 # ===================STATIC=========================
 
+
+def distances_algorithm(distance, y, algorithm="lowestSum"):
+    """
+    Return a tuple of prediction, confidence given an algorithm
+    :param distance: a list of floats associated with the distance between faces
+    :param y: a list of persons of the same lenght of tdistancess
+    :param algorithm: str, the type of the algoritmh to use
+    :return:
+    """
+
+    normalized_distance = distance / distance.sum()
+
+    def top_n(n=10):
+        """
+        Get the top n best distance and use a voting system to get the most probable result
+        :param n: int, the top
+        :return:
+        """
+        pred = Counter(y[distance.argsort()[:n]]).most_common(1)[0][0]
+        measure = normalized_distance[y == pred].sum()
+
+        return pred, measure
+
+    def lowest_sum():
+        """
+        Perform a sum for every person in the KB and get the one with the minimum weighted sum
+        :return:
+        """
+        categ = Counter(y)
+
+        distance_dict = {}
+        for key, val in categ.items():
+            distance_dict[key] = normalized_distance[y == key].sum() / val
+
+        pred = min(distance_dict.items(), key=operator.itemgetter(1))[0]
+        measure = distance_dict[pred]
+
+        return pred, measure
+
+    if algorithm=="topN":
+        return top_n()
+
+    elif algorithm=="lowestSum":
+        return lowest_sum()
+
+    else:
+        raise ValueError(f"algoritm '{algorithm}' not recognized")
+
+
+
+
 def rename_images_index(path_to_dir):
     img_paths = []
     renames = []
+    tmp_paths = []
     idx = 0
     for path, subdirs, files in os.walk(path_to_dir):
         for name in files:
             if "png" in name:
                 img_paths.append(os.path.join(path, name))
                 renames.append(os.path.join(path, f"image_{idx}.png"))
+                tmp_paths.append(os.path.join(path, f"image_copy_{idx}.png"))
                 idx += 1
 
-    for original, renamed in zip(img_paths, renames):
-        os.renames(original, renamed)
+    for original, tmp in zip(img_paths, tmp_paths):
+        os.renames(original, tmp)
+
+    for tmp, renamed in zip(tmp_paths, renames):
+        os.renames(tmp, renamed)
+
+
+def build_dataset():
+    X = []
+    y = []
+
+    # Loop through each person in the training set
+    for class_dir in os.listdir(pt.FACES_DIR):
+        if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)) or "Unknown" in class_dir:
+            continue
+
+        # save directory
+        subject_dir = os.path.join(pt.FACES_DIR, class_dir)
+
+        # load encodings
+        encodings = load_pkl(pt.join(subject_dir, pt.encodings))
+        if encodings is None: encodings = []
+
+        # Loop through each training image for the current person
+        for img_path in image_files_in_folder(subject_dir):
+            image = face_recognition.load_image_file(img_path)
+            os.remove(img_path)
+
+            # take the bounding boxes an the image size
+            face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
+            face_bounding_boxes = [face_bounding_boxes]
+
+            # Add face encoding for current image to the training set
+            encodings.append(
+                face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,
+                                                num_jitters=10)[0])
+            # y.append(class_dir.split("_")[-1])
+
+        # save encodings
+        dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
+        print(f"Encodings for {subject_dir} are {len(encodings)}")
+        # update model
+        X += encodings
+        y += len(encodings) * [class_dir.split("_")[-1]]
+
+    X = np.asarray(X)
+    y = np.asarray(y)
+
+    return X, y
 
 
 def filter_prediction_subjects(predictions):
