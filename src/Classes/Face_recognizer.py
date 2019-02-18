@@ -960,9 +960,7 @@ def build_dataset():
             os.remove(img_path)
 
             # take the bounding boxes an the image size
-            #face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
             face_bounding_boxes = 0,image.shape[1], image.shape[0],0
-            #top, right, bottom, left
             face_bounding_boxes = [face_bounding_boxes]
 
             try:
