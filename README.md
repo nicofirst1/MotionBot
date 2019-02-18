@@ -1,21 +1,29 @@
 # MotionBot
 
-This branch brings the concept of smart surveillance system beyond its original scope. 
-The famous [Darknet](https://pjreddie.com/darknet/) framework has been successfully integrated, making the object recognition 
-task fast and secure.\
+This branch brings the concept of smart surveillance system beyond its
+original scope. The famous [Darknet](https://pjreddie.com/darknet/)
+framework has been successfully integrated, making the object
+recognition task fast and secure.
+ 
 More over the face recognition task has been improved using the
- [face recognition repo](https://github.com/ageitgey/face_recognition).
+[face recognition repo](https://github.com/ageitgey/face_recognition).
 
 ## Installation
-In this section the setup for this branch is explained.\
-You **must** perform the setup of the master branch first in order to make this one work.
+In this section the setup for this branch is explained.
+ 
+You **must** perform the setup of the master branch first in order to
+make this one work.
 
 
 ### Python 
-Install the requirements using\
-`pip install -r requirements.txt`\
-So that the additional packages will be installed.\
-Run the [Path](./src/Path.py) file to initialize missing files:\
+Install the requirements using
+ 
+`pip install -r requirements.txt`
+  
+So that the additional packages will be installed. 
+
+Run the [Path](./src/Path.py) file to initialize missing files:
+ 
 `python ./src/Path.py`
 
 ### Telegram 
@@ -38,8 +46,11 @@ There are various python files which can be executed.
 
 ### Main 
 
-To start the secure system first position your camera where you want and then use the [main.py](./src/main.py) file:\
-`python ./src/main.py`\
+To start the secure system first position your camera where you want and
+then use the [main.py](./src/main.py) file:
+ 
+ `python ./src/main.py`
+
 
 If everything worked fine you should see the following messages:
 ```
