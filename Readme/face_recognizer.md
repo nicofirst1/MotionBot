@@ -2,7 +2,7 @@
 # Face Recognizer
 In this section the functionalities of the
 [face recognizer](Readme/face_recognizer.md) will be explained in
-details, iamges and example will be provided
+details, images and example will be provided
 
 ## Introduction 
 
@@ -28,6 +28,18 @@ depending on the button pressed as can be seen from the following image.
 
 ### Saving Faces
 
+The save face menu is shown in the following image:
+![menu2](./images/menu2.png)
+
+
+## Face Recognition
+
+As previously mentioned, the recognition framework used in this project
+is the one coming from
+[this repo](https://github.com/ageitgey/face_recognition). It is used
+both for face detection as well as a base for face recognition system.\
+
+The 
 
 
 ### <a name="classification_alg"></a> Classification algorithms
