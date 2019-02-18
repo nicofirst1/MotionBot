@@ -33,6 +33,11 @@ cp ./Resources/Custom_darknet/Makefile   ./src/darknet/Makefile
 cp ./Resources/Custom_darknet/darknet.py   ./src/darknet/python/darknet.py
 
 
-cd ./src/darknet/
 
-make
+read -p "Do you wish to compile darknet?" yn
+    case $yn in
+        [Yy]* ) cd ./src/darknet/; make;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+
