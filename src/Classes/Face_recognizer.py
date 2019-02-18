@@ -408,7 +408,7 @@ class FaceRecognizer(Thread):
 
     # ===================RECOGNIZER=========================
 
-    def train_model(self):
+    def train_model(self, to_analyze=True):
         """
         Trains a k-nearest neighbors classifier for face recognition.
 
@@ -480,8 +480,8 @@ class FaceRecognizer(Thread):
         if not len(self.X): return
 
         # Determine how many neighbors to use for weighting in the KNN classifier
-
-        #analize(self.X, self.y)
+        if to_analyze:
+            analize(self.X, self.y)
 
         if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
