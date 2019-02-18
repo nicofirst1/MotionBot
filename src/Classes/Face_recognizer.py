@@ -165,6 +165,8 @@ class FaceRecognizer(Thread):
         :param update: the update recieved
         :return:"""
 
+        #fixme: no more faces
+
         # get the param
         s_name = update.callback_query.data.split()[1]
         user_id = update._effective_user.id
@@ -843,6 +845,15 @@ class FaceRecognizer(Thread):
         stream(f"Removed {len(to_remove)} images")
 
     def switch_classificator(self, value):
+        """
+        Switch classifier
+        :param value: value to switch to
+            0 : svm
+            1 : knn
+            2 : distance top n
+            3 : distance lowest sum
+        :return:
+        """
 
         self.clf_flag = value
 
