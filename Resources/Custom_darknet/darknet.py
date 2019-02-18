@@ -107,6 +107,10 @@ load_image = lib.load_image_color
 load_image.argtypes = [c_char_p, c_int, c_int]
 load_image.restype = IMAGE
 
+free_network= lib.free_network
+free_network.argtypes = [c_void_p]
+free_network.restype = c_void_p
+
 ndarray_image = lib.ndarray_to_image
 ndarray_image.argtypes = [POINTER(c_ubyte), POINTER(c_long), POINTER(c_long)]
 ndarray_image.restype = IMAGE
