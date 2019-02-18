@@ -34,6 +34,7 @@ class PhotoBoothApp:
         self.thread = None
         self.stopEvent = None
         self.darknet = darknet
+        self.darknet_load_falg = False
         self.face_reco = face_reco
 
         # initialize the root window and image panel
@@ -110,15 +111,22 @@ class PhotoBoothApp:
             'reco': None
         }
 
+        model = "cnn"
+
+        if self.darknet_load_falg != self.darknet_flag.get():
+            self.darknet.un_load_net()
+            self.darknet_load_falg = self.darknet_flag.get()
+
         if self.darknet_flag.get():
             segmentation = self.darknet.detect_img(original.copy())
             segmentation = [segmentation]
 
             frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
+            model = "hog"
 
         if self.face_reco_flag.get():
 
-            face = self.face_reco.find_faces(original.copy(), model="hog")
+            face = self.face_reco.find_faces(original.copy(), model=model)
 
             if face is not None:
 
@@ -215,7 +223,7 @@ if __name__ == '__main__':
     # initialize the video stream and allow the camera sensor to warmup
 
     # start the app
-    token,psw=read_token_psw()
+    token, psw = read_token_psw()
     updater = Updater(token)
     disp = updater.dispatcher
 
@@ -226,7 +234,6 @@ if __name__ == '__main__':
     time.sleep(2.0)
 
     darknet = Darknet(True)
-    darknet.start()
 
     pba = PhotoBoothApp(vs, ".", darknet, face_reco)
     pba.root.mainloop()
