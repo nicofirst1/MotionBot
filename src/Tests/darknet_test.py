@@ -36,21 +36,21 @@ class PhotoBoothApp:
         # create a button, that when pressed, will take the current
         # frame and save it to file
         btn = tki.Button(self.root, text="Snapshot!",
-                         command=self.takeSnapshot)
+                         command=self.take_snapshot)
         btn.pack(side="bottom", fill="both", expand="yes", padx=10,
                  pady=10)
 
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
-        self.thread = threading.Thread(target=self.videoLoop, args=())
+        self.thread = threading.Thread(target=self.video_loop, args=())
         self.thread.start()
 
         # set a callback to handle when the window is closed
         self.root.wm_title("PyImageSearch PhotoBooth")
-        self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
+        self.root.wm_protocol("WM_DELETE_WINDOW", self.on_close)
 
-    def videoLoop(self):
+    def video_loop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
         # try/except statement is a pretty ugly hack to get around
@@ -91,7 +91,7 @@ class PhotoBoothApp:
         except RuntimeError as e:
             print("[INFO] caught a RuntimeError")
 
-    def takeSnapshot(self):
+    def take_snapshot(self):
         # grab the current timestamp and use it to construct the
         # output path
         ts = datetime.datetime.now()
@@ -103,7 +103,7 @@ class PhotoBoothApp:
         cv2.imwrite(p, self.frame.copy())
         print("[INFO] saved {}".format(filename))
 
-    def onClose(self):
+    def on_close(self):
         # set the stop event, cleanup the camera, and allow the rest of
         # the quit process to continue
         print("[INFO] closing...")
