@@ -96,8 +96,7 @@ Using PCA on the a dataset made of two individuals with 124 and 144 embeddings r
 ![Plot 1](./Resources/Readme/2d_plot.png)  | ![Video example](./Resources/Readme/3d_plot.png)
 
 Moreover the variance per componetns can be plotted too, which will be useful for the KNN algorithm
-![Variance](./Resources/Readme/variance_components.png)
-<img src="./Resources/Readme/variance_components.png" alt="Variance" width="200"/>
+<img src="./Resources/Readme/variance_components.png" alt="Variance" width="400" height="400"/>
 
 
 ### SVM
