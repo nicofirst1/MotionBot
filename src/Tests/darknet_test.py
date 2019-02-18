@@ -60,15 +60,15 @@ class PhotoBoothApp:
             while not self.stopEvent.is_set():
                 # grab the frame from the video stream and resize it to
                 # have a maximum width of 300 pixels
-                self.frame = self.vs.read()
+                frame = self.vs.read()
 
-                _, bbs = self.darknet.detect_img(self.frame)
+                _, bbs = self.darknet.detect_img(frame)
 
                 for bb in bbs:
                     cat, _, bound = bb
-                    self.darknet.draw_bounds(self.frame, bound, cat)
+                    self.darknet.draw_bounds(frame, bound, cat)
 
-                self.frame = imutils.resize(self.frame, width=300)
+                self.frame = imutils.resize(frame, width=600)
 
                 # OpenCV represents images in BGR order; however PIL
                 # represents images in RGB order, so we need to swap
@@ -97,6 +97,7 @@ class PhotoBoothApp:
         ts = datetime.datetime.now()
         filename = "{}.jpg".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
         p = os.path.sep.join((self.outputPath, filename))
+
 
         # save the file
         cv2.imwrite(p, self.frame.copy())
