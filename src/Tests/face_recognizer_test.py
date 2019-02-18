@@ -37,6 +37,11 @@ class PhotoBoothApp:
         self.darknet_load_falg = False
         self.face_reco = face_reco
 
+        self.darknet_flag = None
+        self.algorithm = None
+        self.face_save_flag = None
+        self.face_reco_flag = None
+
         # initialize the root window and image panel
         self.root = tki.Tk()
 
@@ -68,40 +73,82 @@ class PhotoBoothApp:
         # create a left bttom panel
         check_panel = tki.Label(compound=tki.CENTER, master=bott_panels)
         check_panel.pack(side="right", fill="both", padx=10, pady=10, expand="yes")
-        # check box
-        self.face_save_flag = tki.BooleanVar()
 
-        check = tki.Checkbutton(check_panel, text="save faces", variable=self.face_save_flag)
-        check.pack(side="bottom", fill="both",
-                   expand="yes", padx=10,
-                   pady=10)
+        # create a left bttom panel
+        radio_panel = tki.Label(compound=tki.CENTER, master=bott_panels)
+        radio_panel.pack(side="right", fill="both", padx=10, pady=10, expand="yes")
 
-        self.darknet_flag = tki.BooleanVar()
-        self.darknet_flag.set(False)
+        def build_radio():
+            """
+            Build radio choices
+            :return:
+            """
+            v = tki.IntVar()
+            v.set(2)
 
-        check = tki.Checkbutton(check_panel, text="darknet", variable=self.darknet_flag)
-        check.pack(side="bottom", fill="both",
-                   expand="yes", padx=10,
-                   pady=10)
+            algorithms = [
+                ('svm', 0),
+                ('knn', 1),
+                ('top n', 2),
+                ('min sum', 3)
+            ]
 
-        self.face_reco_flag = tki.BooleanVar()
+            for val, language in enumerate(algorithms):
+                tki.Radiobutton(radio_panel,
+                                text=language,
+                                padx=20,
+                                variable=v,
+                                command=self.set_algorithm,
+                                value=val).pack(anchor=tki.W)
 
-        check = tki.Checkbutton(check_panel, text="face reco", variable=self.face_reco_flag)
-        check.pack(side="bottom", fill="both",
-                   expand="yes", padx=10,
-                   pady=10)
+            return v
 
-        # train button
-        btn = tki.Button(bott_panels, text="Train",
-                         command=self.face_reco.train_model)
-        btn.pack(side="right", fill="both", expand="yes", padx=10,
-                 pady=10)
+        def build_check():
+            # check box
 
-        # clean faces button
-        btn = tki.Button(bott_panels, text="Clean Faces",
-                         command=self.face_reco.filter_all_images)
-        btn.pack(side="right", fill="both", expand="yes", padx=10,
-                 pady=10)
+            face_save_flag = tki.BooleanVar()
+
+            check = tki.Checkbutton(check_panel, text="save faces", variable=face_save_flag)
+            check.pack(side="bottom", fill="both",
+                       expand="yes", padx=10,
+                       pady=10)
+
+            darknet_flag = tki.BooleanVar()
+            darknet_flag.set(False)
+
+            check = tki.Checkbutton(check_panel, text="darknet", variable=darknet_flag)
+            check.pack(side="bottom", fill="both",
+                       expand="yes", padx=10,
+                       pady=10)
+
+            face_reco_flag = tki.BooleanVar()
+
+            check = tki.Checkbutton(check_panel, text="face reco", variable=face_reco_flag)
+            check.pack(side="bottom", fill="both",
+                       expand="yes", padx=10,
+                       pady=10)
+            return face_save_flag, darknet_flag, face_reco_flag
+
+        def build_button():
+            # train button
+            btn = tki.Button(bott_panels, text="Train",
+                             command=self.face_reco.train_model)
+            btn.pack(side="right", fill="both", expand="yes", padx=10,
+                     pady=10)
+
+            # clean faces button
+            btn = tki.Button(bott_panels, text="Clean Faces",
+                             command=self.face_reco.filter_all_images)
+            btn.pack(side="right", fill="both", expand="yes", padx=10,
+                     pady=10)
+
+        self.face_save_flag, self.darknet_flag, self.face_reco_flag = build_check()
+        build_button()
+        self.algorithm = build_radio()
+
+    def set_algorithm(self):
+
+        self.face_reco.switch_classificator(self.algorithm.get())
 
     def process_frame(self, original):
 
