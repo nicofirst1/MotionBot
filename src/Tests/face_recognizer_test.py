@@ -17,6 +17,7 @@ from telegram.ext import Updater
 from Classes.Darknet import Darknet
 from Classes.Face_recognizer import FaceRecognizer, rename_images_index
 from Path import Path as pt
+from Utils.utils import read_token_psw
 
 
 class PhotoBoothApp:
@@ -214,7 +215,8 @@ if __name__ == '__main__':
     # initialize the video stream and allow the camera sensor to warmup
 
     # start the app
-    updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
+    token,psw=read_token_psw()
+    updater = Updater(token)
     disp = updater.dispatcher
 
     face_reco = FaceRecognizer(disp)
