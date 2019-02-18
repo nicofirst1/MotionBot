@@ -551,7 +551,7 @@ class FaceRecognizer(Thread):
 
         def predict_distance():
             """
-            Use custom algortihm to perform the prediction 
+            Use custom algortihm to perform the prediction
             :return:
             """
 
@@ -618,7 +618,7 @@ class FaceRecognizer(Thread):
         print("...Predict multi ended")
         return predictions
 
-    def find_faces(self, image, save=False):
+    def find_faces(self, image, save=False, model="cnn"):
         """
         Find faces in image and return the first
         :param image: the image as PIL
@@ -629,7 +629,7 @@ class FaceRecognizer(Thread):
         face_images = []
 
         # look for the locations in the images
-        face_locations = face_recognition.face_locations(image, model="cnn")
+        face_locations = face_recognition.face_locations(image, model=model)
 
         # for every location crop image and append
         for location in face_locations:
