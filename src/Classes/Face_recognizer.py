@@ -418,7 +418,7 @@ class FaceRecognizer(Thread):
 
         def analize(X, Y):
             enc = preprocessing.LabelEncoder()
-            y_enc = enc.fit_transform(y)
+            y_enc = enc.fit_transform(self.y)
 
             pca = PCA()
             projected = pca.fit_transform(X, Y)
@@ -571,12 +571,11 @@ class FaceRecognizer(Thread):
 
             return results
 
-
-        if self.clf_flag==0:
+        if self.clf_flag == 0:
 
             return predict_svm()
 
-        elif self.clf_flag==1:
+        elif self.clf_flag == 1:
 
             return predict_knn()
 
@@ -870,16 +869,14 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
 
         return pred, measure
 
-    if algorithm=="topN":
+    if algorithm == "topN":
         return top_n()
 
-    elif algorithm=="lowestSum":
+    elif algorithm == "lowestSum":
         return lowest_sum()
 
     else:
         raise ValueError(f"algoritm '{algorithm}' not recognized")
-
-
 
 
 def rename_images_index(path_to_dir):
@@ -1115,7 +1112,8 @@ def filter_similar_images(images, similar_thresh=0.94):
     return to_pop
 
 # # uncomment and add token to debug face recognition
-# updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
+# token, psw = read_token_psw()
+# updater = Updater(token)
 # disp = updater.dispatcher
 # # #
 # face = FaceRecognizer(disp)
