@@ -7,8 +7,8 @@ More over the face recognition task has been improved using the
  [face recognition repo](https://github.com/ageitgey/face_recognition).
 
 ## Installation
-in this section the setup for this branch is explained.\
-You **must** perform the setup of the master branch first in order to make this work.
+In this section the setup for this branch is explained.\
+You **must** perform the setup of the master branch first in order to make this one work.
 
 
 ### Python 
@@ -97,7 +97,7 @@ Using PCA on the a dataset made of two individuals with 124 and 144 embeddings r
 
 Moreover the variance per componetns can be plotted too, which will be useful for the KNN algorithm
 ![Variance](./Resources/Readme/variance_components.png)
-
+<img src="./Resources/Readme/variance_components.png" alt="Variance" width="200"/>
 
 
 ### SVM
