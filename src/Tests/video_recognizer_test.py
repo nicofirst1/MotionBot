@@ -277,7 +277,7 @@ if __name__ == '__main__':
     face_reco = FaceRecognizer(disp)
 
     print("[INFO] warming up camera...")
-    vs = VideoStream(src=0).start()
+    vs = VideoStream(src=1).start()
     time.sleep(2.0)
 
     darknet = Darknet(True)
