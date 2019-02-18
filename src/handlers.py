@@ -30,7 +30,6 @@ FLAG_KEYBOARD = InlineKeyboardMarkup([
      InlineKeyboardButton("Face Reco", callback_data="/flag face_reco"),
      InlineKeyboardButton("Debug", callback_data="/flag debug")],
     [InlineKeyboardButton("Darknet", callback_data="/flag darknet"),
-     InlineKeyboardButton("Darknet Squares", callback_data="/flag darknet_squares"),
      InlineKeyboardButton("Done", callback_data="/flag done")],
 
 ])
@@ -43,7 +42,6 @@ Here you can set the values of your flags, either <b>ON</b> or <b>OFF</b>
 ---- <b>Face Photo</b> : If set to <i>ON</i> you will recieve a photo of the detected face with the video
 ---- <b>Face Reco(gnizer)</b> : If set to <i>ON</i> the program will try to guess the person face
 ---- <b>Darknet</b> : If set to <i>ON</i> the program will use darknet for object segmentation
----- <b>Darknet Squares</b> : If set to <i>ON</i> squares will be drawn on top of the segmented objects
 -- <b>Debug</b> : If set to <i>ON</i> you will recieve the images from the debug
 
 To set a flag just click on the corrispondent button.
@@ -86,10 +84,6 @@ def flag_setting_callback(bot, update):
 
     elif param == "face_reco":
         cam.motion.flags.flip_value('face reco')
-
-
-    elif param == "darknet_squares":
-        cam.motion.flags.flip_value('darknet squares')
 
 
 
@@ -386,13 +380,6 @@ def complete_flags():
     else:
         complete_falg_str += " ❌"
 
-
-    complete_falg_str += "\n-- <b>Darknet Squares</b>"
-
-    if cam.motion.flags.get_value('darknet squares'):
-        complete_falg_str += " ✅"
-    else:
-        complete_falg_str += " ❌"
 
     complete_falg_str += "\n-- <b>Debug</b>"
 

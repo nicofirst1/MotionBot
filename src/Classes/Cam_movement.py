@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 
 # from memory_profiler import profile
+from Classes.Face_recognizer import filter_prediction_subjects
 from Classes.Flags import Falgs
 
 logger = logging.getLogger('cam_movement')
@@ -83,13 +84,11 @@ class CamMovement(Thread):
 
         flags = Falgs()
 
-        # todo: merge darkent and squares
         flags.add_flag("motion", True, [])
         flags.add_flag("debug", False, [])
         flags.add_flag('video', True, ['motion'])
         flags.add_flag('green squares', False, ['motion', 'video'])
         flags.add_flag('darknet', False, ['motion', 'video'])
-        flags.add_flag('darknet squares',False, ['motion', 'darknet', 'video'])
         flags.add_flag('face photo', True, ['motion', 'video'])
         flags.add_flag('face reco', True, ['motion', 'face photo', 'video'])
 
@@ -182,15 +181,14 @@ class CamMovement(Thread):
             if self.flags.get_value('darknet'):
                 segmentation = self.darknet.detect_video(to_write)
 
-                if self.flags.get_value('darknet squares'):
-                    to_write = self.darknet.draw_bounds_list(segmentation)
+                to_write = self.darknet.draw_bounds_list(segmentation)
 
             # if the user wants the face in the movement
             if self.flags.get_value('face photo'):
 
                 def use_recognizer():
                     prediction = self.face_recognizer.predict_multi(to_write, save=True)
-                    faces = self.face_recognizer.filter_prediction_subjects(zip(prediction, to_write))
+                    faces = filter_prediction_subjects(zip(prediction, to_write))
                     # if there are no faces found
                     if not len(faces):
                         self.telegram_handler.send_message(msg="Face not found")
