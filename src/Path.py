@@ -32,6 +32,17 @@ class Path:
     def __init__(self):
         self.initialize_dirs()
 
+        self.create_files([self.ids,self.token_psw])
+
+
+    def create_files(self, files):
+
+        for f in files:
+            try:
+                 open(f, 'r')
+            except IOError:
+                 open(f, 'w')
+
     def initialize_dirs(self):
         """
         Initialize all the directories  listed above
@@ -65,3 +76,6 @@ class Path:
     def join(path1,path2):
         return join(path1,path2)
 
+
+if __name__ == '__main__':
+    Path()
