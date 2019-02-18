@@ -71,6 +71,30 @@ Moreover there are some additional functionality:
 samples faster than using the surveillance system.
 - The *clean face* button is used to filter those images in the [Unkown](./Faces/Unknown) directory which have a similarity higher than a 
 certain threshold
+- The *Train* button trains the model on new images in the [Faces](./Faces) directory. 
 
 
 ## <a name="classification_alg"></a> Classification algorithms
+The classification algoritmhs are chosen using the *clf_flag* in the [Face recognizer](./src/Classes/Face_recognizer.py) file. 
+Each integers maps to a different method:
+- 0 -> SVM
+- 1 -> KNN
+- 2 -> Distance : top n
+- 3 -> Distance : minimum sum 
+
+### Dataset
+The dataset is made of the face embeddings and an associated list of the people they belongs to. These embeddings, called *encodings* 
+in the [face recognition repo](https://github.com/ageitgey/face_recognition) , are arrays of 128 floats. They can be seen as 
+"summaries" extracted from a person's face ([here](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78)
+are more information about how the embeddings extraction works).\
+Using PCA on the a dataset made of two individuals with 124 and 144 embeddings respectively yelds the following plots:
+
+2d plot           |  3d plot
+:-------------------------:|:-------------------------:
+![Plot 1](./Resources/Readme/2d_plot.png)  | ![Video example](./Resources/Readme/3d_plot.png)
+
+
+
+
+### SVM
+This classifier is the easiest classificator since it fits the 
