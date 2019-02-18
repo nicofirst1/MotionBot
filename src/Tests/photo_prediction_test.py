@@ -1,7 +1,6 @@
 # import the necessary packages
 from __future__ import print_function
 
-import copy
 import threading
 import time
 import tkinter as tki
@@ -12,12 +11,9 @@ import imutils
 from PIL import Image
 from PIL import ImageTk
 # import the necessary packages
-from imutils.video import VideoStream
 from telegram.ext import Updater
 
-from Classes.Darknet import Darknet
-from Classes.Face_recognizer import FaceRecognizer, rename_images_index
-from Path import Path as pt
+from Classes.Face_recognizer import FaceRecognizer
 from Utils.utils import read_token_psw
 
 
@@ -27,8 +23,8 @@ class PhotoReco:
         # the most recently read frame, thread for reading frames, and
         # the thread stop event
 
+        self.algorithm = None
         self.queue = []
-
 
         self.thread = None
         self.stopEvent = None
@@ -42,7 +38,7 @@ class PhotoReco:
             'reco': None
         }
 
-        self.img=None
+        self.img = None
         # prepare the gui
         self.pack_gui()
 
@@ -62,7 +58,6 @@ class PhotoReco:
         bott_panels = tki.Label(compound=tki.CENTER)
         bott_panels.pack(side="bottom", fill="both", padx=10, pady=10, expand="yes")
 
-
         btn = tki.Button(bott_panels, text="Choose Photo",
                          command=self.choose_photo)
         btn.pack(side="left", fill="both", expand="yes", padx=10,
@@ -70,23 +65,22 @@ class PhotoReco:
 
         v = tki.IntVar()
         v.set(2)
+        self.algorithm = v
 
-        self.algorithm=v
-        alghoritms=[
-            ('svm',0),
-            ('knn',1),
-            ('top n',2),
-            ('min sum',3)
+        algorithms = [
+            ('svm', 0),
+            ('knn', 1),
+            ('top n', 2),
+            ('min sum', 3)
         ]
 
-
-        for val, language in enumerate(alghoritms):
+        for val, language in enumerate(algorithms):
             tki.Radiobutton(bott_panels,
-                           text=language,
-                           padx=20,
-                           variable=v,
-                           command=self.set_algorithm,
-                           value=val).pack(anchor=tki.W)
+                            text=language,
+                            padx=20,
+                            variable=v,
+                            command=self.set_algorithm,
+                            value=val).pack(anchor=tki.W)
 
     def set_algorithm(self):
 
@@ -95,22 +89,15 @@ class PhotoReco:
         if self.img is not None:
             self.predict(self.img)
 
-
-
     def choose_photo(self):
         filename = askopenfilename()
 
-
         try:
-            img=cv2.imread(filename)
+            img = cv2.imread(filename)
         except Exception:
             return
-        self.img=img
+        self.img = img
         self.predict(img)
-
-
-
-
 
     def predict(self, img):
         # find faces
@@ -129,10 +116,6 @@ class PhotoReco:
 
         frames = self.convert_image(frames)
         self.update_panels(frames)
-
-
-
-
 
     def convert_image(self, frames_dict):
 
@@ -213,8 +196,6 @@ if __name__ == '__main__':
     disp = updater.dispatcher
 
     face_reco = FaceRecognizer(disp)
-
-
 
     pba = PhotoReco(face_reco)
     pba.root.mainloop()
