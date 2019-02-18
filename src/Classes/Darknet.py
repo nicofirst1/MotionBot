@@ -92,21 +92,28 @@ class Darknet(Thread):
 
         return frames
 
-
     def un_load_net(self):
+        """
+        Un/load the model to free memeory
+        :return:
+        """
+
         if self.net is not None:
             free_network(self.net)
-            self.net=None
+            self.net = None
             gc.collect()
         else:
             self.net = load_net(self.cfg, self.weights, 0)
 
     def start(self):
+        """
+        Load the model on start
+        :return:
+        """
 
         self.un_load_net()
 
         super().start()
-
 
     @staticmethod
     def extract_faces(segmentation):
@@ -128,14 +135,14 @@ class Darknet(Thread):
 
             return []
 
-        faces=[]
+        faces = []
 
         # for every tuple img/objects
         for img, bbs in segmentation:
 
             # get the face in the image if any
-            face=get_face_bb(bbs)
-            if len(face)==0: continue
+            face = get_face_bb(bbs)
+            if len(face) == 0: continue
 
             # get the bounding boxes
             x, y, w, h = [int(elem) for elem in face]
@@ -145,7 +152,3 @@ class Darknet(Thread):
             faces.append(img)
 
         return faces
-
-
-
-
