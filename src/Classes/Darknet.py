@@ -27,12 +27,12 @@ class Darknet(Thread):
             weights = pt.join(pt.WEIGHTS_DIR, "yolov3-openimages.weights")
             data = pt.join(pt.DARKNET_DIR, "cfg/openimages.data")
 
-        cfg = cfg.encode('utf-8')
-        weights = weights.encode('utf-8')
-        data = data.encode('utf-8')
+        self.cfg = cfg.encode('utf-8')
+        self.weights = weights.encode('utf-8')
+        self.data = data.encode('utf-8')
 
-        self.net = load_net(cfg, weights, 0)
-        self.meta = load_meta(data)
+        self.net = None
+        self.meta = None
 
     def detect_video(self, img_list):
         """
@@ -91,6 +91,12 @@ class Darknet(Thread):
 
         return frames
 
+
+    def start(self):
+        self.net = load_net(self.cfg, self.weights, 0)
+        self.meta = load_meta(self.data)
+
+        super().start()
 
 
     @staticmethod
