@@ -110,8 +110,8 @@ def read_token_psw():
         lines=file.readlines()
 
     #take token and password
-    token=lines[0].split(b"=")[1].strip(b"\n")
-    psw=lines[1].split(b"=")[1].strip(b"\n")
+    token=lines[0].strip(b"\n")
+    psw=lines[1].strip(b"\n")
 
     #return converted to string
     return token.decode("utf-8") ,psw.decode("utf-8")
