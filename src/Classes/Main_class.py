@@ -73,6 +73,7 @@ class MainClass:
 
     def stop(self):
         """Stop the execution of the threads and exit"""
+        #fixme
         self.motion.stop()
         self.motion.join()
 
