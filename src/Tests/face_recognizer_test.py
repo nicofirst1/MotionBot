@@ -5,7 +5,7 @@ import copy
 import threading
 import time
 import tkinter as tki
-
+from Path import Path as pt
 import cv2
 import imutils
 from PIL import Image
@@ -15,7 +15,7 @@ from imutils.video import VideoStream
 from telegram.ext import Updater
 
 from Classes.Darknet import Darknet
-from Classes.Face_recognizer import FaceRecognizer
+from Classes.Face_recognizer import FaceRecognizer, rename_images_index
 
 
 class PhotoBoothApp:
@@ -25,6 +25,9 @@ class PhotoBoothApp:
         # the thread stop event
         self.vs = vs
         self.outputPath = outputPath
+        self.queue=[]
+
+        rename_images_index(pt.UNK_DIR)
 
         self.thread = None
         self.stopEvent = None
@@ -78,14 +81,24 @@ class PhotoBoothApp:
             'reco': None
         }
 
-        segmentation = self.darknet.detect_img(original.copy())
-        segmentation = [segmentation]
+        # segmentation = self.darknet.detect_img(original.copy())
+        # segmentation = [segmentation]
+        #
+        # frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
 
-        frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
 
-        face = self.face_reco.find_faces(original.copy(), save=self.face_reco_flag.get())
+
+
+        face = self.face_reco.find_faces(original.copy())
+
 
         if face is not None:
+
+            self.queue.append(face)
+            if len(self.queue)>10 and self.face_reco_flag.get():
+                self.face_reco.add_image_write(self.queue)
+                self.queue=[]
+
             reco = copy.deepcopy(original)
             try:
                 prediction = self.face_reco.predict(reco)
@@ -151,7 +164,7 @@ class PhotoBoothApp:
 
 
         except RuntimeError as e:
-            print("[INFO] caught a RuntimeError")
+            print(f"[INFO] caught a RuntimeError: {e}")
 
     def onClose(self):
         # set the stop event, cleanup the camera, and allow the rest of
@@ -177,8 +190,8 @@ if __name__ == '__main__':
     updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
     disp = updater.dispatcher
 
-    darknet = Darknet(True)
-    darknet.start()
+    # darknet = Darknet(True)
+    # darknet.start()
 
     face_reco = FaceRecognizer(disp)
 
@@ -186,5 +199,5 @@ if __name__ == '__main__':
     vs = VideoStream(src=0).start()
     time.sleep(2.0)
 
-    pba = PhotoBoothApp(vs, ".", darknet, face_reco)
+    pba = PhotoBoothApp(vs, ".", None, face_reco)
     pba.root.mainloop()

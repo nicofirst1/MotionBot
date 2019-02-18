@@ -13,10 +13,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from face_recognition.face_recognition_cli import image_files_in_folder
-from sklearn import neighbors, preprocessing
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn import neighbors, preprocessing, svm
 from sklearn.decomposition import PCA
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from tqdm import trange
 
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
@@ -56,8 +58,10 @@ class FaceRecognizer(Thread):
         self.image_size = (200, 200)
         self.distance_thres = 95
         self.auto_train_dist = 80
-        self.recognizer = load_pkl(pt.model)
+        self.classifier = load_pkl(pt.model)
         self.face_thrs = 0.75
+        self.faces_idx = 0
+        self.clf_flag = 1  # 1 if svm, 0 if knn
 
         # ======TELEGRAM VARIABLES========
         self.disp = disp
@@ -103,7 +107,7 @@ class FaceRecognizer(Thread):
             # if the thread has been stopped
             if self.stopped():
                 # save the recognizer
-                self.recognizer.save(pt.recognizer)
+                self.classifier.save(pt.recognizer)
                 return
 
     def stop(self):
@@ -426,6 +430,16 @@ class FaceRecognizer(Thread):
             plt.savefig(pt.join(pt.ANALISYS_DIR, "variance_components"))
 
             plt.clf()
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            ax.scatter(projected[:, 0], projected[:, 1], projected[:, 2],
+                       c=y_enc, edgecolor='red', alpha=0.5, s=30,
+                       cmap=plt.cm.get_cmap('viridis', 10))
+
+            plt.savefig(pt.join(pt.ANALISYS_DIR, "3d_plot"))
+
+            plt.clf()
 
             plt.scatter(projected[:, 0], projected[:, 1],
                         c=y_enc, edgecolor='none', alpha=0.5,
@@ -445,41 +459,57 @@ class FaceRecognizer(Thread):
 
             plt.savefig(pt.join(pt.ANALISYS_DIR, "faces"))
 
-        X = []
-        y = []
+        def build_dataset():
+            X = []
+            y = []
 
-        # Loop through each person in the training set
-        for class_dir in os.listdir(pt.FACES_DIR):
-            if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)) or "Unknown" in class_dir:
-                continue
+            # Loop through each person in the training set
+            for class_dir in os.listdir(pt.FACES_DIR):
+                if not os.path.isdir(os.path.join(pt.FACES_DIR, class_dir)) or "Unknown" in class_dir:
+                    continue
 
-            # save directory
-            subject_dir = os.path.join(pt.FACES_DIR, class_dir)
+                # save directory
+                subject_dir = os.path.join(pt.FACES_DIR, class_dir)
 
-            # load encodings
-            encodings = load_pkl(pt.join(subject_dir, pt.encodings))
-            if encodings is None: encodings = []
+                # load encodings
+                encodings = load_pkl(pt.join(subject_dir, pt.encodings))
+                if encodings is None: encodings = []
 
-            # Loop through each training image for the current person
-            for img_path in image_files_in_folder(subject_dir):
-                image = face_recognition.load_image_file(img_path)
-                os.remove(img_path)
+                # Loop through each training image for the current person
+                for img_path in image_files_in_folder(subject_dir):
+                    image = face_recognition.load_image_file(img_path)
+                    os.remove(img_path)
 
-                # take the bounding boxes an the image size
-                face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
-                face_bounding_boxes = [face_bounding_boxes]
+                    # take the bounding boxes an the image size
+                    face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
+                    face_bounding_boxes = [face_bounding_boxes]
 
-                # Add face encoding for current image to the training set
-                encodings.append(
-                    face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes, num_jitters=10)[0])
-                # y.append(class_dir.split("_")[-1])
+                    # Add face encoding for current image to the training set
+                    encodings.append(
+                        face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,
+                                                        num_jitters=10)[0])
+                    # y.append(class_dir.split("_")[-1])
 
-            # save encodings
-            dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
-            print(f"Encodings for {subject_dir} are {len(encodings)}")
-            # update model
-            X += encodings
-            y += len(encodings) * [class_dir.split("_")[-1]]
+                # save encodings
+                dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
+                print(f"Encodings for {subject_dir} are {len(encodings)}")
+                # update model
+                X += encodings
+                y += len(encodings) * [class_dir.split("_")[-1]]
+
+            return X, y
+
+        def build_classifier_knn(X, y):
+            clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute", weights='uniform')
+            clf.fit(X, y)
+            return clf
+
+        def build_classifier_svm(X, y):
+            clf = svm.SVC()
+            clf.fit(X, y)
+            return clf
+
+        X, y = build_dataset()
 
         if not len(X): return
 
@@ -490,15 +520,18 @@ class FaceRecognizer(Thread):
                 print("Chose n_neighbors automatically:", n_neighbors)
 
         analize(X, y)
-        # Create and train the KNN classifier
-        knn_clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute", weights='uniform')
-        knn_clf.fit(X, y)
 
-        # se recovnizer to current one
-        self.recognizer = knn_clf
+        if self.clf_flag:
+
+            clf = build_classifier_svm(X, y)
+        else:
+            clf = build_classifier_knn(X, y)
+
+        # save classifier to current one
+        self.classifier = clf
 
         # Save the trained KNN classifier
-        dump_pkl(knn_clf, pt.model)
+        dump_pkl(clf, pt.model)
 
         print("Model trained")
 
@@ -513,11 +546,11 @@ class FaceRecognizer(Thread):
         """
 
         # Load a trained KNN model if not already loaded
-        if self.recognizer is None:
-            self.recognizer = load_pkl(pt.model)
+        if self.classifier is None:
+            self.classifier = load_pkl(pt.model)
 
         # if no recognizer raise error
-        if self.recognizer is None:
+        if self.classifier is None:
             raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
 
         # Load image file and find face locations
@@ -527,16 +560,35 @@ class FaceRecognizer(Thread):
         if len(face_locations) == 0:
             return None
 
-        # Find encodings for faces in the test iamge
+        # Find encodings for faces in the test image
         faces_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations)
 
-        # Use the KNN model to find the best matches for the test face
-        closest_distances = self.recognizer.kneighbors(faces_encodings, n_neighbors=3)
-        are_matches = [closest_distances[0][i][0] for i in range(len(face_locations))]
+        def predict_knn():
 
-        # Predict classes and remove classifications that aren't within the threshold
-        return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
-                zip(self.recognizer.predict(faces_encodings), face_locations, are_matches)]
+            # Use the KNN model to find the best matches for the test face
+            closest_distances = self.classifier.kneighbors(faces_encodings, n_neighbors=3)
+            are_matches = [closest_distances[0][i][0] for i in range(len(face_locations))]
+
+            # Predict classes and remove classifications that aren't within the threshold
+            return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
+                    zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
+
+        def predict_svm():
+            predictions = self.classifier.predict(faces_encodings)
+            are_matches = ["-" for elem in predictions]
+
+            # Predict classes and remove classifications that aren't within the threshold
+            return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
+                    zip(self.classifier.predict(faces_encodings), face_locations, are_matches)]
+
+        if self.clf_flag:
+
+            return predict_svm()
+
+        else:
+            
+            return predict_knn()
+
 
     def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
@@ -584,7 +636,7 @@ class FaceRecognizer(Thread):
         face_images = []
 
         # look for the locations in the images
-        face_locations = face_recognition.face_locations(image)
+        face_locations = face_recognition.face_locations(image, model="cnn")
 
         # for every location crop image and append
         for location in face_locations:
@@ -620,7 +672,10 @@ class FaceRecognizer(Thread):
             (top, right, bottom, left) = pred['bbs']
 
             name = pred['pred']
-            conf = round(100 * pred['conf'], 1)
+            try:
+                conf = round(100 * pred['conf'], 1)
+            except TypeError:
+                conf = pred['conf']
 
             pt1 = (left, top)
             pt2 = (right, bottom)
@@ -954,7 +1009,7 @@ def filter_similar_images(images, similar_thresh=0.94):
     images = [img for img in images if not 0 in img.shape]
     to_pop = []
 
-    for idx in range(len(images) - 1):
+    for idx in trange(len(images) - 1):
         for jdx in range(idx + 1, len(images)):
             # measure similarity
             similarity = rmse(images[idx], images[jdx])
