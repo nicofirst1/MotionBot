@@ -23,14 +23,24 @@ depending on the button pressed as can be seen from the following image.
   other.
 - *Save Faces*: triggers the saving of the faces in the *Unk* dir
   depending on the user choice (more later).
-- *Exit* : trigger the treaining of the model and the elimnation of the
-  images classified previously
+- *Exit* : trigger the re-training of the model and the elimination of
+  the images classified previously
 
 ### Saving Faces
 
-The save face menu is shown in the following image:
+The save face menu is shown in the following image.
+
 ![menu2](./images/menu2.png)
 
+As can be seen one of the images in the *Unk* directory have been
+randomly chosen and displayed with various options:
+- Adding the image to one of the previously created subject' directories
+  (giggio, mela Pitta, mamma....). 
+- Saving a new subject by clicking the *new* button.
+- Deleting the current image, can be used when the face is not
+  recognizable.
+- Exit to trigger the model re-training.
+  
 
 ## Face Recognition
 
