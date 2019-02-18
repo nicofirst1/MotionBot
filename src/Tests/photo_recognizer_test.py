@@ -17,6 +17,29 @@ from Classes.Face_recognizer import FaceRecognizer
 from Utils.utils import read_token_psw
 
 
+def convert_image(frames_dict):
+    def convert_single(image):
+
+        image = imutils.resize(image, width=500)
+
+        # OpenCV represents images in BGR order; however PIL
+        # represents images in RGB order, so we need to swap
+        # the channels, then convert to PIL and ImageTk format
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(image)
+        image = ImageTk.PhotoImage(image)
+
+        return image
+
+    for key, val in frames_dict.items():
+        if val is not None:
+            try:
+                frames_dict[key] = convert_single(val)
+            except:
+                frames_dict[key] = None
+    return frames_dict
+
+
 class PhotoReco:
     def __init__(self, face_reco):
         # store the video stream object and output path, then initialize
@@ -45,12 +68,12 @@ class PhotoReco:
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
-        self.thread = threading.Thread(target=self.videoLoop, args=())
+        self.thread = threading.Thread(target=self.video_loop, args=())
         self.thread.start()
 
         # set a callback to handle when the window is closed
         self.root.wm_title("PyImageSearch PhotoBooth")
-        self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
+        self.root.wm_protocol("WM_DELETE_WINDOW", self.on_close)
 
     def pack_gui(self):
 
@@ -94,7 +117,7 @@ class PhotoReco:
 
         try:
             img = cv2.imread(filename)
-        except Exception:
+        except:
             return
         self.img = img
         self.predict(img)
@@ -114,31 +137,8 @@ class PhotoReco:
             'reco': pred_img
         }
 
-        frames = self.convert_image(frames)
+        frames = convert_image(frames)
         self.update_panels(frames)
-
-    def convert_image(self, frames_dict):
-
-        def convert_single(image):
-
-            image = imutils.resize(image, width=500)
-
-            # OpenCV represents images in BGR order; however PIL
-            # represents images in RGB order, so we need to swap
-            # the channels, then convert to PIL and ImageTk format
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            image = Image.fromarray(image)
-            image = ImageTk.PhotoImage(image)
-
-            return image
-
-        for key, val in frames_dict.items():
-            if val is not None:
-                try:
-                    frames_dict[key] = convert_single(val)
-                except:
-                    frames_dict[key] = None
-        return frames_dict
 
     def update_panels(self, frames):
 
@@ -153,7 +153,7 @@ class PhotoReco:
                 self.panels[key].configure(image=frames[key])
                 self.panels[key].image = frames[key]
 
-    def videoLoop(self):
+    def video_loop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
         # try/except statement is a pretty ugly hack to get around
@@ -171,7 +171,7 @@ class PhotoReco:
         except RuntimeError as e:
             print(f"[INFO] caught a RuntimeError: {e}")
 
-    def onClose(self):
+    def on_close(self):
         # set the stop event, cleanup the camera, and allow the rest of
         # the quit process to continue
         print("[INFO] closing...")
