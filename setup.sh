@@ -20,6 +20,8 @@ fi
 
 cd $cwd
 
+
+
 echo "copying custom files"
 
 cp ./Resources/Custom_darknet/coco.data ./src/darknet/cfg/coco.data
@@ -31,6 +33,10 @@ cp ./Resources/Custom_darknet/image.h ./src/darknet/src/image.h
 cp ./Resources/Custom_darknet/Makefile   ./src/darknet/Makefile
 
 cp ./Resources/Custom_darknet/darknet.py   ./src/darknet/python/darknet.py
+
+echo "writing paths"
+echo "names = $cwd/src/darknet/data/coco.names" >>  ./src/darknet/cfg/coco.data
+echo "names = $cwd/src/darknet/data/openimages.names" >> ./src/darknet/cfg/openimages.data
 
 
 
