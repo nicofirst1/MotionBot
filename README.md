@@ -89,6 +89,11 @@ certain threshold
 
 
 ## More to know
-For additional information refet to:
-- [this file](Readme/face_recognizer.md) for behavior of the
- [Face recognizer class](Readme/face_recognizer.md)
+For additional information refer to the markdowns in the
+[Readme dir](Readme/). 
+
+Specifically to: 
+- [this file](Readme/face_recognizer.md) for behavior
+of the [Face recognizer class](src/Classes/Face_recognizer.py)
+- [this one](Readme/darknet.md) for the functionalities of the
+  [Darknet class](src/Classes/Darknet.py)
