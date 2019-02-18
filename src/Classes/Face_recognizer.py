@@ -816,7 +816,7 @@ class FaceRecognizer(Thread):
 
         # get a list of paths for every image in Faces
         img_paths = []
-        for path, subdirs, files in os.walk(pt.FACES_DIR):
+        for path, subdirs, files in os.walk(pt.UNK_DIR):
             for name in files:
                 if "png" in name:
                     img_paths.append(os.path.join(path, name))
@@ -874,6 +874,9 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
     :param algorithm: str, the type of the algoritmh to use
     :return:
     """
+
+    # return if no
+    if not len(distance): return "", 0
 
     normalized_distance = distance / distance.sum()
 
@@ -951,19 +954,28 @@ def build_dataset():
         if encodings is None: encodings = []
 
         # Loop through each training image for the current person
+        errors=0
         for img_path in image_files_in_folder(subject_dir):
             image = face_recognition.load_image_file(img_path)
             os.remove(img_path)
 
             # take the bounding boxes an the image size
-            face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
+            #face_bounding_boxes = 0, 0, image.shape[0], image.shape[1]
+            face_bounding_boxes = 0,image.shape[1], image.shape[0],0
+            #top, right, bottom, left
             face_bounding_boxes = [face_bounding_boxes]
 
-            # Add face encoding for current image to the training set
-            encodings.append(
-                face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,
-                                                num_jitters=10)[0])
-            # y.append(class_dir.split("_")[-1])
+            try:
+                encode=face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,num_jitters=10)[0]
+
+                #encode=face_recognition.face_encodings(image,num_jitters=10)[0]
+                encodings.append(encode)
+
+            except IndexError:
+                print(f"out of range error number {errors}")
+                errors+=1
+                pass
+
 
         # save encodings
         dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
