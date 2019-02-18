@@ -1,3 +1,0 @@
-[submodule "src/darknet"]
-	path = src/darknet
-	url = https://github.com/pjreddie/darknet.git
