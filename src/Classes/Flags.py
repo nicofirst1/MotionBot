@@ -1,12 +1,9 @@
-
-
 class Falgs:
 
     def __init__(self):
 
-        self.flags={}
-        self.no_parents=[]
-
+        self.flags = {}
+        self.no_parents = []
 
     def get_flags(self):
         """
@@ -15,7 +12,7 @@ class Falgs:
         """
         return self.flags.keys()
 
-    def add_flag(self, name,default,parents):
+    def add_flag(self, name, default, parents):
         """
         Add a flag to the dictionary
         :param name: the name of the flag
@@ -24,44 +21,52 @@ class Falgs:
         :return:
         """
 
+        # check if the name is part of the flag list
         if name in self.get_flags():
             raise KeyError(f"Key '{name}' already in dictionary")
 
+        # check if the parents are in the flag list
         for p in parents:
             if p not in self.get_flags():
                 raise KeyError(f"Parent '{p}' not in dictionary for key '{name}'")
 
-        if not isinstance(default,bool):
+        # check if the value is bool
+        if not isinstance(default, bool):
             raise ValueError("Default must be bool")
 
-
-        self.flags[name]={
-            'value':default,
-            'childrens':[],
-            'parents':[]
+        # add the isntance to the list
+        self.flags[name] = {
+            'value': default,
+            'childrens': [],
+            'parents': []
         }
 
-
-        self.flags[name]['parents']=parents
+        # add its parents
+        self.flags[name]['parents'] = parents
 
         # add the current flag to the no parents one
-        if len(parents)==0:
+        if len(parents) == 0:
             self.no_parents.append(name)
 
-
+        # compute children
         self.compute_children()
 
-
     def flip_value(self, name):
+        """
+        Flip the value of a certain flags
+        :param name: (str) the name of the flag
+        :return:
+        """
 
+        # check for the name in the list of flags
         if name not in self.get_flags():
             raise KeyError(f"Key {name} not in dictionary")
 
-        value=self.get_value(name)
+        # get the current value
+        value = self.get_value(name)
 
+        # set it to the new value
         self.set_value(name, not value)
-
-
 
     def compute_children(self):
         """
@@ -79,7 +84,6 @@ class Falgs:
                 if not entry in self.flags[p]['childrens']:
                     # append it
                     self.flags[p]['childrens'].append(entry)
-
 
     def set_value(self, name, value):
         """
@@ -101,9 +105,14 @@ class Falgs:
             for ch in self.flags[name]['childrens']:
                 self.set_value(ch, False)
 
-        self.flags[name]['value']=value
+        self.flags[name]['value'] = value
 
     def get_value(self, name):
+        """
+        Return the value of a flag
+        :param name: (str) the name of the flag
+        :return:
+        """
 
         if name not in self.get_flags():
             raise KeyError(f"Flag {name} not found")
@@ -116,7 +125,7 @@ class Falgs:
         :return:
         """
 
-        checked=[]
+        checked = []
 
         for entry in self.no_parents:
 
@@ -126,12 +135,9 @@ class Falgs:
 
             checked.append(entry)
 
-
         for entry in self.get_flags():
-            if entry in checked:continue
+            if entry in checked: continue
 
             if not self.get_value(entry):
                 for child in self.flags[entry]['childrens']:
                     self.set_value(child, False)
-
-

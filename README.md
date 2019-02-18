@@ -95,5 +95,7 @@ For additional information refer to the markdowns in the
 Specifically to: 
 - [this file](Readme/face_recognizer.md) for behavior
 of the [Face recognizer class](src/Classes/Face_recognizer.py)
-- [this one](Readme/darknet.md) for the functionalities of the
+- [this one](Readme/darknet.md) for the functionality of the
   [Darknet class](src/Classes/Darknet.py)
+- [this file](Readme/flags.md) for more insights on the
+  [Flags class](src/Classes/Flags.py)
