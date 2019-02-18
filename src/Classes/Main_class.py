@@ -130,6 +130,6 @@ class MainClass:
         if not len(prediction):
             return None
 
-        self.face_recognizer.show_prediction_labels_on_image(img,prediction)
+        show_prediction_labels_on_image(img,prediction)
 
         return img

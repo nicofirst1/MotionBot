@@ -171,7 +171,7 @@ class PhotoBoothApp:
 
     def set_algorithm(self):
 
-        self.face_reco.switch_classificator(self.algorithm.get())
+        self.face_reco.switch_classifier(self.algorithm.get())
 
     def process_frame(self, original):
 

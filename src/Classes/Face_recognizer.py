@@ -38,17 +38,17 @@ class FaceRecognizer(Thread):
 
         recognizer: the classifier used for face rocognition
         image_size : the image size for the training and prediction
-        distance_thres : the maximum distance accepted for recognition confidence
+        distance_trh : the maximum distance accepted for recognition confidence
         auto_train_dist : the maximum distance accepted for auto recognition and training
 
-        disp : the telegram distpacher
+        dispatcher : the telegram distpacher
         classify_start_inline : the inline keyboar for the command /classify
         classify_start_msg : the message for the command /classify
 
 
     """
 
-    def __init__(self, disp):
+    def __init__(self, dispatcher):
         """Init the class and start the telegram handlers"""
 
         Thread.__init__(self)
@@ -57,21 +57,21 @@ class FaceRecognizer(Thread):
 
         # ======RECOGNIZER VARIABLES======
         self.image_size = (200, 200)
-        self.distance_thres = 95
+        self.distance_trh = 95
         self.auto_train_dist = 80
         self.classifier = load_pkl(pt.model)
-        self.face_thrs = 0.75
+        self.face_trh = 0.75
         self.faces_idx = 0
         self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
         self.X, self.y = build_dataset()
 
         # ======TELEGRAM VARIABLES========
-        self.disp = disp
+        self.dispatcher = dispatcher
         self.current_face = None
 
         # Creating conversation handler
         conversation = ConversationHandler(
-            [CallbackQueryHandler(self.new_face, pattern="/unknown_new")],
+            [CallbackQueryHandler(new_face, pattern="/unknown_new")],
             states={
                 1: [MessageHandler(Filters.text, self.get_new_name)]
 
@@ -88,22 +88,22 @@ class FaceRecognizer(Thread):
         self.classify_start_msg = "Welcome, here you can choose what you want to do"
 
         # adding everything to the bot
-        disp.add_handler(conversation)
-        disp.add_handler(CallbackQueryHandler(self.see_faces, pattern="/classify_see"))
-        disp.add_handler(CallbackQueryHandler(self.send_faces, pattern="/view_face"))
-        disp.add_handler(CallbackQueryHandler(self.send_unknown_face, pattern="/classify_save"))
-        disp.add_handler(CallbackQueryHandler(self.filter_images_tg, pattern="/classify_filter"))
-        disp.add_handler(CallbackQueryHandler(self.move_known_face, pattern="/unknown_known"))
-        disp.add_handler(CallbackQueryHandler(self.delete_unkwon_face, pattern="/unknown_del"))
-        disp.add_handler(CommandHandler("classify", self.classify_start))
-        disp.add_handler(CallbackQueryHandler(self.end_callback, pattern="/end"))
+        dispatcher.add_handler(conversation)
+        dispatcher.add_handler(CallbackQueryHandler(self.see_faces, pattern="/classify_see"))
+        dispatcher.add_handler(CallbackQueryHandler(self.send_faces, pattern="/view_face"))
+        dispatcher.add_handler(CallbackQueryHandler(self.send_unknown_face, pattern="/classify_save"))
+        dispatcher.add_handler(CallbackQueryHandler(self.filter_images_tg, pattern="/classify_filter"))
+        dispatcher.add_handler(CallbackQueryHandler(self.move_known_face, pattern="/unknown_known"))
+        dispatcher.add_handler(CallbackQueryHandler(self.delete_unknown_face, pattern="/unknown_del"))
+        dispatcher.add_handler(CommandHandler("classify", self.classify_start))
+        dispatcher.add_handler(CallbackQueryHandler(self.end_callback, pattern="/end"))
 
     def run(self):
         """Run the thread, first train the model then just be alive"""
 
         # updater.start_polling()
 
-        self.filter_all_images()
+        filter_all_images()
 
         while True:
             # if the thread has been stopped
@@ -127,6 +127,7 @@ class FaceRecognizer(Thread):
     def classify_start(self, bot, update):
         """
         Initial function for the classify stage
+        :type bot: object
         :param bot: the telegram bot
         :param update: the update recieved
         :return:
@@ -141,7 +142,7 @@ class FaceRecognizer(Thread):
         :return:"""
 
         # generate the inline keyboard with the custom callback
-        inline = self.generate_inline_keyboard("/view_face ")
+        inline = generate_inline_keyboard("/view_face ")
 
         # if there is no inline keyboard it means there are no saved faces
         if not inline:
@@ -165,7 +166,7 @@ class FaceRecognizer(Thread):
         :param update: the update recieved
         :return:"""
 
-        #fixme: no more faces
+        # fixme: no more faces
 
         # get the param
         s_name = update.callback_query.data.split()[1]
@@ -192,13 +193,13 @@ class FaceRecognizer(Thread):
     def send_unknown_face(self, bot, update):
         """Function to send an unknown face (in the Unknown dir)
          :param bot: the telegram bot
-        :param update: the update recieved
+        :param update: the update received
         :return:"""
 
         def resize_image(image_file, desired_size):
             """
             Resize an image to a desired dimension
-            :param image_file: the image to be resized
+            :param image_file: the image to be resize
             :param desired_size: the desired dimension
             :return: the new path to the image
             """
@@ -228,20 +229,20 @@ class FaceRecognizer(Thread):
         callback_image = image.split("/")[-1]
         user_id = update._effective_user.id
 
-        inline = self.generate_inline_keyboard("/unknown_known " + callback_image + " ",
-                                               InlineKeyboardButton("New",
-                                                                    callback_data="/unknown_new " + callback_image),
-                                               InlineKeyboardButton("Delete",
-                                                                    callback_data="/unknown_del " + callback_image),
-                                               InlineKeyboardButton("Exit", callback_data="/end " + callback_image))
+        inline = generate_inline_keyboard("/unknown_known " + callback_image + " ",
+                                          InlineKeyboardButton("New",
+                                                               callback_data="/unknown_new " + callback_image),
+                                          InlineKeyboardButton("Delete",
+                                                               callback_data="/unknown_del " + callback_image),
+                                          InlineKeyboardButton("Exit", callback_data="/end " + callback_image))
 
         bot.delete_message(
             chat_id=update.callback_query.message.chat_id,
             message_id=update.callback_query.message.message_id,
 
         )
-        to_send = "You can either choose one of the known faces, create a new one or delete the photo\nThere are currently " \
-                  "" + str(len(to_choose)) + " photos to be classified"
+        to_send = "You can either choose one of the known faces, create a new one or delete the photo\nThere are " \
+                  "currently " + str(len(to_choose)) + " photos to be classified"
 
         image = resize_image(image, 840)
 
@@ -255,7 +256,7 @@ class FaceRecognizer(Thread):
     def move_known_face(self, bot, update):
         """Function to move a known face from Unknown dir to face_dir
          :param bot: the telegram bot
-        :param update: the update recieved
+        :param update: the update received
         :return:"""
 
         # the param has the format:  image_name dir_name
@@ -266,6 +267,7 @@ class FaceRecognizer(Thread):
         # get the length of the images in the directory
         dir_name = pt.join(pt.FACES_DIR, get_name_dir(dir_name))
         idx = len([name for name in os.listdir(dir_name)])
+
         # generate new image name
         new_image_name = pt.join(dir_name, f"image_{idx}.png")
 
@@ -280,10 +282,10 @@ class FaceRecognizer(Thread):
 
         self.classify_start(bot, update.callback_query)
 
-    def delete_unkwon_face(self, bot, update):
+    def delete_unknown_face(self, bot, update):
         """Function to delete a photo from the unknown dir
          :param bot: the telegram bot
-        :param update: the update recieved
+        :param update: the update received
         :return:"""
 
         image = update.callback_query.data.split()[1]
@@ -299,22 +301,6 @@ class FaceRecognizer(Thread):
         update.callback_query.message.reply_text("Photo deleted")
 
         self.classify_start(bot, update.callback_query)
-
-    def new_face(self, bot, update):
-        """Function to ask the user the name of the new subject
-         :param bot: the telegram bot
-        :param update: the update recieved
-        :return:"""
-
-        to_send = "Please insert the subject name\nYou have just one chance so be careful"
-
-        bot.edit_message_caption(
-            chat_id=update.callback_query.message.chat_id,
-            caption=to_send,
-            message_id=update.callback_query.message.message_id,
-            parse_mode="HTML")
-
-        return 1
 
     def get_new_name(self, bot, update):
         """Function to get a user name and create a folder
@@ -332,7 +318,7 @@ class FaceRecognizer(Thread):
             update.message.reply_text("You cannot use the same name for two faces")
             return ConversationHandler.END
 
-        self.move_image(image_name, face_name)
+        move_image(image_name, face_name)
         update.message.reply_text("Done! You can now check the image under " + face_name)
 
         self.classify_start(bot, update)
@@ -404,26 +390,23 @@ class FaceRecognizer(Thread):
                 reply_markup=self.classify_start_inline
             )
 
-        self.filter_all_images(stream=edit_msg)
+        filter_all_images(stream=edit_msg)
 
     # ===================RECOGNIZER=========================
 
     def train_model(self, to_analyze=True):
         """
         Trains a k-nearest neighbors classifier for face recognition.
-
-        :param n_neighbors: (optional) number of neighbors to weigh in classification. Chosen automatically if not specified
-        :param knn_algo: (optional) underlying data structure to support knn.default is ball_tree
-        :param verbose: verbosity of training
+        :param to_analyze: (bool) if to analyze the dataset
         :return: returns knn classifier that was trained on the given data.
         """
 
-        def analize(X, Y):
+        def analyze(x, y):
             enc = preprocessing.LabelEncoder()
             y_enc = enc.fit_transform(self.y)
 
             pca = PCA()
-            projected = pca.fit_transform(X, Y)
+            projected = pca.fit_transform(x, y)
 
             plt.plot(np.cumsum(pca.explained_variance_ratio_))
             plt.xlabel('number of components')
@@ -461,27 +444,28 @@ class FaceRecognizer(Thread):
 
             plt.savefig(pt.join(pt.ANALISYS_DIR, "faces"))
 
-        def build_classifier_knn(X, y):
+        def build_classifier_knn(x, y):
 
-            n_neighbors = int(round(math.sqrt(len(X)))) * 2
+            n_neighbors = int(round(math.sqrt(len(x)))) * 2
             print("Chose n_neighbors automatically:", n_neighbors)
 
-            clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute", weights='uniform')
-            clf.fit(X, y)
-            return clf
+            clf_knn = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute", weights='uniform')
+            clf_knn.fit(x, y)
+            return clf_knn
 
-        def build_classifier_svm(X, y):
-            clf = svm.SVC()
-            clf.fit(X, y)
-            return clf
+        def build_classifier_svm(x, y):
+            clf_svm = svm.SVC()
+            clf_svm.fit(x, y)
+            return clf_svm
 
         self.X, self.y = build_dataset()
 
-        if not len(self.X): return
+        if not len(self.X):
+            return
 
         # Determine how many neighbors to use for weighting in the KNN classifier
         if to_analyze:
-            analize(self.X, self.y)
+            analyze(self.X, self.y)
 
         if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
@@ -504,8 +488,6 @@ class FaceRecognizer(Thread):
         """
         Recognizes faces in given image using a trained KNN classifier
         :param img: an image to be recognized
-        :param distance_threshold: (optional) distance threshold for face classification. the larger it is, the more chance
-               of mis-classifying an unknown person as a known one.
         :return: a list of names and face locations for the recognized faces in the image: [(name, bounding box), ...].
             For faces of unrecognized persons, the name 'unknown' will be returned.
         """
@@ -557,7 +539,7 @@ class FaceRecognizer(Thread):
                     raise FileNotFoundError("Recognizer not loaded, cannot make prediction")
 
             predictions = self.classifier.predict(faces_encodings)
-            are_matches = ["-" for elem in predictions]
+            are_matches = ["-" for _ in predictions]
 
             # Predict classes and remove classifications that aren't within the threshold
             return [{'pred': pred, 'bbs': loc, 'conf': rec} for pred, loc, rec in
@@ -565,7 +547,7 @@ class FaceRecognizer(Thread):
 
         def predict_distance(algorithm):
             """
-            Use custom algortihm to perform the prediction
+            Use custom algorithm to perform the prediction
             :return:
             """
 
@@ -601,6 +583,7 @@ class FaceRecognizer(Thread):
 
     def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
+        :param save: if to save the images into the unk dir
         :param imgs: list of images
         :return: list of triples (face_name, confidence,image) for every Different face in the image list
         """
@@ -608,7 +591,9 @@ class FaceRecognizer(Thread):
         print("Predict multi started...")
 
         # if there are no images return
-        if len(imgs) == 0: return None
+        if len(imgs) == 0:
+            return None
+
         predictions = []
         cropped = []
 
@@ -627,7 +612,7 @@ class FaceRecognizer(Thread):
                 cropped_img = img[top:bottom, left:right]
                 cropped.append(cropped_img)
 
-        # if save append found images in direcotry
+        # if save append found images in directory
         if save:
             self.add_image_write(cropped)
 
@@ -637,6 +622,7 @@ class FaceRecognizer(Thread):
     def find_faces(self, image, save=False, model="cnn"):
         """
         Find faces in image and return the first
+        :param model: (str) what model to use for finding faces, either cnn or hog
         :param image: the image as PIL
         :param save: (bool) if to save the image in the UNK dir
         :return: either the cropped image or None
@@ -653,6 +639,7 @@ class FaceRecognizer(Thread):
             face = image[top:bottom, left:right]
 
             face_images.append(face)
+
         # if there are any faces
         if len(face_images):
             # if to save
@@ -665,78 +652,12 @@ class FaceRecognizer(Thread):
 
     # ===================UTILS=========================
 
-    def show_prediction_labels_on_image(self, img, predictions):
+    def add_image_write(self, image_list):
         """
-        Shows the face recognition results visually.
-        :param img: path to image to be recognized
-        :param predictions: results of the predict function
+        Add image to the unk dir
+        :param image_list: a list of images
         :return:
         """
-
-        if predictions is None: return
-
-        for pred in predictions:
-            # Draw a box around the face using the Pillow module
-
-            (top, right, bottom, left) = pred['bbs']
-
-            name = pred['pred']
-            try:
-                conf = round(100 * pred['conf'], 1)
-            except TypeError:
-                conf = pred['conf']
-
-            pt1 = (left, top)
-            pt2 = (right, bottom)
-
-            cv2.rectangle(img, pt1, pt2, color=(0, 255, 0),
-                          thickness=2)
-
-            cv2.putText(img, str(name), (int(left), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
-                        (0, 255, 0))
-
-            cv2.putText(img, f"conf:{conf}", (int(left), int(bottom) - 10), cv2.FONT_HERSHEY_COMPLEX, 1,
-                        (0, 255, 0))
-
-    def generate_inline_keyboard(self, callback_data, *args):
-        """Generate an inline keyboard containing the names of the known faces plus any inlinebutton passed with args"""
-
-        # get all the saved subjects names
-        names = get_dir_subjects()
-
-        # uf there are none return
-        if len(names) == 0 and len(args) == 0:
-            return False
-
-        # print(names)
-
-        # add the names to the inline button
-        rows = []
-        cols = []
-
-        for name in names:
-
-            # only three cols allowed
-            if len(cols) == 3:
-                rows.append(cols)
-                cols = []
-            # add the buttom to the row
-            cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
-
-        # if there was less than three faces append them
-        if len(cols) > 0:
-            rows.append(cols)
-        if not rows:
-            rows.append(cols)
-
-        # if there are other buttons from args, append them
-        if args: rows.append(args)
-
-        inline = InlineKeyboardMarkup(rows)
-
-        return inline
-
-    def add_image_write(self, image_list, subject_name=""):
 
         # currently used only for the unknown directory
         subject_name = "Unknown"
@@ -757,6 +678,7 @@ class FaceRecognizer(Thread):
             return False
         else:
             _dir = pt.join(pt.FACES_DIR, _dir + "/")
+
         # get the length of the images in the directory
         idx = len([name for name in os.listdir(_dir) if "png" in name]) + 1
 
@@ -768,83 +690,9 @@ class FaceRecognizer(Thread):
 
         print("...Done")
 
-        # self.auto_train()
-
-        # remove similar images
-        # threading.Thread(target=self.filter_all_images).start()
-
         return True
 
-    def move_image(self, image, subject_name):
-
-        # look for the direcotry and create it if not present
-        print(subject_name)
-        subject_name = subject_name.strip()
-        if not any(subject_name in x for x in os.listdir(pt.FACES_DIR)):
-            add_folder(subject_name)
-
-        # get the directory name
-        _dir = get_name_dir(subject_name)
-
-        if not _dir:
-            return False
-        else:
-            _dir = pt.join(pt.FACES_DIR, _dir)
-
-        # get the length of the images in the directory
-        idx = len([name for name in os.listdir(_dir) if os.path.isfile(name)])
-
-        image_name = pt.join(_dir, f"image_{idx}.png")
-
-        os.rename(image, image_name)
-
-        return True
-
-    def filter_all_images(self, stream=None):
-        """
-        Remove all the images in the database which are similar to each other
-        :return:
-        """
-
-        def print_stream(to_send):
-            print(to_send)
-
-        if stream is None:
-            stream = print_stream
-
-        stream("Filtering images...")
-
-        # get a list of paths for every image in Faces
-        img_paths = []
-        for path, subdirs, files in os.walk(pt.UNK_DIR):
-            for name in files:
-                if "png" in name:
-                    img_paths.append(os.path.join(path, name))
-
-        stream(f"Found {len(img_paths)} images... Filtering")
-
-        # read them all using opencv
-        images = [cv2.imread(elem) for elem in img_paths]
-        # get the indices to be removed
-        to_remove = filter_similar_images(images)
-
-        if not len(to_remove):
-            stream("No image to remove")
-            return
-
-        # get the paths corresponding to the indices
-        to_remove = operator.itemgetter(*to_remove)(img_paths)
-        if not isinstance(to_remove, tuple): to_remove = [to_remove]
-        # remove them
-        for elem in to_remove:
-            os.remove(elem)
-
-        for sub in subdirs:
-            rename_images_index(os.path.join(pt.FACES_DIR, sub))
-
-        stream(f"Removed {len(to_remove)} images")
-
-    def switch_classificator(self, value):
+    def switch_classifier(self, value):
         """
         Switch classifier
         :param value: value to switch to
@@ -857,10 +705,8 @@ class FaceRecognizer(Thread):
 
         self.clf_flag = value
 
-
         if value == 0 or value == 1:
             self.train_model()
-
 
 
 # ===================STATIC=========================
@@ -870,13 +716,14 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
     """
     Return a tuple of prediction, confidence given an algorithm
     :param distance: a list of floats associated with the distance between faces
-    :param y: a list of persons of the same lenght of tdistancess
-    :param algorithm: str, the type of the algoritmh to use
+    :param y: a list of persons of the same length of distances
+    :param algorithm: str, the type of the alalgorithmo use
     :return:
     """
 
     # return if no
-    if not len(distance): return "", 0
+    if not len(distance):
+        return "", 0
 
     normalized_distance = distance / distance.sum()
 
@@ -896,10 +743,10 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
         Perform a sum for every person in the KB and get the one with the minimum weighted sum
         :return:
         """
-        categ = Counter(y)
+        label = Counter(y)
 
         distance_dict = {}
-        for key, val in categ.items():
+        for key, val in label.items():
             distance_dict[key] = normalized_distance[y == key].sum() / val
 
         pred = min(distance_dict.items(), key=operator.itemgetter(1))[0]
@@ -918,10 +765,16 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
 
 
 def rename_images_index(path_to_dir):
+    """
+    Used to rename all the images into a directory to have consecutiveve indexing
+    :param path_to_dir: a path to a dir
+    :return:
+    """
     img_paths = []
     renames = []
     tmp_paths = []
     idx = 0
+
     for path, subdirs, files in os.walk(path_to_dir):
         for name in files:
             if "png" in name:
@@ -938,7 +791,11 @@ def rename_images_index(path_to_dir):
 
 
 def build_dataset():
-    X = []
+    """
+    build the dataset
+    :return: X,Y as numpy arrays
+    """
+    x = []
     y = []
 
     # Loop through each person in the training set
@@ -951,54 +808,55 @@ def build_dataset():
 
         # load encodings
         encodings = load_pkl(pt.join(subject_dir, pt.encodings))
-        if encodings is None: encodings = []
+        if encodings is None:
+            encodings = []
 
         # Loop through each training image for the current person
-        errors=0
+        errors = 0
         for img_path in image_files_in_folder(subject_dir):
             image = face_recognition.load_image_file(img_path)
             os.remove(img_path)
 
             # take the bounding boxes an the image size
-            face_bounding_boxes = 0,image.shape[1], image.shape[0],0
+            face_bounding_boxes = 0, image.shape[1], image.shape[0], 0
             face_bounding_boxes = [face_bounding_boxes]
 
             try:
-                encode=face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes,num_jitters=10)[0]
+                encode = \
+                    face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes, num_jitters=10)[0]
 
-                #encode=face_recognition.face_encodings(image,num_jitters=10)[0]
                 encodings.append(encode)
 
             except IndexError:
                 print(f"out of range error number {errors}")
-                errors+=1
+                errors += 1
                 pass
-
 
         # save encodings
         dump_pkl(encodings, pt.join(subject_dir, pt.encodings))
         print(f"Encodings for {subject_dir} are {len(encodings)}")
         # update model
-        X += encodings
+        x += encodings
         y += len(encodings) * [class_dir.split("_")[-1]]
 
-    X = np.asarray(X)
+    x = np.asarray(x)
     y = np.asarray(y)
 
-    return X, y
+    return x, y
 
 
 def filter_prediction_subjects(predictions):
     """
     Filter prediction and returns a list of found faces based on maximum confidence
     :param predictions: zipped list (predictions, images)
-    :return: list of tuples (predicted name, croppped image)
+    :return: list of tuples (predicted name, cropped image)
     """
 
     # remove empty list
     filtered = [elem for elem in predictions if elem[0] is not None]
 
-    if not len(filtered): return []
+    if not len(filtered):
+        return []
 
     # unzip list
     filtered, images = zip(*filtered)
@@ -1036,44 +894,10 @@ def filter_prediction_subjects(predictions):
     return to_return
 
 
-def prepare_training_data():
-    """Get the saved images from the Faces direcotry, treat them and return two lists with the same lenght:
-    faces : list of images with faces in them
-    labels : list of labels for each face """
-
-    # ------STEP-1--------
-    # get the directories (one directory for each subject) in data folder
-    dirs = glob.glob(pt.join(pt.FACES_DIR, "s_*"))
-    # list to hold all subject faces
-    faces = []
-    # list to hold labels for all subjects
-    labels = []
-
-    # let's go through each directory and read images within it
-    for dir_name in dirs:
-        # print(dir_name)
-        # get the subject label (number)
-        label = int(dir_name.split("/")[-1].split("_")[1])
-
-        # for every image in the direcotry append image,label
-        for image_path in glob.glob(pt.join(dir_name, "*.png")):
-            # read the image
-            image = cv2.imread(image_path)
-            # convert to gray scale
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # append image
-            faces.append(gray)
-            labels.append(label)
-            # remove image
-            os.remove(image_path)
-
-    return faces, labels
-
-
 def add_folder(name):
     """Create a folder for the new person"""
 
-    if not name in os.listdir(pt.FACES_DIR):
+    if name not in os.listdir(pt.FACES_DIR):
         # get how many folder there are in the faces dir
         idx = len(glob.glob(pt.join(pt.FACES_DIR, 's_*')))
         # generate the name
@@ -1083,15 +907,20 @@ def add_folder(name):
 
 
 def get_name_dir(subject_name):
-    for dir in os.listdir(pt.FACES_DIR):
-        if subject_name in dir:
-            return dir
+    """
+    Get the path to a directory of a subject given its name
+    :param subject_name: (str) the name of the subject
+    :return: the path or false
+    """
+    for _dir in os.listdir(pt.FACES_DIR):
+        if subject_name in _dir:
+            return _dir
 
     return False
 
 
 def get_dir_subjects():
-    """Function to get all the names saved in the faces direcotry"""
+    """Function to get all the names saved in the faces directory"""
 
     s_names = []
 
@@ -1101,18 +930,19 @@ def get_dir_subjects():
     return s_names
 
 
-def filter_similar_images(images, similar_thresh=0.94):
+def filter_similar_images(images, similar_trh=0.94):
     """
     Filter from lis of images the ones which have a high similarity
+    :param similar_trh: the similarity threshold for considering two images similar
     :param images: a list of np arrays
     :return: list of indices of the images to be removed
     """
 
     def rmse(img_1, img_2):
         """
-        Run similarity measure between two iamges
-        :param img_1:
-        :param img_2:
+        Run similarity measure between two images
+        :param img_1: the first image
+        :param img_2: the second one
         :return:
         """
 
@@ -1134,7 +964,7 @@ def filter_similar_images(images, similar_thresh=0.94):
         img_1 = np.asarray(img_1)
         img_2 = np.asarray(img_2)
 
-        # performa similarity measure
+        # perform a similarity measure
 
         a, b, _ = img_1.shape
         score = np.sqrt(np.sum((img_2 - img_1) ** 2) / float(a * b))
@@ -1143,7 +973,7 @@ def filter_similar_images(images, similar_thresh=0.94):
         return 1 - (score / (max_val - min_val))
 
     # remove images with zero dimension
-    images = [img for img in images if not 0 in img.shape]
+    images = [img for img in images if 0 not in img.shape]
     to_pop = []
 
     for idx in trange(len(images) - 1):
@@ -1151,12 +981,179 @@ def filter_similar_images(images, similar_thresh=0.94):
             # measure similarity
             similarity = rmse(images[idx], images[jdx])
             # if it is more than thresh
-            if similarity >= similar_thresh:
+            if similarity >= similar_trh:
                 to_pop.append(jdx)
 
     to_pop = list(set(to_pop))
 
     return to_pop
+
+
+def new_face(bot, update):
+    """Function to ask the user the name of the new subject
+     :param bot: the telegram bot
+    :param update: the update received
+    :return:"""
+
+    to_send = "Please insert the subject name\nYou have just one chance so be careful"
+
+    bot.edit_message_caption(
+        chat_id=update.callback_query.message.chat_id,
+        caption=to_send,
+        message_id=update.callback_query.message.message_id,
+        parse_mode="HTML")
+
+    return 1
+
+
+def show_prediction_labels_on_image(img, predictions):
+    """
+    Shows the face recognition results visually.
+    :param img: path to image to be recognized
+    :param predictions: results of the predict function
+    :return:
+    """
+
+    if predictions is None:
+        return
+
+    for pred in predictions:
+        # Draw a box around the face using the Pillow module
+
+        (top, right, bottom, left) = pred['bbs']
+
+        name = pred['pred']
+        try:
+            conf = round(100 * pred['conf'], 1)
+        except TypeError:
+            conf = pred['conf']
+
+        pt1 = (left, top)
+        pt2 = (right, bottom)
+
+        cv2.rectangle(img, pt1, pt2, color=(0, 255, 0),
+                      thickness=2)
+
+        cv2.putText(img, str(name), (int(left), int(top)), cv2.FONT_HERSHEY_COMPLEX, 1,
+                    (0, 255, 0))
+
+        cv2.putText(img, f"conf:{conf}", (int(left), int(bottom) - 10), cv2.FONT_HERSHEY_COMPLEX, 1,
+                    (0, 255, 0))
+
+
+def generate_inline_keyboard(callback_data, *args):
+    """Generate an inline keyboard containing the names of the known faces plus any inlinebutton passed with args"""
+
+    # get all the saved subjects names
+    names = get_dir_subjects()
+
+    # uf there are none return
+    if len(names) == 0 and len(args) == 0:
+        return False
+
+    # print(names)
+
+    # add the names to the inline button
+    rows = []
+    cols = []
+
+    for name in names:
+
+        # only three cols allowed
+        if len(cols) == 3:
+            rows.append(cols)
+            cols = []
+        # add the buttom to the row
+        cols.append(InlineKeyboardButton(name, callback_data=callback_data + name))
+
+    # if there was less than three faces append them
+    if len(cols) > 0:
+        rows.append(cols)
+    if not rows:
+        rows.append(cols)
+
+    # if there are other buttons from args, append them
+    if args:
+        rows.append(args)
+
+    inline = InlineKeyboardMarkup(rows)
+
+    return inline
+
+
+def move_image(image, subject_name):
+    """
+    move an image to a subject directory
+    :param image: the image path
+    :param subject_name: the subject name
+    :return:
+    """
+    # look for the directory and create it if not present
+    subject_name = subject_name.strip()
+    if not any(subject_name in x for x in os.listdir(pt.FACES_DIR)):
+        add_folder(subject_name)
+
+    # get the directory name
+    _dir = get_name_dir(subject_name)
+
+    if not _dir:
+        return False
+    else:
+        _dir = pt.join(pt.FACES_DIR, _dir)
+
+    # get the length of the images in the directory
+    idx = len([name for name in os.listdir(_dir) if os.path.isfile(name)])
+
+    image_name = pt.join(_dir, f"image_{idx}.png")
+
+    os.rename(image, image_name)
+
+    return True
+
+
+def filter_all_images(stream=None):
+    """
+    Remove all the images in the database which are similar to each other
+    :return:
+    """
+
+    def print_stream(to_send):
+        print(to_send)
+
+    if stream is None:
+        stream = print_stream
+
+    stream("Filtering images...")
+
+    # get a list of paths for every image in Faces
+    img_paths = []
+    for path, subdirs, files in os.walk(pt.UNK_DIR):
+        for name in files:
+            if "png" in name:
+                img_paths.append(os.path.join(path, name))
+
+    stream(f"Found {len(img_paths)} images... Filtering")
+
+    # read them all using opencv
+    images = [cv2.imread(elem) for elem in img_paths]
+    # get the indices to be removed
+    to_remove = filter_similar_images(images)
+
+    if not len(to_remove):
+        stream("No image to remove")
+        return
+
+    # get the paths corresponding to the indices
+    to_remove = operator.itemgetter(*to_remove)(img_paths)
+    if not isinstance(to_remove, tuple): to_remove = [to_remove]
+    # remove them
+    for elem in to_remove:
+        os.remove(elem)
+
+    for sub in subdirs:
+        rename_images_index(os.path.join(pt.FACES_DIR, sub))
+
+    stream(f"Removed {len(to_remove)} images")
 
 # # uncomment and add token to debug face recognition
 # token, psw = read_token_psw()

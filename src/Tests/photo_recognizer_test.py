@@ -107,7 +107,7 @@ class PhotoReco:
 
     def set_algorithm(self):
 
-        self.face_reco.switch_classificator(self.algorithm.get())
+        self.face_reco.switch_classifier(self.algorithm.get())
 
         if self.img is not None:
             self.predict(self.img)
