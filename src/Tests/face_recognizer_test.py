@@ -5,7 +5,7 @@ import copy
 import threading
 import time
 import tkinter as tki
-from Path import Path as pt
+
 import cv2
 import imutils
 from PIL import Image
@@ -16,6 +16,7 @@ from telegram.ext import Updater
 
 from Classes.Darknet import Darknet
 from Classes.Face_recognizer import FaceRecognizer, rename_images_index
+from Path import Path as pt
 
 
 class PhotoBoothApp:
@@ -25,7 +26,7 @@ class PhotoBoothApp:
         # the thread stop event
         self.vs = vs
         self.outputPath = outputPath
-        self.queue=[]
+        self.queue = []
 
         rename_images_index(pt.UNK_DIR)
 
@@ -43,26 +44,9 @@ class PhotoBoothApp:
             'reco': None
         }
 
-        # create a checkbutton, that when pressed, will take the current
+        # prepare the gui
+        self.pack_gui()
 
-        bott_panels = tki.Label(compound=tki.CENTER)
-        bott_panels.pack(side="bottom", fill="both", padx=10, pady=10, expand="yes")
-
-        self.face_reco_flag = tki.IntVar()
-
-        check = tki.Checkbutton(bott_panels, text="save faces", variable=self.face_reco_flag)
-        check.pack(side="right", fill="both",
-                   expand="yes", padx=10,
-                   pady=10)
-
-        btn = tki.Button(bott_panels, text="Train",
-                         command=self.face_reco.train_model)
-        btn.pack(side="right", fill="both", expand="yes", padx=10,
-                 pady=10)
-        btn = tki.Button(bott_panels, text="Clean Faces",
-                         command=self.face_reco.filter_all_images)
-        btn.pack(side="right", fill="both", expand="yes", padx=10,
-                 pady=10)
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -73,6 +57,50 @@ class PhotoBoothApp:
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
 
+    def pack_gui(self):
+
+        # create a bottom panel
+        bott_panels = tki.Label(compound=tki.CENTER)
+        bott_panels.pack(side="bottom", fill="both", padx=10, pady=10, expand="yes")
+
+        # create a left bttom panel
+        check_panel = tki.Label(compound=tki.CENTER, master=bott_panels)
+        check_panel.pack(side="right", fill="both", padx=10, pady=10, expand="yes")
+        # check box
+        self.face_save_flag = tki.BooleanVar()
+
+        check = tki.Checkbutton(check_panel, text="save faces", variable=self.face_save_flag)
+        check.pack(side="bottom", fill="both",
+                   expand="yes", padx=10,
+                   pady=10)
+
+        self.darknet_flag = tki.BooleanVar()
+        self.darknet_flag.set(False)
+
+        check = tki.Checkbutton(check_panel, text="darknet", variable=self.darknet_flag)
+        check.pack(side="bottom", fill="both",
+                   expand="yes", padx=10,
+                   pady=10)
+
+        self.face_reco_flag = tki.BooleanVar()
+
+        check = tki.Checkbutton(check_panel, text="face reco", variable=self.face_reco_flag)
+        check.pack(side="bottom", fill="both",
+                   expand="yes", padx=10,
+                   pady=10)
+
+        # train button
+        btn = tki.Button(bott_panels, text="Train",
+                         command=self.face_reco.train_model)
+        btn.pack(side="right", fill="both", expand="yes", padx=10,
+                 pady=10)
+
+        # clean faces button
+        btn = tki.Button(bott_panels, text="Clean Faces",
+                         command=self.face_reco.filter_all_images)
+        btn.pack(side="right", fill="both", expand="yes", padx=10,
+                 pady=10)
+
     def process_frame(self, original):
 
         frames = {
@@ -81,31 +109,31 @@ class PhotoBoothApp:
             'reco': None
         }
 
-        # segmentation = self.darknet.detect_img(original.copy())
-        # segmentation = [segmentation]
-        #
-        # frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
+        if self.darknet_flag.get():
+            segmentation = self.darknet.detect_img(original.copy())
+            segmentation = [segmentation]
 
+            frames['darknet'] = self.darknet.draw_bounds_list(copy.deepcopy(segmentation))[0]
 
+        if self.face_reco_flag.get():
 
+            face = self.face_reco.find_faces(original.copy(), model="hog")
 
-        face = self.face_reco.find_faces(original.copy())
+            if face is not None:
 
+                self.queue.append(face)
+                if len(self.queue) > 10 and self.face_save_flag.get():
+                    self.face_reco.add_image_write(self.queue)
+                    self.queue = []
 
-        if face is not None:
+                reco = copy.deepcopy(original)
+                try:
+                    prediction = self.face_reco.predict(reco)
+                    self.face_reco.show_prediction_labels_on_image(reco, prediction)
+                    frames['reco'] = reco
+                except FileNotFoundError:
+                    pass
 
-            self.queue.append(face)
-            if len(self.queue)>10 and self.face_reco_flag.get():
-                self.face_reco.add_image_write(self.queue)
-                self.queue=[]
-
-            reco = copy.deepcopy(original)
-            try:
-                prediction = self.face_reco.predict(reco)
-                self.face_reco.show_prediction_labels_on_image(reco, prediction)
-                frames['reco'] = reco
-            except FileNotFoundError:
-                pass
         return frames
 
     def convert_image(self, frames_dict):
@@ -143,7 +171,6 @@ class PhotoBoothApp:
             else:
                 self.panels[key].configure(image=frames[key])
                 self.panels[key].image = frames[key]
-
 
     def videoLoop(self):
         # DISCLAIMER:
@@ -190,14 +217,14 @@ if __name__ == '__main__':
     updater = Updater("545431258:AAHEocYDtLOQdZDCww6tQFSfq3p-xmWeyE8")
     disp = updater.dispatcher
 
-    # darknet = Darknet(True)
-    # darknet.start()
-
     face_reco = FaceRecognizer(disp)
 
     print("[INFO] warming up camera...")
     vs = VideoStream(src=0).start()
     time.sleep(2.0)
 
-    pba = PhotoBoothApp(vs, ".", None, face_reco)
+    darknet = Darknet(True)
+    darknet.start()
+
+    pba = PhotoBoothApp(vs, ".", darknet, face_reco)
     pba.root.mainloop()
