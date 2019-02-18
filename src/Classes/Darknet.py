@@ -1,10 +1,11 @@
+import gc
 import logging
 from threading import Thread
 
 import cv2
 
 from Path import Path as pt
-from darknet.python.darknet import load_net, load_meta, detect
+from darknet.python.darknet import load_net, load_meta, detect, free_network
 
 logger = logging.getLogger('darknet')
 
@@ -32,7 +33,7 @@ class Darknet(Thread):
         self.data = data.encode('utf-8')
 
         self.net = None
-        self.meta = None
+        self.meta = load_meta(self.data)
 
     def detect_video(self, img_list):
         """
@@ -92,9 +93,17 @@ class Darknet(Thread):
         return frames
 
 
+    def un_load_net(self):
+        if self.net is not None:
+            free_network(self.net)
+            self.net=None
+            gc.collect()
+        else:
+            self.net = load_net(self.cfg, self.weights, 0)
+
     def start(self):
-        self.net = load_net(self.cfg, self.weights, 0)
-        self.meta = load_meta(self.data)
+
+        self.un_load_net()
 
         super().start()
 
