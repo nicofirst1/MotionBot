@@ -1,8 +1,8 @@
 # MotionBot
 
 This project combines visual perception, with Opencv, and telegram bots.
-The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.
-
+The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.\
+Check out the **new branch** [darknet security](https://gitlab.com/nicofirst1/MotionBot/tree/darknet_security)!
 ## Table of Content
 
 - [Behavior](#behavior)
