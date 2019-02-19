@@ -33,6 +33,12 @@ Run the [Path](./src/Path.py) file to initialize missing files:
  
 `python ./src/Path.py`
 
+If you are having problem with the imports configure the *PYTHONPATH* using:
+
+`PYTHONPATH=. python src/main.py`
+
+In the main directory
+
 ### Telegram 
 Fill the [token_psw file](./Resources/token_psw.txt) with your token on the first line and your password on the 
 second line, for example:

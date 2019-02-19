@@ -90,3 +90,24 @@ include/darknet.h:11:30: fatal error: cuda_runtime.h: No such file or directory
 
 ### Solution 
 In the [custom makefile](Resources/Custom_darknet/Makefile) change the use of CUDNN and GPU to zero.
+
+
+## Issue6
+
+```
+     c/_cffi_backend.c:15:17: fatal error: ffi.h: No such file or directory
+       #include <ffi.h>
+```
+
+### Solution
+Install libffi with `sudo apt-get install libffi-dev`
+
+
+## Issue7
+```
+ImportError: numpy.core.multiarray failed to import
+```
+
+### Solution
+
+Update numpy installation with `ImportError: numpy.core.multiarray failed to import`
