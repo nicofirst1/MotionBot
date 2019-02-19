@@ -95,15 +95,25 @@ confidence in the prediction is set to a constant "-".
 ### KNN
 This is the approach used by *ageitgey* in its
 [example code](https://github.com/ageitgey/face_recognition/blob/master/examples/face_recognition_knn.py)
-where a k-nearest-neighbors classifier is used. Parameters such as the number of neighbors can be tweaked
-directly in the *predict* function.
+where a k-nearest-neighbors classifier is used. Parameters such as the number of neighbors and weight measure
+can be tweaked directly in the *predict* function.
 
 The following images represent the quality of a recognition using two different types of weights: uniform
-and distance, provided by sklearn.
+and distance, provided by sklearn. The number of classes to be predicted (saved subjects) is 3 with a number
+of neightbors equal to 22. Having a sample size of 400 instances the average accuracy of the classification
+is 99%.
 
 Distance measure         |  Uniform measure
 :-------------------------:|:-------------------------:
-![Plot 1](./images/knn_distance.png)  | ![Video example](./images/knn_uniform.png)
+![Plot 1](./images/knn_distance_3.png)  | ![Video example](./images/knn_uniform_3.png)
+
+Another example is shown in te followign images: here the number of subjects is 7. The number of samples is
+610 and the average accuracy is 90%. 
+
+Distance measure         |  Uniform measure
+:-------------------------:|:-------------------------:
+![Plot 1](./images/knn_distance_7.png)  | ![Video example](./images/knn_uniform_7.png)
+
 
 ### Distance 
 This category of custom algorithm make use of the
