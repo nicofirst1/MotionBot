@@ -2,7 +2,7 @@ import os
 
 import face_recognition
 from face_recognition.face_detection_cli import image_files_in_folder
-from sklearn import preprocessing, neighbors
+from sklearn import preprocessing, neighbors, svm
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
@@ -109,6 +109,79 @@ class DataAnalysis():
 
         return projected
 
+    def svm_analysis(self, X,Y):
+        fignum = 1
+        def accuracy_svm(x, y):
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            clf = svm.SVC(kernel='linear', C=1)
+            clf.fit(X_train, y_train)
+            y_pred = clf.predict(X_test)
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
+
+        acc=accuracy_svm(X,Y)
+
+        X = X[:, :2]
+
+        indx=np.argwhere(Y<=2).squeeze()
+        Y=Y[indx]
+        X=X[indx]
+
+
+
+        # fit the model
+        clf = svm.SVC(kernel='linear', C=1)
+        clf.fit(X, Y)
+
+        # get the separating hyperplane
+        w = clf.coef_[0]
+        a = -w[0] / w[1]
+        xx = np.linspace(-5, 5)
+        yy = a * xx - (clf.intercept_[0]) / w[1]
+
+        # plot the parallels to the separating hyperplane that pass through the
+        # support vectors (margin away from hyperplane in direction
+        # perpendicular to hyperplane). This is sqrt(1+a^2) away vertically in
+        # 2-d.
+        margin = 1 / np.sqrt(np.sum(clf.coef_ ** 2))
+        yy_down = yy - np.sqrt(1 + a ** 2) * margin
+        yy_up = yy + np.sqrt(1 + a ** 2) * margin
+
+        # plot the line, the points, and the nearest vectors to the plane
+        plt.figure(fignum, figsize=(4, 3))
+        plt.clf()
+        plt.plot(xx, yy, 'k-')
+        plt.plot(xx, yy_down, 'k--')
+        plt.plot(xx, yy_up, 'k--')
+
+        plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=80,
+                    facecolors='none', zorder=10, edgecolors='k')
+        plt.scatter(X[:, 0], X[:, 1], c=Y, zorder=10, cmap=plt.cm.Paired,
+                    edgecolors='k')
+
+        plt.axis('tight')
+        x_min = x.min()-0.5
+        x_max = x.max()+0.5
+        y_min = -0.5
+        y_max = 0.5
+
+        XX, YY = np.mgrid[x_min:x_max:200j, y_min:y_max:200j]
+        Z = clf.predict(np.c_[XX.ravel(), YY.ravel()])
+
+        # Put the result into a color plot
+        Z = Z.reshape(XX.shape)
+        plt.figure(fignum, figsize=(4, 3))
+        plt.pcolormesh(XX, YY, Z, cmap=plt.cm.Paired)
+
+        plt.xlim(x_min, x_max)
+        plt.ylim(y_min, y_max)
+
+        plt.xticks(())
+        plt.yticks(())
+        fignum = fignum + 1
+
+        plt.savefig(pt.join(pt.ANALISYS_DIR, f"svm"))
+        plt.clf()
+
     def analyze(self):
         enc = preprocessing.LabelEncoder()
         encoded_label = enc.fit_transform(self.y)
@@ -116,6 +189,8 @@ class DataAnalysis():
         projected = self.pca_analysis(encoded_label)
         print("Executing KNN")
         self.knn_analysis(projected, encoded_label)
+        print("Executin SVM")
+        self.svm_analysis(projected,encoded_label)
 
 
 def build_dataset_analysis():
