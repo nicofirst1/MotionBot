@@ -27,15 +27,13 @@ class CamMovement(Thread):
 
         face_recognizer: the face recognizer class
 
+        darknet: the darknet class
+
         delay : used delay between movement detection
         min_area : the minimum area of changes detected to be considered an actual change in the image
         ground_frame : the image used as the background to be compared with the current frames
         blur : the mean shift of the blur for the preprocessing of the images
 
-        frontal_face_cascade : the object that detects frontal faces
-        profile_face_cascade : the object that detects frontal faces
-        face_size : the minimum window size to look for faces, the bigger the faster the program gets. But for distant
-            people small values are to be taken into account
 
         max_seconds_retries : if a movement is detected for longer than max_seconds_retries the program will check for a
         background change, do not increase this parameter to much since it will slow down tremendously the program execution
@@ -47,14 +45,14 @@ class CamMovement(Thread):
             CALL) and will give the video a slower movement.
 
 
-        flags.get_flag('motion') : flag used to check if the user want to recieve a notification (can be set by telegram)
-        flags.get_flag('video') :  flag used to check if the user want to recieve a video of the movement (can be set by telegram)
-        flags.get_flag('face photo') : flag used to check if the user want to recieve a photo of the faces in the video (can be set by telegram)
-        flags.get_flag('debug') : flag used to check if the user want to recieve the debug images (can be set by telegram , it slows down the program)
-        flags.get_flag('face reco') : flag used to check if the user want to recieve the predicted face with the photo (can be set by telegram)
+        flags.get_flag('motion') : flag used to check if the user want to receive a notification (can be set by telegram)
+        flags.get_flag('video') :  flag used to check if the user want to receive a video of the movement (can be set by telegram)
+        flags.get_flag('face photo') : flag used to check if the user want to receive a photo of the faces in the video (can be set by telegram)
+        flags.get_flag('debug') : flag used to check if the user want to receive the debug images (can be set by telegram , it slows down the program)
+        flags.get_flag('face reco') : flag used to check if the user want to receive the predicted face with the photo (can be set by telegram)
 
         faces_cnts : list of contours for detected faces
-        max_blurrines : the maximum threshold for blurriness detection, discard face images with blur>max_blurrines
+        max_blurriness : the maximum threshold for blurriness detection, discard face images with blur>max_blurriness
         min_bk_threshold : the minimum difference in the background grayscaled image for the movement to be detected. When high
             only the bigger black/white difference will be detected. The range is (0,255) which is the intensity of the pixel
 
@@ -97,7 +95,7 @@ class CamMovement(Thread):
         self.resetting_ground = False
 
         self.faces_cnts = []
-        self.max_blurrines = 100
+        self.max_blurriness = 100
         self.min_bk_threshold = 75
         self.dilate_window_size = (17, 13)
 
