@@ -1,6 +1,7 @@
 from ctypes import *
 import math
 import random
+import os
 
 def sample(probs):
     s = sum(probs)
@@ -42,9 +43,12 @@ class METADATA(Structure):
     _fields_ = [("classes", c_int),
                 ("names", POINTER(c_char_p))]
 
-    
 
-lib = CDLL("/home/dizzi/Desktop/MotionBot/src/darknet/libdarknet.so", RTLD_GLOBAL)
+curdir = os.getcwd()
+curdir = curdir.split("MotionBot")[0]
+curdir = os.path.join(curdir, "MotionBot")
+
+lib = CDLL(os.path.join(curdir,"/src/darknet/libdarknet.so"), RTLD_GLOBAL)
 #lib = CDLL("libdarknet.so", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
