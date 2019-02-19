@@ -34,7 +34,7 @@ class CamShotter(Thread):
         self.stop_event = threading.Event()
 
         # get camera and queue
-        self.cam_idx = 0
+        self.cam_idx = 1
         self.CAM = cv2.VideoCapture(self.cam_idx)
         self.queue = queue
         self.capture_bool = False

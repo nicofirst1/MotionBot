@@ -15,7 +15,8 @@ from imutils.video import VideoStream
 from telegram.ext import Updater
 
 from Classes.Darknet import Darknet
-from Classes.Face_recognizer import FaceRecognizer, rename_images_index
+from Classes.Face_recognizer import FaceRecognizer, rename_images_index, filter_all_images, \
+    show_prediction_labels_on_image
 from Path import Path as pt
 from Utils.utils import read_token_psw
 
@@ -52,7 +53,6 @@ class PhotoBoothApp:
         self.outputPath = outputPath
         self.queue = []
 
-        rename_images_index(pt.UNK_DIR)
 
         self.thread = None
         self.stopEvent = None
@@ -161,7 +161,7 @@ class PhotoBoothApp:
 
             # clean faces button
             btn = tki.Button(bott_panels, text="Clean Faces",
-                             command=self.face_reco.filter_all_images)
+                             command=filter_all_images)
             btn.pack(side="right", fill="both", expand="yes", padx=10,
                      pady=10)
 
@@ -208,7 +208,7 @@ class PhotoBoothApp:
                 reco = copy.deepcopy(original)
                 try:
                     prediction = self.face_reco.predict(reco)
-                    self.face_reco.show_prediction_labels_on_image(reco, prediction)
+                    show_prediction_labels_on_image(reco, prediction)
                     frames['reco'] = reco
                 except FileNotFoundError:
                     pass

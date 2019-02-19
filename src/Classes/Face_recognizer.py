@@ -497,7 +497,7 @@ class FaceRecognizer(Thread):
 
         # If no faces are found in the image, return an empty result.
         if len(face_locations) == 0:
-            return None
+            return []
 
         # Find encodings for faces in the test image
         faces_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations)
@@ -1154,6 +1154,8 @@ def filter_all_images(stream=None):
         rename_images_index(os.path.join(pt.FACES_DIR, sub))
 
     stream(f"Removed {len(to_remove)} images")
+
+    rename_images_index(pt.UNK_DIR)
 
 # # uncomment and add token to debug face recognition
 # token, psw = read_token_psw()

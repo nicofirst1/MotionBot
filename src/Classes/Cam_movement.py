@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 
 # from memory_profiler import profile
-from Classes.Face_recognizer import filter_prediction_subjects
+from Classes.Face_recognizer import filter_prediction_subjects, show_prediction_labels_on_image
 from Classes.Flags import Falgs
 
 logger = logging.getLogger('cam_movement')
@@ -178,10 +178,7 @@ class CamMovement(Thread):
             # save the taken frames
             to_write = self.shotter.capture(False)
 
-            if self.flags.get_value('darknet'):
-                segmentation = self.darknet.detect_video(to_write)
 
-                to_write = self.darknet.draw_bounds_list(segmentation)
 
             # if the user wants the face in the movement
             if self.flags.get_value('face photo'):
@@ -200,13 +197,18 @@ class CamMovement(Thread):
 
                     if self.flags.get_value("face reco"):
                         for pred, frame in zip(prediction, to_write):
-                            self.face_recognizer.show_prediction_labels_on_image(frame,pred)
+                            show_prediction_labels_on_image(frame,pred)
 
                 # take the face
                 try:
                     use_recognizer()
                 except FileNotFoundError:
                     self.telegram_handler.send_message(msg="To use face recognition feature you must first /classify some faces")
+
+            # use darknet
+            if self.flags.get_value('darknet'):
+                segmentation = self.darknet.detect_video(to_write)
+                to_write = self.darknet.draw_bounds_list(segmentation)
 
             # send the original video too
             if not self.resetting_ground:
