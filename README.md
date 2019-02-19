@@ -1,8 +1,15 @@
 # MotionBot
 
-This project combines visual perception, with Opencv, and telegram bots.
-The goal is to have a cheap, easy to use, surveillance system that you can install effortless in your home.\
-Check out the **new branch** [darknet security](https://gitlab.com/nicofirst1/MotionBot/tree/darknet_security)!
+This project combines visual perception, with Opencv, and telegram bots. The goal is to have a cheap, easy
+to use, surveillance system that you can install effortless in your home.
+
+Check out the **new branch**
+[darknet security](https://gitlab.com/nicofirst1/MotionBot/tree/darknet_security), use 
+```
+git checkout darknet-security
+```
+To move to the new branch.
+
 ## Table of Content
 
 - [Behavior](#behavior)
@@ -12,7 +19,6 @@ Check out the **new branch** [darknet security](https://gitlab.com/nicofirst1/Mo
   * [Face recognition](#face-recognition)
 - [Getting Started](#getting-started)
   * [Package Setup](#package-setup)
-  * [Physical Setup](#physical-setup)
   * [Final Setup](#final-setup)
   * [Parameter Tuning](#parameter-tuning)
       - [Cam_movement](#cam-movement)
@@ -123,8 +129,6 @@ increase the size of the model with approximately 10M every 70 images saved.
 
 **IMPORTANT**
 
-If you see the **debugging** commit do not pull the repo yet, the most secure updates are the **APLHA/BETA** releases. 
-Other commits comments may introduce new features and bugs too.
 
 If you are having any kind of problems related to the following steps check out the *Journal.md* under the *Issues* section. 
 
@@ -138,18 +142,6 @@ To install **OpenCV** for raspberry pi (changing python3.4 to python3.5)
 * Install [telegram-python-bot](https://github.com/python-telegram-bot/python-telegram-bot) with `pip install python-telegram-bot --upgrade`
 * (Optional) Install profiler fuction `pip install -U memory_profiler`
 
-### Physical Setup
-**THIS PART IS NOT IMPLEMENTED YET, YOU CAN SKIP IT**
-
-For this part you need a [microservo motor](https://www.amazon.com/RioRand-micro-Helicopter-Airplane-Controls/dp/B00JJZXRR0)
-* Connect it like this
-
-![connection](https://cdn.instructables.com/F6Y/Y4UA/IZT6TFQN/F6YY4UAIZT6TFQN.MEDIUM.jpg)
-![connection](https://cdn.instructables.com/F91/2AHG/IZT6TFNU/F912AHGIZT6TFNU.MEDIUM.jpg)
-
-Where the input pin is the GPIO0
-
-![connection](https://cdn.instructables.com/F7X/KHKG/IZT6TIS5/F7XKHKGIZT6TIS5.LARGE.jpg) 
 
 ### Final Setup
 * Edit file **token_psw.txt**, insert your token and password after the *=* - the password can be any random string and will be used for authentication against the bot.
