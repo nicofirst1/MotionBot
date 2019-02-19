@@ -1,8 +1,17 @@
 # Utils
 
 ## Commands
-- Sync local machine with raspberry pie:\
-`rsync -avz . pi@192.168.1.4:/home/pi/Work/PycharmProjects/MotionBot`
+
+Given your raspberry pie IP and username (usr)
+
+- Sync local machine with raspberry pie:
+ 
+ ```
+ rsync -avz . urs@IP:/your/path/to/MotionBot
+ rsync -avz . pi@192.168.1.4:/home/pi/Work/PycharmProjects/MotionBot
+
+ ```
+
 
 - To scan your network for the raspberry pi ip use:\
 `nmap -sn 192.168.1.0/24`
@@ -70,3 +79,14 @@ change the path of coco.names file in [coco.data](src/darknet/cfg/coco.data) fil
 `names = data/coco.names`\
 to\
  `names= ./src/darknet/data/coco.names`
+ 
+ 
+## Issue5
+```
+include/darknet.h:11:30: fatal error: cuda_runtime.h: No such file or directory
+     #include "cuda_runtime.h"
+
+```
+
+### Solution 
+In the [custom makefile](Resources/Custom_darknet/Makefile) change the use of CUDNN and GPU to zero.
