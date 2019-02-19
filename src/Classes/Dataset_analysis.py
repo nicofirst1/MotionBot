@@ -69,8 +69,8 @@ class DataAnalysis():
                         edgecolor='k', s=20)
             plt.xlim(xx.min(), xx.max())
             plt.ylim(yy.min(), yy.max())
-            plt.title("3-Class classification (k = %i, weights = '%s', accuracy = %d)"
-                      % (n_neighbors, weights, accuracy))
+            plt.title("%d-Class classification (k = %i, w = '%s', acc = %d)"
+                      % (len(set(encoded)), n_neighbors, weights, accuracy))
 
             plt.savefig(pt.join(pt.ANALISYS_DIR, f"knn_{weights}"))
             plt.clf()
