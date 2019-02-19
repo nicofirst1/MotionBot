@@ -1,18 +1,17 @@
 import os
 
 import face_recognition
-from face_recognition.face_detection_cli import image_files_in_folder
-from sklearn import preprocessing, neighbors, svm
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
+from face_recognition.face_detection_cli import image_files_in_folder
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn import preprocessing, neighbors, svm
+from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 from Classes.Face_recognizer import distances_algorithm
 from Path import Path as pt
-from mpl_toolkits.mplot3d import Axes3D
-
 from Utils.serialization import load_pkl, dump_pkl
 
 

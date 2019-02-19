@@ -391,7 +391,6 @@ class FaceRecognizer(Thread):
         if not len(self.X):
             return
 
-
         if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
 
@@ -903,11 +902,11 @@ def filter_similar_images(images, similar_trh=0.94):
 
     for idx in trange(len(images) - 1):
 
-        if idx in to_pop:continue
+        if idx in to_pop: continue
 
         for jdx in range(idx + 1, len(images)):
 
-            if jdx in to_pop:continue
+            if jdx in to_pop: continue
             # measure similarity
             similarity = rmse(images[idx], images[jdx])
             # if it is more than thresh
