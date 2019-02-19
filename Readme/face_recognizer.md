@@ -95,8 +95,15 @@ confidence in the prediction is set to a constant "-".
 ### KNN
 This is the approach used by *ageitgey* in its
 [example code](https://github.com/ageitgey/face_recognition/blob/master/examples/face_recognition_knn.py)
-where a k-nearest-neighbors classifier is used. Parameters such as the
-number  of neighbors can be tweaked directly in the *predict* function.
+where a k-nearest-neighbors classifier is used. Parameters such as the number of neighbors can be tweaked
+directly in the *predict* function.
+
+The following images represent the quality of a recognition using two different types of weights: uniform
+and distance, provided by sklearn.
+
+Distance measure         |  Uniform measure
+:-------------------------:|:-------------------------:
+![Plot 1](./images/knn_distance.png)  | ![Video example](./images/knn_uniform.png)
 
 ### Distance 
 This category of custom algorithm make use of the

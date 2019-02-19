@@ -118,7 +118,7 @@ class DataAnalysis():
         self.knn_analysis(projected, encoded_label)
 
 
-def build_dataset():
+def build_dataset_analysis():
     """
     build the dataset
     :return: X,Y as numpy arrays
@@ -174,6 +174,6 @@ def build_dataset():
 
 
 if __name__ == '__main__':
-    x, y = build_dataset()
+    x, y = build_dataset_analysis()
     analysis = DataAnalysis(x, y)
     analysis.analyze()
