@@ -62,7 +62,7 @@ class FaceRecognizer(Thread):
         self.faces_idx = 0
         self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
         self.X, self.y = build_dataset()
-        self.analysis=DataAnalysis(self.X, self.y)
+        self.analysis = DataAnalysis(self.X, self.y)
 
         # ======TELEGRAM VARIABLES========
         self.dispatcher = dispatcher
@@ -80,15 +80,14 @@ class FaceRecognizer(Thread):
 
         # Custom inlinekeyboard and start message
         self.classify_start_inline = InlineKeyboardMarkup([
-            [InlineKeyboardButton("See Faces", callback_data="/classify_see"),
-             InlineKeyboardButton("Save Faces", callback_data="/classify_save")],
-            [InlineKeyboardButton("Filter Faces", callback_data="/classify_filter"),
-             InlineKeyboardButton("Exit", callback_data="/end")]])
+            [
+                InlineKeyboardButton("Save Faces", callback_data="/classify_save"),
+                InlineKeyboardButton("Filter Faces", callback_data="/classify_filter")],
+            [InlineKeyboardButton("Exit", callback_data="/end")]])
         self.classify_start_msg = "Welcome, here you can choose what you want to do"
 
         # adding everything to the bot
         dispatcher.add_handler(conversation)
-        dispatcher.add_handler(CallbackQueryHandler(self.see_faces, pattern="/classify_see"))
         dispatcher.add_handler(CallbackQueryHandler(self.send_faces, pattern="/view_face"))
         dispatcher.add_handler(CallbackQueryHandler(self.send_unknown_face, pattern="/classify_save"))
         dispatcher.add_handler(CallbackQueryHandler(self.filter_images_tg, pattern="/classify_filter"))
@@ -133,31 +132,6 @@ class FaceRecognizer(Thread):
         """
 
         update.message.reply_text(self.classify_start_msg, reply_markup=self.classify_start_inline)
-
-    def see_faces(self, bot, update):
-        """Function to choose what face the user want to see
-         :param bot: the telegram bot
-        :param update: the update recieved
-        :return:"""
-
-        # generate the inline keyboard with the custom callback
-        inline = generate_inline_keyboard("/view_face ")
-
-        # if there is no inline keyboard it means there are no saved faces
-        if not inline:
-            self.back_to_start(bot, update, "Sorry... no saved faces were found")
-            return
-
-        to_send = "What face do you want to see?"
-
-        # edit the previous message
-        bot.edit_message_text(
-            chat_id=update.callback_query.message.chat_id,
-            text=to_send,
-            message_id=update.callback_query.message.message_id,
-            parse_mode="HTML",
-            reply_markup=inline
-        )
 
     def send_faces(self, bot, update):
         """Function to send all the photo of a specific subdir
@@ -400,8 +374,6 @@ class FaceRecognizer(Thread):
         :return: returns knn classifier that was trained on the given data.
         """
 
-
-
         def build_classifier_knn(x, y):
 
             n_neighbors = int(round(math.sqrt(len(x)))) * 2
@@ -417,7 +389,7 @@ class FaceRecognizer(Thread):
             return clf_svm
 
         self.X, self.y = build_dataset()
-        self.analysis.set_data(self.X,self.y)
+        self.analysis.set_data(self.X, self.y)
 
         if not len(self.X):
             return
@@ -936,7 +908,12 @@ def filter_similar_images(images, similar_trh=0.94):
     to_pop = []
 
     for idx in trange(len(images) - 1):
+
+        if idx in to_pop:continue
+
         for jdx in range(idx + 1, len(images)):
+
+            if jdx in to_pop:continue
             # measure similarity
             similarity = rmse(images[idx], images[jdx])
             # if it is more than thresh

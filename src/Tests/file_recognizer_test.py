@@ -7,6 +7,7 @@ import tkinter as tki
 from tkinter.filedialog import askopenfilename
 
 import cv2
+import face_recognition
 import imutils
 from PIL import Image
 from PIL import ImageTk
