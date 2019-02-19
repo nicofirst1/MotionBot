@@ -18,7 +18,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 from tqdm import trange
 
-from Classes.Dataset_analysis import Data_analysis
+from Classes.Dataset_analysis import DataAnalysis
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
 
@@ -62,7 +62,7 @@ class FaceRecognizer(Thread):
         self.faces_idx = 0
         self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
         self.X, self.y = build_dataset()
-        self.analysis=Data_analysis(self.X,self.y)
+        self.analysis=DataAnalysis(self.X, self.y)
 
         # ======TELEGRAM VARIABLES========
         self.dispatcher = dispatcher

@@ -15,37 +15,33 @@ from mpl_toolkits.mplot3d import Axes3D
 from Utils.serialization import load_pkl, dump_pkl
 
 
-class Data_analysis():
+class DataAnalysis():
 
+    def __init__(self, x, y):
 
-    def __init__(self,x,y):
+        self.x = x
+        self.y = y
 
-        self.x=x
-        self.y=y
+    def set_data(self, x, y):
 
-
-
-    def set_data(self,x,y):
-
-        self.x=x
-        self.y=y
-
+        self.x = x
+        self.y = y
 
     def knn_analysis(self, projected, encoded, n_neighbors=None):
 
-        def accuracy_knn(x,y):
+        def accuracy_knn(x, y):
             X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
             clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
             clf.fit(X_train, y_train)
-            y_pred=clf.predict(X_test)
-            return round(accuracy_score(y_test,y_pred)*100,2)
+            y_pred = clf.predict(X_test)
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
 
         if n_neighbors is None:
             n_neighbors = int(round(np.math.sqrt(len(projected))))
 
         projected = projected[:, :2]
         print("Chose n_neighbors automatically:", n_neighbors)
-        X_train, X_test, y_train, y_test = train_test_split(projected, encoded, test_size = 0.33, random_state = 42)
+        X_train, X_test, y_train, y_test = train_test_split(projected, encoded, test_size=0.33, random_state=42)
         h = .02  # step size in the mesh
         for weights in ['uniform', 'distance']:
             # we create an instance of Neighbours Classifier and fit the data.
@@ -59,7 +55,6 @@ class Data_analysis():
             xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                                  np.arange(y_min, y_max, h))
 
-
             Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
 
             # Put the result into a color plot
@@ -67,8 +62,7 @@ class Data_analysis():
             plt.figure()
             plt.pcolormesh(xx, yy, Z, cmap="viridis")
 
-
-            accuracy=accuracy_knn(self.x,encoded)
+            accuracy = accuracy_knn(self.x, encoded)
 
             # Plot also the training points
             plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap="viridis",
@@ -76,11 +70,10 @@ class Data_analysis():
             plt.xlim(xx.min(), xx.max())
             plt.ylim(yy.min(), yy.max())
             plt.title("3-Class classification (k = %i, weights = '%s', accuracy = %d)"
-                      % (n_neighbors, weights,accuracy))
+                      % (n_neighbors, weights, accuracy))
 
             plt.savefig(pt.join(pt.ANALISYS_DIR, f"knn_{weights}"))
             plt.clf()
-
 
     def pca_analysis(self, encoded_label):
         pca = PCA()
@@ -116,14 +109,14 @@ class Data_analysis():
 
         return projected
 
-
     def analyze(self):
         enc = preprocessing.LabelEncoder()
         encoded_label = enc.fit_transform(self.y)
         print("Executin PCA")
-        projected=self.pca_analysis(encoded_label)
+        projected = self.pca_analysis(encoded_label)
         print("Executing KNN")
-        self.knn_analysis(projected,encoded_label)
+        self.knn_analysis(projected, encoded_label)
+
 
 def build_dataset():
     """
@@ -174,7 +167,6 @@ def build_dataset():
         x += encodings
         y += len(encodings) * [class_dir.split("_")[-1]]
 
-
     x = np.asarray(x)
     y = np.asarray(y)
 
@@ -182,6 +174,6 @@ def build_dataset():
 
 
 if __name__ == '__main__':
-    x,y=build_dataset()
-    analysis=Data_analysis(x,y)
+    x, y = build_dataset()
+    analysis = DataAnalysis(x, y)
     analysis.analyze()
