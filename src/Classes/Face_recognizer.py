@@ -10,17 +10,15 @@ from threading import Thread
 
 import cv2
 import face_recognition
-import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from face_recognition.face_recognition_cli import image_files_in_folder
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn import neighbors, preprocessing, svm
-from sklearn.decomposition import PCA
+from sklearn import neighbors, svm
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 from tqdm import trange
 
+from Classes.Dataset_analysis import Data_analysis
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
 
@@ -64,6 +62,7 @@ class FaceRecognizer(Thread):
         self.faces_idx = 0
         self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
         self.X, self.y = build_dataset()
+        self.analysis=Data_analysis(self.X,self.y)
 
         # ======TELEGRAM VARIABLES========
         self.dispatcher = dispatcher
@@ -401,48 +400,7 @@ class FaceRecognizer(Thread):
         :return: returns knn classifier that was trained on the given data.
         """
 
-        def analyze(x, y):
-            enc = preprocessing.LabelEncoder()
-            y_enc = enc.fit_transform(self.y)
 
-            pca = PCA()
-            projected = pca.fit_transform(x, y)
-
-            plt.plot(np.cumsum(pca.explained_variance_ratio_))
-            plt.xlabel('number of components')
-            plt.ylabel('cumulative explained variance')
-
-            plt.savefig(pt.join(pt.ANALISYS_DIR, "variance_components"))
-
-            plt.clf()
-            fig = plt.figure()
-            ax = Axes3D(fig)
-
-            ax.scatter(projected[:, 0], projected[:, 1], projected[:, 2],
-                       c=y_enc, edgecolor='red', alpha=0.5, s=30,
-                       cmap=plt.cm.get_cmap('viridis', 10))
-
-            plt.savefig(pt.join(pt.ANALISYS_DIR, "3d_plot"))
-
-            plt.clf()
-
-            plt.scatter(projected[:, 0], projected[:, 1],
-                        c=y_enc, edgecolor='none', alpha=0.5,
-                        cmap=plt.cm.get_cmap('viridis', 10))
-            plt.xlabel('component 1')
-            plt.ylabel('component 2')
-            plt.colorbar()
-            plt.savefig(pt.join(pt.ANALISYS_DIR, "2d_plot"))
-
-            plt.clf()
-
-            fig, axes = plt.subplots(3, 8, figsize=(9, 4),
-                                     subplot_kw={'xticks': [], 'yticks': []},
-                                     gridspec_kw=dict(hspace=0.1, wspace=0.1))
-            for i, ax in enumerate(axes.flat):
-                ax.imshow(pca.components_[i].reshape(8, 16), cmap='bone')
-
-            plt.savefig(pt.join(pt.ANALISYS_DIR, "faces"))
 
         def build_classifier_knn(x, y):
 
@@ -459,13 +417,14 @@ class FaceRecognizer(Thread):
             return clf_svm
 
         self.X, self.y = build_dataset()
+        self.analysis.set_data(self.X,self.y)
 
         if not len(self.X):
             return
 
         # Determine how many neighbors to use for weighting in the KNN classifier
         if to_analyze:
-            analyze(self.X, self.y)
+            self.analysis.analyze()
 
         if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
