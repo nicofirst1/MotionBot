@@ -72,16 +72,18 @@ There are multiple kind of test executables in the [Test](./src/Tests) directory
 
 #### Darknet 
 
-[This file](./src/Tests/darknet_test.py) works uniquely with the darknet
-framework showing how it works in real time. You can also take
-screenshots of what the program is seeing (notice that a webcam must be
+[This file](./src/Tests/darknet_test.py) works uniquely with the darknet framework showing how it works in
+real time. You can also take screenshots of what the program is seeing (notice that a webcam must be
 connected in order to make it work), as shown in the following image.
 ![Darknet example](./Readme/images/darknet_test.jpg)
 
-#### Photo recognizer
-[This file](./Readme/images/photo_recognizer_test.py) is used to test the recognizer with static images. It supports the loading of a custom 
-image from the device and the choosing of multiple types of algorithm for face recognition 
-(see the [Classification algorithms section](#classification_alg) for more information on the algorithms).
+#### File recognizer
+[This file](./Readme/images/file_recognizer_test.py) is used to test the
+recognizer with static images. It supports the loading of a custom image
+from the device and the choosing of multiple types of algorithm for face
+recognition (see the
+[Classification algorithms section](Readme/face_recognizer.md) for more
+information on the algorithms).
 ![Photo example](./Readme/images/photo_reco.png)
 
 
