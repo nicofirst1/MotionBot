@@ -72,8 +72,8 @@ a person's face
 ([here](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78)
 are more information about how the embeddings extraction works).
 
-Using PCA on the a dataset made of two individuals with 124 and 144 
-embeddings respectively yelds the following plots:
+Using PCA on the a dataset made of 3 individuals with 124, 144 and 150 embeddings respectively yelds the
+following plots:
 
 2D plot           |  3D plot
 :-------------------------:|:-------------------------:
@@ -91,6 +91,12 @@ Moreover the
 [SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)
 does not provide a measure of probability for its decision, hence the
 confidence in the prediction is set to a constant "-".
+
+Using the SVM allows us to plot the decision function and margins for the classification task. The following
+image describes the decision function and margins for a classification problem with 3 classes.
+![Plot 1](./images/svm.png)
+
+The accuracy of the classificaiton is 91.86%-
  
 ### KNN
 This is the approach used by *ageitgey* in its
@@ -99,7 +105,9 @@ where a k-nearest-neighbors classifier is used. Parameters such as the number of
 can be tweaked directly in the *predict* function.
 
 The following images represent the quality of a recognition using two different types of weights: uniform
-and distance, provided by sklearn. The number of classes to be predicted (saved subjects) is 3 with a number
+and distance, provided by sklearn. 
+
+The number of classes to be predicted (saved subjects) is 3 with a number
 of neightbors equal to 22. Having a sample size of 400 instances the average accuracy of the classification
 is 99%.
 
