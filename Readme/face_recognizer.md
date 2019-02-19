@@ -144,3 +144,19 @@ This algorithm uses the normalized distance vector to sum all the
 distances belonging to a specific label and then normalize them with the
 number of times that labels appears in the dataset. It then return the
 label with the lowest value.
+
+### Comparison Between Algorithms
+
+In the following table accuracy scores form the different algorithms are reported. The number of classes to
+be predicted varies from 2 to 7.
+
+| Classes 	| SVM   	| KNN   	| TopN  	| LowestSum 	|
+|---------	|-------	|-------	|-------	|-----------	|
+| 2       	| 99.09 	| 99.09 	| 99.09 	| 98.18     	|
+| 3       	| 100.0 	| 99.32 	| 99.32 	| 99.32     	|
+| 4       	| 100.0 	| 100.0 	| 100.0 	| 98.3      	|
+| 5       	| 99.63 	| 98.13 	| 99.63 	| 95.51     	|
+| 6       	| 91.86 	| 90.17 	| 90.85 	| 86.1      	|
+| 7       	| 91.86 	| 90.17 	| 90.85 	| 86.1      	|
+
+
