@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
+from Classes.Face_recognizer import distances_algorithm
 from Path import Path as pt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -192,6 +193,65 @@ class DataAnalysis():
         print("Executin SVM")
         self.svm_analysis(projected,encoded_label)
 
+    def compare_scores(self):
+        enc = preprocessing.LabelEncoder()
+        encoded_label = enc.fit_transform(self.y)
+
+
+        def accuracy_svm(x, y):
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            clf = svm.SVC(kernel='linear', C=1)
+            clf.fit(X_train, y_train)
+            y_pred = clf.predict(X_test)
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
+
+        def accuracy_knn(x, y):
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            clf = neighbors.KNeighborsClassifier(22, weights="uniform")
+            clf.fit(X_train, y_train)
+            y_pred = clf.predict(X_test)
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
+
+        def accuracy_top_n(x,y):
+
+            y_pred=[]
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+
+            for idx in range(len(X_test)):
+                distances = face_recognition.face_distance(X_train, X_test[idx])
+                pred, measure = distances_algorithm(distances, y_train, algorithm="topN")
+
+                y_pred.append(pred)
+
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
+
+        def accuracy_lowes_sum(x, y):
+
+            y_pred = []
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+
+            for idx in range(len(X_test)):
+                distances = face_recognition.face_distance(X_train, X_test[idx])
+                pred, measure = distances_algorithm(distances, y_train, algorithm="lowestSum")
+
+                y_pred.append(pred)
+
+            return round(accuracy_score(y_test, y_pred) * 100, 2)
+
+        for idx in range(2,len(set(encoded_label))+1):
+            indx = np.argwhere(encoded_label <= idx).squeeze()
+
+            svm_acc=accuracy_svm(x[indx],encoded_label[indx])
+            knn_acc=accuracy_knn(x[indx],encoded_label[indx])
+            topn_acc=accuracy_top_n(x[indx],encoded_label[indx])
+            lowest_acc=accuracy_lowes_sum(x[indx],encoded_label[indx])
+
+
+            print(f"Accuracies for {idx} classes:\nSvm = {svm_acc}\nKnn = {knn_acc}\nTopN = {topn_acc}\nLowesSum ="\
+            f"{lowest_acc}\n\n")
+
+
+
 
 def build_dataset_analysis():
     """
@@ -251,4 +311,4 @@ def build_dataset_analysis():
 if __name__ == '__main__':
     x, y = build_dataset_analysis()
     analysis = DataAnalysis(x, y)
-    analysis.analyze()
+    analysis.compare_scores()
