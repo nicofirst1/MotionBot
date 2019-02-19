@@ -14,6 +14,13 @@ In this section the setup for this branch is explained.
 You **must** perform the setup of the master branch first in order to
 make this one work.
 
+Remember to use:
+ 
+ `git submodule update --init --recursive`
+ 
+ after cloning the repo to download the darknet submodule.
+
+
 
 ### Python 
 Install the requirements using
