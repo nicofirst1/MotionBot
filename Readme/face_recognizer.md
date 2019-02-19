@@ -94,6 +94,7 @@ confidence in the prediction is set to a constant "-".
 
 Using the SVM allows us to plot the decision function and margins for the classification task. The following
 image describes the decision function and margins for a classification problem with 3 classes.
+
 ![Plot 1](./images/svm.png)
 
 The accuracy of the classificaiton is 91.86%-
