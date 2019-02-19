@@ -18,7 +18,6 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 from tqdm import trange
 
-from Classes.Dataset_analysis import DataAnalysis
 from Path import Path as pt
 from Utils.serialization import dump_pkl, load_pkl
 
