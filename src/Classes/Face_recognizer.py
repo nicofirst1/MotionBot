@@ -62,7 +62,6 @@ class FaceRecognizer(Thread):
         self.faces_idx = 0
         self.clf_flag = 2  # 0 if svm, 1 if knn, 2 distance
         self.X, self.y = build_dataset()
-        self.analysis = DataAnalysis(self.X, self.y)
 
         # ======TELEGRAM VARIABLES========
         self.dispatcher = dispatcher
@@ -367,7 +366,7 @@ class FaceRecognizer(Thread):
 
     # ===================RECOGNIZER=========================
 
-    def train_model(self, to_analyze=True):
+    def train_model(self):
         """
         Trains a k-nearest neighbors classifier for face recognition.
         :param to_analyze: (bool) if to analyze the dataset
@@ -389,14 +388,10 @@ class FaceRecognizer(Thread):
             return clf_svm
 
         self.X, self.y = build_dataset()
-        self.analysis.set_data(self.X, self.y)
 
         if not len(self.X):
             return
 
-        # Determine how many neighbors to use for weighting in the KNN classifier
-        if to_analyze:
-            self.analysis.analyze()
 
         if self.clf_flag == 0:
             clf = build_classifier_svm(self.X, self.y)
