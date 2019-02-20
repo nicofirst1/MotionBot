@@ -183,7 +183,8 @@ class CamMovement(Thread):
 
                 def use_recognizer():
                     prediction = self.face_recognizer.predict_multi(to_write, save=True)
-                    faces = filter_prediction_subjects(zip(prediction, to_write))
+                    faces = filter_prediction_subjects(zip(prediction, to_write),
+                                                       self.face_recognizer.get_confidence_trh())
                     # if there are no faces found
                     if not len(faces):
                         self.telegram_handler.send_message(msg="Face not found")
