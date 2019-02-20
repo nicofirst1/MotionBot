@@ -691,17 +691,22 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
     if not len(distance):
         return "", 0
 
-    normalized_distance = distance / distance.sum()
+    normalized_distance =1- distance / distance.sum()
 
-    def top_n(n=10):
+    def top_n(n=0.5):
         """
         Get the top n best distance and use a voting system to get the most probable result
-        :param n: int, the top
+        :param n: float , the percentage of instances to consider
         :return:
         """
-        pred = Counter(y[distance.argsort()[:n]]).most_common(1)[0][0]
-        measure = normalized_distance[y == pred].sum()
 
+        n=int(len(distance)*n)
+        c= Counter(y[distance.argsort()[:n]])
+        pred =c.most_common(1)[0][0]
+        measure_distance = normalized_distance[y == pred].sum()/sum(normalized_distance)
+        measure_counter=c[pred]/sum(val for val in c.values())
+
+        measure=(measure_counter+measure_distance)/2
         return pred, measure
 
     def lowest_sum():
@@ -712,10 +717,16 @@ def distances_algorithm(distance, y, algorithm="lowestSum"):
         label = Counter(y)
 
         distance_dict = {}
+        _sum=0
         for key, val in label.items():
             distance_dict[key] = normalized_distance[y == key].sum() / val
+            _sum+=normalized_distance[y == key].sum() / val
 
-        pred = min(distance_dict.items(), key=operator.itemgetter(1))[0]
+
+        for key in distance_dict.keys():
+            distance_dict[key]/=_sum
+
+        pred = max(distance_dict.items(), key=operator.itemgetter(1))[0]
         measure = distance_dict[pred]
 
         return pred, measure
