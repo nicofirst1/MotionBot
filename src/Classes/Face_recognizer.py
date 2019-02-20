@@ -822,15 +822,17 @@ def build_dataset():
     return x, y
 
 
-def filter_prediction_subjects(predictions):
+def filter_prediction_subjects(predictions, confidence_trh, blur_trh=60):
     """
     Filter prediction and returns a list of found faces based on maximum confidence
+    :param blur_trh: int, confidence for the blurriness of the face
+    :param confidence_trh: float, confidence for the prediction
     :param predictions: zipped list (predictions, images)
     :return: list of tuples (predicted name, cropped image)
     """
 
     # remove empty list
-    filtered = [elem for elem in predictions if elem[0] is not None]
+    filtered = [elem for elem in predictions if len(elem[0])]
 
     if not len(filtered):
         return []
@@ -845,25 +847,43 @@ def filter_prediction_subjects(predictions):
         # for every prediction in a list
         for jdx in range(len(filtered[idx])):
 
-            # get the predicted face and the confidence
-            pred = filtered[idx][jdx]['pred']
-            conf = filtered[idx][jdx]['conf']
+            filtered[idx][jdx]['idx']=idx
 
-            try:
-                # update value if confidence is more
-                if best_dict[pred][0] < conf:
-                    best_dict[pred] = (conf, idx, jdx)
-            except KeyError:
-                # append it otherwise
-                best_dict[pred] = (conf, idx, jdx)
+      
+
+    filtered=[elem for sub in filtered for elem in sub]
+    # remove for blur threshold
+    filtered=[elem for elem in filtered if elem['blur']>blur_trh]
+    # remove for conf threshold
+    filtered=[elem for elem in filtered if elem['conf']>confidence_trh]
+
+    blur_sum=sum(elem['blur'] for elem in filtered)
+
+    blur_importance=0.7
+    best_dict={}
+    for elem in filtered:
+        # normalize blur and generate conf_blur score
+
+        elem['blur']/=blur_sum
+        elem['conf_blur']=(elem['blur']*blur_importance+elem['conf'])/2
+
+        pred=elem['pred']
+        conf=elem['conf_blur']
+
+        try:
+            # update value if confidence is more
+            if best_dict[pred][0] < conf:
+                best_dict[pred] = (conf, elem['idx'], elem['bbs'])
+        except KeyError:
+            # append it otherwise
+            best_dict[pred] = (conf, elem['idx'], elem['bbs'])
 
     to_return = []
     # for every best results
     for key, val in best_dict.items():
         # crop image and append it to list
         idx = val[1]
-        jdx = val[2]
-        top, right, bottom, left = filtered[idx][jdx]['bbs']
+        top, right, bottom, left = val[2]
         cropped = images[idx][top:bottom, left:right]
 
         to_return.append((key, cropped))
