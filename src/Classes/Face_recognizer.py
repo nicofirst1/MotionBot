@@ -490,19 +490,35 @@ class FaceRecognizer(Thread):
 
             return results
 
+        def variance_of_laplacian(image):
+            # compute the Laplacian of the image and then return the focus
+            # measure, which is simply the variance of the Laplacian
+            return cv2.Laplacian(image, cv2.CV_64F).var()
+
+
+        prediction=None
+
         if self.clf_flag == 0:
 
-            return predict_svm()
+            prediction= predict_svm()
 
         elif self.clf_flag == 1:
 
-            return predict_knn()
+            prediction= predict_knn()
 
         elif self.clf_flag == 2:
-            return predict_distance("topN")
+            prediction= predict_distance("topN")
 
         else:
-            return predict_distance("lowestSum")
+            prediction= predict_distance("lowestSum")
+
+
+        blur=variance_of_laplacian(img)
+
+        for elem in prediction:
+            elem['blur']=blur
+
+        return prediction
 
     def predict_multi(self, imgs, save=False):
         """ Predict faces in multiple images
@@ -510,6 +526,7 @@ class FaceRecognizer(Thread):
         :param imgs: list of images
         :return: list of triples (face_name, confidence,image) for every Different face in the image list
         """
+
 
         print("Predict multi started...")
 
