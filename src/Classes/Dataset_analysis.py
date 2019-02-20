@@ -196,16 +196,18 @@ class DataAnalysis():
         enc = preprocessing.LabelEncoder()
         encoded_label = enc.fit_transform(self.y)
 
+        test_size=0.33
+
 
         def accuracy_svm(x, y):
-            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=42)
             clf = svm.SVC(kernel='linear', C=1)
             clf.fit(X_train, y_train)
             y_pred = clf.predict(X_test)
             return round(accuracy_score(y_test, y_pred) * 100, 2)
 
         def accuracy_knn(x, y):
-            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=42)
             clf = neighbors.KNeighborsClassifier(22, weights="uniform")
             clf.fit(X_train, y_train)
             y_pred = clf.predict(X_test)
@@ -214,7 +216,7 @@ class DataAnalysis():
         def accuracy_top_n(x,y):
 
             y_pred=[]
-            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=42)
 
             for idx in range(len(X_test)):
                 distances = face_recognition.face_distance(X_train, X_test[idx])
@@ -227,7 +229,9 @@ class DataAnalysis():
         def accuracy_lowes_sum(x, y):
 
             y_pred = []
-            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=42)
+
+            print(f"test size len={len(y_test)}")
 
             for idx in range(len(X_test)):
                 distances = face_recognition.face_distance(X_train, X_test[idx])
@@ -236,6 +240,7 @@ class DataAnalysis():
                 y_pred.append(pred)
 
             return round(accuracy_score(y_test, y_pred) * 100, 2)
+
 
         for idx in range(2,len(set(encoded_label))+1):
             indx = np.argwhere(encoded_label <= idx).squeeze()
