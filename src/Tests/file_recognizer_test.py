@@ -219,7 +219,10 @@ class PhotoReco:
 
 
         else:
+            face = self.face_reco.find_faces(img, save=False, model="cnn")
+            self.face_reco.add_image_write([face])
             img = [img]
+
 
         print("Predicting faces...")
         update_frames=[]
