@@ -590,6 +590,32 @@ class FaceRecognizer(Thread):
 
         return None
 
+    def get_confidence_trh(self):
+        """
+        Get the confidence threshold based on the current algorithm
+        :return:
+        """
+
+        confidence = 0
+
+        #svm
+        if self.clf_flag == 0:
+
+            confidence = 0
+        #knn
+        elif self.clf_flag == 1:
+
+            confidence = 0.32
+        #topN
+        elif self.clf_flag == 2:
+
+            confidence = 0.45
+        #lowestSum
+        elif classmethod == 3:
+            confidence = 0.85
+
+        return confidence
+
     # ===================UTILS=========================
 
     def add_image_write(self, image_list):
