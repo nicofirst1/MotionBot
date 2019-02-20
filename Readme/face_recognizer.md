@@ -1,8 +1,7 @@
 
 # Face Recognizer
-In this section the functionalities of the
-[face recognizer](Readme/face_recognizer.md) will be explained in
-details, images and example will be provided
+In this section the functionalities of the [face recognizer](../src/Classes/Face_recognizer.py) will be
+explained in details, images and example will be provided.
 
 ## Introduction 
 
@@ -54,7 +53,7 @@ algorithms using [sklearn](https://scikit-learn.org/stable/)
 classificators.
 
 
-### <a name="classification_alg"></a> Classification algorithms
+### Classification algorithms
 The classification algorithms are chosen using the *clf_flag* in the
 [Face recognizer](./src/Classes/Face_recognizer.py) file. Each integers
 maps to a different method:
@@ -75,9 +74,15 @@ are more information about how the embeddings extraction works).
 Using PCA on the a dataset made of 3 individuals with 124, 144 and 150 embeddings respectively yelds the
 following plots:
 
-2D plot           |  3D plot
-:-------------------------:|:-------------------------:
-![Plot 1](./images/2d_plot.png)  | ![Video example](./images/3d_plot.png)
+
+
+| 2D plot of three subjects                                    | 3D plot of three subjects                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![](/home/dizzi/Desktop/MotionBot/Readme/images/2d_plot.png) | ![](/home/dizzi/Desktop/MotionBot/Readme/images/3d_plot.png) |
+
+
+
+
 
 Moreover the variance per componetns can be plotted too, which will be
 useful for the KNN algorithm ![variance](images/variance_components.png) 
@@ -98,7 +103,7 @@ image describes the decision function and margins for a classification problem w
 ![Plot 1](./images/svm.png)
 
 The accuracy of the classificaiton is 91.86%-
- 
+
 ### KNN
 This is the approach used by *ageitgey* in its
 [example code](https://github.com/ageitgey/face_recognition/blob/master/examples/face_recognition_knn.py)
