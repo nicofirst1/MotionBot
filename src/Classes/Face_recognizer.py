@@ -822,7 +822,7 @@ def build_dataset():
     return x, y
 
 
-def filter_prediction_subjects(predictions, confidence_trh, blur_trh=60):
+def filter_prediction_subjects(predictions, confidence_trh):
     """
     Filter prediction and returns a list of found faces based on maximum confidence
     :param blur_trh: int, confidence for the blurriness of the face
@@ -849,11 +849,9 @@ def filter_prediction_subjects(predictions, confidence_trh, blur_trh=60):
 
             filtered[idx][jdx]['idx']=idx
 
-      
+
 
     filtered=[elem for sub in filtered for elem in sub]
-    # remove for blur threshold
-    filtered=[elem for elem in filtered if elem['blur']>blur_trh]
     # remove for conf threshold
     filtered=[elem for elem in filtered if elem['conf']>confidence_trh]
 
