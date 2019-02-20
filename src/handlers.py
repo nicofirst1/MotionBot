@@ -244,8 +244,11 @@ def delete_log(bot, update):
             os.remove(f"{pt.LOGGER_DIR}/{log}")
             delete=True
 
-    if delete:
+    if not delete:
         update.message.reply_text("No log file detected!")
+    else:
+        update.message.reply_text("Log files deleted")
+
 
 
 
@@ -335,6 +338,7 @@ def complete_flags():
     global FLAG_SEND
 
     complete_falg_str = FLAG_SEND
+
 
 
     complete_falg_str += "\n-- <b>Motion Detection</b>"

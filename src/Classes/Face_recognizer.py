@@ -334,14 +334,13 @@ class FaceRecognizer(Thread):
             self.train_model()
 
             bot.edit_message_text(
-                chat_id=update.callback_query.message.chat_id,
+                chat_id=msg.chat_id,
                 text="...Done",
-                message_id=update.callback_query.message.message_id,
+                message_id=msg.message_id,
                 parse_mode="HTML",
-                reply_markup=self.classify_start_inline
             )
 
-            time.sleep(1.3)
+            time.sleep(1.5)
 
             bot.delete_message(
                 chat_id=msg.chat_id,
