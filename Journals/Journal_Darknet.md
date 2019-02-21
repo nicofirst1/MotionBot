@@ -111,3 +111,14 @@ ImportError: numpy.core.multiarray failed to import
 ### Solution
 
 Update numpy installation with `ImportError: numpy.core.multiarray failed to import`
+
+
+## Issue8
+```
+ImportError: /lib/arm-linux-gnueabihf/libm.so.6: version `GLIBC_2.27' not found 
+```
+
+### Tried
+Update version of libc
+ `sudo apt-get install libc6`
+ 
