@@ -1,2 +1,2 @@
-numpy==1.14.0
+numpy==1.22.0
 python_telegram_bot==9.0.0
